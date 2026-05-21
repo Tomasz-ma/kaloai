@@ -698,7 +698,7 @@ total_liquid_ml to suma płynów w ml (woda/kawa/herbata/sok/mleko). Napoje ozna
     ?[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:currentPhotoB64}},{type:'text',text:'Przeanalizuj i podaj JSON.'}]}]
     :[{role:'user',content:`Przeanalizuj i podaj JSON:\n\n${txt}`}];
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,system:sys,messages:msgs})});
+    const resp=await fetch('https://kaloai-proxy.tomasz-mazur-lg.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,system:sys,messages:msgs})});
     if(!resp.ok)throw new Error('HTTP '+resp.status);
     const data=await resp.json();
     const result=JSON.parse(data.content.map(c=>c.text||'').join('').replace(/```json|```/g,'').trim());
@@ -852,7 +852,7 @@ function stopMic(){isRecording=false;if(recognition){try{recognition.stop();}cat
 const LOOKUP_SYS=`Jesteś ekspertem od żywienia. Zwróć WYŁĄCZNIE JSON (bez Markdown) z wartościami na 100g:
 {"calories":liczba,"protein_g":liczba,"fat_g":liczba,"carbs_g":liczba}`;
 async function lookupNutrients(name){
-  const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,system:LOOKUP_SYS,messages:[{role:'user',content:`Składnik: ${name}`}]})});
+  const resp=await fetch('https://kaloai-proxy.tomasz-mazur-lg.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,system:LOOKUP_SYS,messages:[{role:'user',content:`Składnik: ${name}`}]})});
   if(!resp.ok)throw new Error('HTTP '+resp.status);
   const data=await resp.json();
   return JSON.parse(data.content.map(c=>c.text||'').join('').replace(/```json|```/g,'').trim());
