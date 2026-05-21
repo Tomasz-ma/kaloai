@@ -178,7 +178,7 @@ textarea::placeholder{color:var(--text3);}
 .ing-table td:not(:first-child){text-align:right;}
 .ing-table tr:last-child td{border-bottom:none;}
 .ing-name-wrap{position:relative;display:inline-block;}
-.ing-name-inp{border:1px solid transparent;border-radius:3px;padding:2px 22px 2px 4px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text);background:transparent;outline:none;width:120px;transition:border-color .2s;}
+.ing-name-inp{border:1px solid transparent;border-radius:3px;padding:2px 22px 2px 4px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text);background:transparent;outline:none;width:180px;transition:border-color .2s;}
 .ing-name-inp:focus{border-color:var(--accent);background:var(--bg);}
 .ing-lookup-spin{position:absolute;right:3px;top:50%;transform:translateY(-50%);width:10px;height:10px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;display:none;}
 .ing-lookup-spin.active{display:block;}
@@ -368,6 +368,10 @@ textarea::placeholder{color:var(--text3);}
           </div>
         </div>
         <div class="tab-content" id="content-photo">
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <button class="tab-btn active" id="photo-lib-btn" onclick="setPhotoSource(false)" style="flex:1;font-size:12px;">🖼️ Biblioteka zdjęć</button>
+            <button class="tab-btn" id="photo-cam-btn" onclick="setPhotoSource(true)" style="flex:1;font-size:12px;">📸 Aparat</button>
+          </div>
           <div class="upload-zone" id="uploadZone">
             <input type="file" id="photoInput" accept="image/*" onchange="handlePhotoUpload(event)">
             <div class="uz-icon">🍽️</div>
@@ -382,7 +386,13 @@ textarea::placeholder{color:var(--text3);}
       </div>
 
       <div class="result-card" id="resultCard">
-        <input class="dish-name-input" id="editName" type="text" placeholder="Nazwa posiłku">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <input class="dish-name-input" id="editName" type="text" placeholder="Nazwa posiłku" style="margin-bottom:0;flex:1;">
+          <div style="flex-shrink:0;display:flex;flex-direction:column;gap:3px;">
+            <label style="font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);">Data i godzina</label>
+            <input type="datetime-local" id="editDateTime" style="padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);background:var(--bg);outline:none;cursor:pointer;" onchange="" title="Zmień datę i godzinę posiłku">
+          </div>
+        </div>
         <div class="totals-bar">
           <div class="total-chip cal"><span class="tc-label">Kalorie</span><span class="tc-val" id="tcCal">0</span><span class="tc-unit">kcal</span></div>
           <div class="total-chip prot"><span class="tc-label">Białko</span><span class="tc-val" id="tcProt">0</span><span class="tc-unit">g</span></div>
@@ -395,7 +405,7 @@ textarea::placeholder{color:var(--text3);}
         <div class="ai-note" id="resNote"></div>
         <div class="ing-header"><span class="ing-title">Składniki</span><span class="ing-hint">— zmień wagę → proporcjonalne przeliczenie</span></div>
         <table class="ing-table">
-          <thead><tr><th style="width:33%">Składnik</th><th>Waga g</th><th>Kcal</th><th>Białko</th><th>Tłuszcz</th><th>Węgl.</th><th></th></tr></thead>
+          <thead><tr><th style="width:40%">Składnik</th><th>Waga g</th><th>Kcal</th><th>Białko</th><th>Tłuszcz</th><th>Węgl.</th><th></th></tr></thead>
           <tbody id="ingBody"></tbody>
         </table>
         <button class="add-ing-btn" onclick="toggleAddForm()">＋ Dodaj składnik ręcznie</button>
@@ -635,20 +645,33 @@ window.updateSummary=()=>{
 window.renderMeals=()=>{
   const list=document.getElementById('mealList');
   if(!meals.length&&!waterLog.length){list.innerHTML='<div class="empty-state">Brak wpisów.<br>Dodaj pierwszy posiłek →</div>';return;}
-  list.innerHTML=meals.map((m,i)=>`
+  // merge meals and water, sort by sortKey (timestamp)
+  const allEntries=[
+    ...meals.map((m,i)=>({...m,_type:'meal',_idx:i,_sortKey:m.sortKey||0})),
+    ...waterLog.map((w,i)=>({...w,_type:'water',_idx:i,_sortKey:w.sortKey||0}))
+  ].sort((a,b)=>a._sortKey-b._sortKey);
+  list.innerHTML=allEntries.map(entry=>{
+    if(entry._type==='meal'){const i=entry._idx;const m=entry;return `
     <div class="meal-item">
       <div class="meal-icon">${foodEmoji(m.name)}</div>
-      <div class="meal-info"><div class="meal-name">${m.name}</div><div class="meal-macros">${r0(m.weight)}g · B:${r0(m.protein)}g · T:${r0(m.fat)}g · W:${r0(m.carb)}g</div></div>
-      <div class="meal-cal">${r0(m.cal)} kcal</div>
+      <div class="meal-info">
+        <div class="meal-name">${m.name}</div>
+        <div class="meal-macros">${r0(m.weight)}g · B:${r0(m.protein)}g · T:${r0(m.fat)}g · W:${r0(m.carb)}g</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;">
+        <div class="meal-cal">${r0(m.cal)} kcal</div>
+        <div style="font-size:9px;color:var(--text3);">${m.time||''}</div>
+      </div>
       <button class="meal-delete" onclick="window.deleteMeal(${i})">✕</button>
-    </div>`).join('')+
-  waterLog.map((w,i)=>`
+    </div>`;}
+    else{const i=entry._idx;const w=entry;return `
     <div class="water-item">
       <span style="font-size:14px;">${w.icon||'💧'}</span>
       <div style="flex:1"><div style="font-weight:500">${w.name}</div><div style="font-size:9px;opacity:.7">${w.time}</div></div>
       <div style="font-weight:600;font-size:12px;margin-right:7px;">${w.ml} ml</div>
       <button class="meal-delete" onclick="window.deleteWater(${i})">✕</button>
-    </div>`).join('');
+    </div>`;}
+  }).join('');
 };
 
 window.deleteMeal=i=>{meals.splice(i,1);saveDay();updateSummary();renderMeals();showToast('Posiłek usunięty');};
@@ -676,6 +699,23 @@ window.handlePhotoUpload=e=>{
   reader.onload=ev=>{currentPhotoB64=ev.target.result.split(',')[1];const img=document.getElementById('previewImg');img.src=ev.target.result;img.style.display='block';};
   reader.readAsDataURL(file);
   const zone=document.getElementById('uploadZone');zone.querySelector('.uz-icon').textContent='✅';zone.querySelector('p').textContent=file.name;
+};
+
+window.setPhotoSource=useCamera=>{
+  const input=document.getElementById('photoInput');
+  const libBtn=document.getElementById('photo-lib-btn');
+  const camBtn=document.getElementById('photo-cam-btn');
+  if(useCamera){
+    input.setAttribute('capture','environment'); // rear camera
+    input.removeAttribute('multiple');
+    camBtn.classList.add('active'); libBtn.classList.remove('active');
+    // trigger immediately
+    input.click();
+  } else {
+    input.removeAttribute('capture');
+    libBtn.classList.add('active'); camBtn.classList.remove('active');
+    input.click();
+  }
 };
 
 // ── Analyze ───────────────────────────────────────────────
@@ -715,6 +755,11 @@ total_liquid_ml to suma płynów w ml (woda/kawa/herbata/sok/mleko). Napoje ozna
 function showResult(r){
   document.getElementById('editName').value=r.name||'';
   document.getElementById('resNote').innerHTML=`<strong>AI:</strong> ${r.note||''}`;
+  // set current datetime as default, allow user to change
+  const now=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  const localDT=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  document.getElementById('editDateTime').value=localDT;
   pendingWaterMl=r.total_liquid_ml||0;
   if(pendingWaterMl>0){document.getElementById('waterDetectedMl').textContent=pendingWaterMl+' ml';document.getElementById('waterDetected').style.display='block';}
   else{document.getElementById('waterDetected').style.display='none';}
@@ -763,11 +808,20 @@ window.confirmAddIng=()=>{
 
 window.acceptMeal=()=>{
   const t=recalcTotals();
-  const meal={name:document.getElementById('editName').value||'Posiłek',weight:r0(ings.reduce((s,g)=>s+(+g.weight||0),0)),cal:r0(t.cal),protein:r1(t.prot),fat:r1(t.fat),carb:r1(t.carb),time:new Date().toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'})};
+  const dtVal=document.getElementById('editDateTime').value;
+  const mealDt=dtVal?new Date(dtVal):new Date();
+  const timeStr=mealDt.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'});
+  const dateStr=mealDt.toLocaleDateString('pl-PL',{day:'numeric',month:'short'});
+  const isToday=mealDt.toDateString()===new Date().toDateString();
+  const displayTime=isToday?timeStr:dateStr+' '+timeStr;
+  const sortKey=mealDt.getTime();
+  const meal={name:document.getElementById('editName').value||'Posiłek',weight:r0(ings.reduce((s,g)=>s+(+g.weight||0),0)),cal:r0(t.cal),protein:r1(t.prot),fat:r1(t.fat),carb:r1(t.carb),time:displayTime,sortKey};
   meals.push(meal);
+  meals.sort((a,b)=>(a.sortKey||0)-(b.sortKey||0));
   if(pendingWaterMl>0){
     const liqNames=ings.filter(g=>g.isLiquid).map(g=>g.name).join(', ')||meal.name;
-    waterLog.push({ml:pendingWaterMl,name:liqNames,icon:'💧',time:meal.time});
+    waterLog.push({ml:pendingWaterMl,name:liqNames,icon:'💧',time:displayTime,sortKey});
+    waterLog.sort((a,b)=>(a.sortKey||0)-(b.sortKey||0));
     waterMl+=pendingWaterMl;pendingWaterMl=0;
   }
   saveDay();updateSummary();renderMeals();
@@ -798,15 +852,21 @@ window.toggleSeries=s=>{seriesVisible[s]=!seriesVisible[s];document.getElementBy
 
 async function buildCharts(){
   const days=getDateRange();
+  const todayStr=todayKey();
   const dayData=await loadDateRange(days);
-  const data=dayData.map(({date,data:d})=>({
-    date,
-    cal:(d.meals||[]).reduce((s,m)=>s+(m.cal||0),0),
-    prot:(d.meals||[]).reduce((s,m)=>s+(m.protein||0),0),
-    fat:(d.meals||[]).reduce((s,m)=>s+(m.fat||0),0),
-    carb:(d.meals||[]).reduce((s,m)=>s+(m.carb||0),0),
-    water:d.waterMl||0
-  }));
+  const data=dayData.map(({date,data:d})=>{
+    // always use live in-memory data for today
+    const k=date.toISOString().split('T')[0];
+    const src=(k===todayStr)?{meals,waterMl}:d;
+    return {
+      date,
+      cal:(src.meals||[]).reduce((s,m)=>s+(m.cal||0),0),
+      prot:(src.meals||[]).reduce((s,m)=>s+(m.protein||0),0),
+      fat:(src.meals||[]).reduce((s,m)=>s+(m.fat||0),0),
+      carb:(src.meals||[]).reduce((s,m)=>s+(m.carb||0),0),
+      water:src.waterMl||0
+    };
+  });
   const labels=days.map(fmtLabel);
   const active=data.filter(d=>d.cal>0||d.water>0);
   const n=Math.max(active.length,1);
