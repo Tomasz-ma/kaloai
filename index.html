@@ -22,7 +22,7 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 
-/* ══ LOGIN SCREEN ══ */
+/* LOGIN */
 #loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1a3a16 0%,#2D5A27 50%,#4a8a40 100%);}
 .login-card{background:#fff;border-radius:20px;padding:48px 40px;max-width:400px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2);}
 .login-logo{font-family:'DM Serif Display',serif;font-size:42px;color:var(--accent);margin-bottom:6px;}
@@ -35,143 +35,175 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .google-btn svg{width:20px;height:20px;flex-shrink:0;}
 .login-privacy{font-size:11px;color:var(--text3);margin-top:16px;line-height:1.5;}
 
-/* ══ APP ══ */
+/* PROFILE WIZARD MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.hidden{display:none;}
+.modal-box{background:#fff;border-radius:20px;padding:36px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25);}
+.modal-box h2{font-family:'DM Serif Display',serif;font-size:24px;color:var(--text);margin-bottom:6px;}
+.modal-box .modal-sub{font-size:13px;color:var(--text2);margin-bottom:24px;}
+.wizard-step{display:none;}.wizard-step.active{display:block;}
+.wizard-progress{display:flex;gap:6px;margin-bottom:24px;}
+.wp-dot{height:4px;flex:1;border-radius:2px;background:var(--border);transition:background .3s;}
+.wp-dot.done{background:var(--accent);}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;}
+.form-group input,.form-group select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s;}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent);background:#fff;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.option-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;}
+.option-card{padding:12px;border:2px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;text-align:center;transition:all .2s;font-size:13px;}
+.option-card:hover{border-color:var(--accent);background:var(--accent-light);}
+.option-card.selected{border-color:var(--accent);background:var(--accent-light);font-weight:600;color:var(--accent);}
+.option-card .oc-icon{font-size:22px;margin-bottom:4px;}
+.wizard-result{background:var(--accent-light);border-radius:var(--radius-sm);padding:16px;margin-bottom:20px;}
+.wr-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(45,90,39,.15);}
+.wr-row:last-child{border-bottom:none;}
+.wr-label{font-size:13px;color:var(--text2);}
+.wr-val{font-size:15px;font-weight:600;color:var(--accent);}
+.manual-override{margin-top:14px;}
+.manual-override summary{font-size:12px;color:var(--text2);cursor:pointer;padding:6px 0;}
+.manual-fields{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-top:10px;}
+.wizard-nav{display:flex;gap:10px;margin-top:20px;}
+.btn-next{flex:1;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;}
+.btn-next:hover{background:#1e3d1a;}
+.btn-back{padding:12px 18px;background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;}
+
+/* APP */
 .app{display:none;grid-template-columns:380px 1fr;min-height:100vh;}
 .app.visible{display:grid;}
 
 /* LEFT */
 .panel-left{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:hidden;}
-.logo{padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.logo{padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
 .logo-text h1{font-family:'DM Serif Display',serif;font-size:22px;letter-spacing:-.5px;color:var(--accent);}
 .logo-text p{font-size:11px;color:var(--text2);margin-top:1px;}
 .user-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--accent-light);cursor:pointer;flex-shrink:0;}
 .user-avatar-placeholder{width:34px;height:34px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--accent);cursor:pointer;flex-shrink:0;}
-.user-menu{position:absolute;top:64px;left:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:50;min-width:200px;display:none;}
+.user-menu{position:absolute;top:62px;left:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:50;min-width:210px;display:none;}
 .user-menu.open{display:block;}
 .user-menu-name{padding:8px 10px;font-size:13px;font-weight:500;color:var(--text);border-bottom:1px solid var(--border);margin-bottom:6px;}
 .user-menu-email{font-size:11px;color:var(--text2);font-weight:400;}
-.user-menu-btn{width:100%;padding:8px 10px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--danger);cursor:pointer;border-radius:var(--radius-sm);text-align:left;display:flex;align-items:center;gap:8px;}
-.user-menu-btn:hover{background:var(--danger-light);}
-
-.date-bar{padding:10px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;}
+.user-menu-btn{width:100%;padding:8px 10px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;border-radius:var(--radius-sm);text-align:left;display:flex;align-items:center;gap:8px;}
+.user-menu-btn.profile{color:var(--accent);}.user-menu-btn.profile:hover{background:var(--accent-light);}
+.user-menu-btn.logout{color:var(--danger);}.user-menu-btn.logout:hover{background:var(--danger-light);}
+.date-bar{padding:9px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;}
 .date-bar span{font-size:12px;color:var(--text2);font-weight:500;}
 .date-badge{background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;}
 .sync-badge{margin-left:auto;font-size:10px;color:var(--text3);display:flex;align-items:center;gap:4px;}
 .sync-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
-.sync-dot.syncing{background:var(--warning,#BA7517);animation:pulse-sync .8s ease-in-out infinite;}
+.sync-dot.syncing{background:#BA7517;animation:pulse-sync .8s ease-in-out infinite;}
 @keyframes pulse-sync{0%,100%{opacity:1;}50%{opacity:.3;}}
-
-.daily-summary{padding:14px 20px;border-bottom:1px solid var(--border);}
-.summary-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
+.daily-summary{padding:12px 20px;border-bottom:1px solid var(--border);}
+.summary-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
 .cal-display{display:flex;align-items:baseline;gap:5px;margin-bottom:2px;}
-.cal-num{font-family:'DM Serif Display',serif;font-size:40px;color:var(--text);line-height:1;}
+.cal-num{font-family:'DM Serif Display',serif;font-size:38px;color:var(--text);line-height:1;}
 .cal-unit{font-size:13px;color:var(--text2);}
-.cal-goal{font-size:11px;color:var(--text3);margin-bottom:8px;}
-.progress-bar{height:5px;background:var(--surface2);border-radius:3px;margin-bottom:12px;overflow:hidden;}
+.cal-goal{font-size:11px;color:var(--text3);margin-bottom:7px;}
+.progress-bar{height:5px;background:var(--surface2);border-radius:3px;margin-bottom:10px;overflow:hidden;}
 .progress-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .5s ease;}
 .progress-fill.over{background:var(--danger);}
-.macros-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
-.macro-card{padding:8px 10px;border-radius:var(--radius-sm);}
+.macros-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;}
+.macro-card{padding:7px 9px;border-radius:var(--radius-sm);}
 .macro-card .m-label{font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px;}
-.macro-card .m-val{font-size:15px;font-weight:500;}
+.macro-card .m-val{font-size:14px;font-weight:600;}
 .macro-card .m-unit{font-size:9px;color:var(--text2);}
-.macro-card.protein{background:var(--protein-light);}.macro-card.protein .m-label,.macro-card.protein .m-val{color:var(--protein);}
-.macro-card.fat{background:var(--fat-light);}.macro-card.fat .m-label,.macro-card.fat .m-val{color:var(--fat);}
-.macro-card.carb{background:var(--carb-light);}.macro-card.carb .m-label,.macro-card.carb .m-val{color:var(--carb);}
-
-.water-block{padding:12px 20px;border-bottom:1px solid var(--border);}
-.water-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.macro-card .m-pct{font-size:9px;font-weight:600;margin-top:3px;}
+.macro-prog{height:3px;border-radius:2px;margin-top:3px;overflow:hidden;background:rgba(255,255,255,.5);}
+.macro-prog-fill{height:100%;border-radius:2px;transition:width .5s ease;}
+.macro-card.protein{background:var(--protein-light);}.macro-card.protein .m-label,.macro-card.protein .m-val,.macro-card.protein .m-pct{color:var(--protein);}.macro-card.protein .m-prog-fill{background:var(--protein);}
+.macro-card.fat{background:var(--fat-light);}.macro-card.fat .m-label,.macro-card.fat .m-val,.macro-card.fat .m-pct{color:var(--fat);}
+.macro-card.carb{background:var(--carb-light);}.macro-card.carb .m-label,.macro-card.carb .m-val,.macro-card.carb .m-pct{color:var(--carb);}
+.water-block{padding:10px 20px;border-bottom:1px solid var(--border);}
+.water-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
 .water-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--water);}
-.water-num{font-family:'DM Serif Display',serif;font-size:24px;color:var(--water);line-height:1;}
-.water-unit{font-size:11px;color:var(--text2);margin-left:2px;}
-.water-goal{font-size:10px;color:var(--text3);}
-.water-bar{height:4px;background:var(--surface2);border-radius:3px;margin-bottom:9px;overflow:hidden;}
+.water-num{font-family:'DM Serif Display',serif;font-size:22px;color:var(--water);line-height:1;}
+.water-unit{font-size:10px;color:var(--text2);margin-left:2px;}
+.water-goal-txt{font-size:9px;color:var(--text3);}
+.water-bar{height:4px;background:var(--surface2);border-radius:3px;margin-bottom:8px;overflow:hidden;}
 .water-fill{height:100%;background:var(--water);border-radius:3px;transition:width .5s ease;}
-.water-btns{display:flex;gap:5px;}
-.w-add-btn{flex:1;padding:6px 3px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .2s;text-align:center;}
+.water-btns{display:flex;gap:4px;}
+.w-add-btn{flex:1;padding:5px 2px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .2s;text-align:center;}
 .w-add-btn:hover{background:var(--water-light);color:var(--water);border-color:var(--water);}
-.w-custom{display:flex;gap:5px;margin-top:6px;}
-.w-custom input{flex:1;padding:5px 9px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text);background:var(--bg);outline:none;}
+.w-custom{display:flex;gap:4px;margin-top:5px;}
+.w-custom input{flex:1;padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text);background:var(--bg);outline:none;}
 .w-custom input:focus{border-color:var(--water);}
-.w-custom button{padding:5px 10px;background:var(--water);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;}
-
-.meals-section{flex:1;overflow-y:auto;padding:14px 20px;}
-.meals-section-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:9px;}
-.meal-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 11px;margin-bottom:6px;display:flex;align-items:center;gap:9px;animation:slideIn .3s ease;}
+.w-custom button{padding:4px 9px;background:var(--water);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;}
+.meals-section{flex:1;overflow-y:auto;padding:12px 20px;}
+.meals-section-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
+.meal-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;margin-bottom:5px;display:flex;align-items:center;gap:8px;animation:slideIn .3s ease;}
 @keyframes slideIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
-.meal-icon{width:30px;height:30px;border-radius:6px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.meal-icon{width:28px;height:28px;border-radius:6px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
 .meal-info{flex:1;min-width:0;}
 .meal-name{font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.meal-macros{font-size:10px;color:var(--text2);margin-top:1px;}
-.meal-cal{font-size:12px;font-weight:600;color:var(--accent);white-space:nowrap;}
-.meal-delete{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:3px;border-radius:3px;transition:color .2s,background .2s;flex-shrink:0;}
+.meal-macros{font-size:9px;color:var(--text2);margin-top:1px;}
+.meal-cal{font-size:11px;font-weight:600;color:var(--accent);white-space:nowrap;}
+.meal-time-lbl{font-size:9px;color:var(--text3);}
+.meal-delete{background:none;border:none;cursor:pointer;color:var(--text3);font-size:12px;padding:3px;border-radius:3px;transition:color .2s;flex-shrink:0;}
 .meal-delete:hover{color:var(--danger);background:var(--danger-light);}
-.water-item{background:var(--water-light);border:1px solid rgba(26,122,191,.2);border-radius:var(--radius-sm);padding:7px 11px;margin-bottom:6px;display:flex;align-items:center;gap:7px;font-size:11px;color:var(--water);}
-.empty-state{text-align:center;padding:22px 0;color:var(--text3);font-size:12px;}
+.water-item{background:var(--water-light);border:1px solid rgba(26,122,191,.2);border-radius:var(--radius-sm);padding:6px 10px;margin-bottom:5px;display:flex;align-items:center;gap:7px;font-size:11px;color:var(--water);}
+.empty-state{text-align:center;padding:20px 0;color:var(--text3);font-size:12px;}
 
 /* RIGHT */
 .panel-right{display:flex;flex-direction:column;min-height:100vh;}
-.main-nav{padding:0 36px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:0;}
-.nav-btn{padding:16px 20px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;display:flex;align-items:center;gap:7px;}
+.main-nav{padding:0 32px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:0;overflow-x:auto;}
+.nav-btn{padding:14px 18px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:6px;}
 .nav-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
 .nav-btn:hover:not(.active){color:var(--text);}
-.view{display:none;padding:36px;flex:1;}
-.view.active{display:flex;flex-direction:column;gap:24px;}
+.view{display:none;padding:32px;flex:1;}
+.view.active{display:flex;flex-direction:column;gap:22px;}
 .view h2{font-family:'DM Serif Display',serif;font-size:24px;color:var(--text);letter-spacing:-.5px;}
 .view h2 em{color:var(--accent);font-style:italic;}
-
-.input-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);}
-.tab-row{display:flex;gap:7px;margin-bottom:18px;}
-.tab-btn{flex:1;padding:8px;border:1px solid var(--border);background:var(--surface2);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;color:var(--text2);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.input-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);}
+.tab-row{display:flex;gap:6px;margin-bottom:16px;}
+.tab-btn{flex:1;padding:7px;border:1px solid var(--border);background:var(--surface2);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;color:var(--text2);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px;}
 .tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
 .tab-btn:not(.active):hover{background:var(--accent-light);color:var(--accent);border-color:var(--accent);}
 .tab-content{display:none;}.tab-content.active{display:block;}
 .textarea-wrap{position:relative;}
-textarea{width:100%;min-height:88px;resize:vertical;border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 44px 11px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s;line-height:1.6;}
+textarea{width:100%;min-height:84px;resize:vertical;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 42px 10px 10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s;line-height:1.6;}
 textarea:focus{border-color:var(--accent);background:var(--surface);}
 textarea::placeholder{color:var(--text3);}
-.mic-btn{position:absolute;bottom:8px;right:8px;width:30px;height:30px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;background:var(--surface2);color:var(--text2);transition:all .2s;}
+.mic-btn{position:absolute;bottom:7px;right:7px;width:28px;height:28px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;background:var(--surface2);color:var(--text2);transition:all .2s;}
 .mic-btn:hover{background:var(--accent-light);color:var(--accent);}
 .mic-btn.recording{background:var(--danger);color:#fff;animation:pulse-rec .8s ease-in-out infinite;}
 @keyframes pulse-rec{0%,100%{box-shadow:0 0 0 0 rgba(153,60,29,.4);}50%{box-shadow:0 0 0 5px rgba(153,60,29,0);}}
-.upload-zone{border:2px dashed var(--border);border-radius:var(--radius-sm);padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg);position:relative;}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius-sm);padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg);position:relative;}
 .upload-zone:hover,.upload-zone.dragover{border-color:var(--accent);background:var(--accent-light);}
 .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
-.upload-zone .uz-icon{font-size:28px;margin-bottom:7px;}
+.upload-zone .uz-icon{font-size:26px;margin-bottom:6px;}
 .upload-zone p{font-size:12px;color:var(--text2);}
-.upload-zone span{font-size:11px;color:var(--text3);}
-.preview-img{width:100%;max-height:200px;object-fit:cover;border-radius:var(--radius-sm);margin-top:10px;display:none;}
-.analyze-btn{width:100%;margin-top:14px;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.upload-zone span{font-size:10px;color:var(--text3);}
+.preview-img{width:100%;max-height:180px;object-fit:cover;border-radius:var(--radius-sm);margin-top:9px;display:none;}
+.analyze-btn{width:100%;margin-top:12px;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;}
 .analyze-btn:hover{background:#1e3d1a;transform:translateY(-1px);}
 .analyze-btn:disabled{background:var(--text3);cursor:not-allowed;transform:none;}
-.loading{display:none;align-items:center;gap:11px;padding:14px;background:var(--accent-light);border-radius:var(--radius-sm);margin-top:12px;font-size:12px;color:var(--accent);font-weight:500;}
-.spinner{width:16px;height:16px;border:2px solid rgba(45,90,39,.2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
+.loading{display:none;align-items:center;gap:10px;padding:12px;background:var(--accent-light);border-radius:var(--radius-sm);margin-top:10px;font-size:12px;color:var(--accent);font-weight:500;}
+.spinner{width:15px;height:15px;border:2px solid rgba(45,90,39,.2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .loading.visible{display:flex;}
-.error-msg{background:var(--danger-light);color:var(--danger);border-radius:var(--radius-sm);padding:9px 12px;font-size:11px;margin-top:10px;display:none;}
+.error-msg{background:var(--danger-light);color:var(--danger);border-radius:var(--radius-sm);padding:8px 11px;font-size:11px;margin-top:9px;display:none;}
 .error-msg.visible{display:block;}
-
-.result-card{display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);animation:fadeUp .4s ease;}
+.result-card{display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);animation:fadeUp .4s ease;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:translateY(0);}}
 .result-card.visible{display:block;}
-.dish-name-input{font-family:'DM Serif Display',serif;font-size:19px;color:var(--text);border:1px solid transparent;border-radius:5px;padding:3px 7px;background:transparent;outline:none;width:100%;transition:border-color .2s;margin-bottom:12px;}
+.dish-name-input{font-family:'DM Serif Display',serif;font-size:18px;color:var(--text);border:1px solid transparent;border-radius:5px;padding:3px 7px;background:transparent;outline:none;width:100%;transition:border-color .2s;}
 .dish-name-input:focus{border-color:var(--accent);background:var(--bg);}
-.totals-bar{display:flex;margin-bottom:16px;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;}
-.total-chip{flex:1;padding:10px 5px;text-align:center;background:var(--surface);}
+.totals-bar{display:flex;margin-bottom:14px;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;}
+.total-chip{flex:1;padding:9px 4px;text-align:center;background:var(--surface);}
 .total-chip+.total-chip{border-left:1px solid var(--border);}
 .total-chip .tc-label{font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:2px;}
-.total-chip .tc-val{font-size:16px;font-weight:600;display:block;line-height:1.1;}
-.total-chip .tc-unit{font-size:10px;color:var(--text2);display:block;}
+.total-chip .tc-val{font-size:15px;font-weight:600;display:block;line-height:1.1;}
+.total-chip .tc-unit{font-size:9px;color:var(--text2);display:block;}
 .total-chip.cal .tc-val{color:var(--accent);}
 .total-chip.prot .tc-val{color:var(--protein);}
 .total-chip.fat .tc-val{color:var(--fat);}
 .total-chip.carb .tc-val{color:var(--carb);}
-.ai-note{background:var(--surface2);border-radius:var(--radius-sm);padding:9px 12px;font-size:11px;color:var(--text2);line-height:1.6;margin-bottom:16px;font-style:italic;}
+.ai-note{background:var(--surface2);border-radius:var(--radius-sm);padding:8px 11px;font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:14px;font-style:italic;}
 .ai-note strong{font-style:normal;color:var(--text);}
-.ing-header{display:flex;align-items:baseline;gap:6px;margin-bottom:8px;}
+.ing-header{display:flex;align-items:baseline;gap:6px;margin-bottom:7px;}
 .ing-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);}
 .ing-hint{font-size:10px;color:var(--text3);}
-.ing-table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:11px;}
+.ing-table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:10px;}
 .ing-table th{text-align:left;font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);padding:3px 4px 5px;border-bottom:1px solid var(--border);}
 .ing-table th:not(:first-child){text-align:right;}
 .ing-table td{padding:3px 4px;border-bottom:1px solid var(--surface2);vertical-align:middle;}
@@ -185,172 +217,269 @@ textarea::placeholder{color:var(--text3);}
 .ing-num-inp{border:1px solid transparent;border-radius:3px;padding:2px 3px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text);background:transparent;outline:none;text-align:right;width:48px;transition:border-color .2s;}
 .ing-num-inp:focus{border-color:var(--accent);background:var(--bg);}
 .ing-num-inp.w-inp{width:52px;}
-.ing-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:11px;padding:2px 3px;border-radius:3px;transition:color .15s,background .15s;}
+.ing-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:11px;padding:2px 3px;border-radius:3px;transition:color .15s;}
 .ing-del:hover{color:var(--danger);background:var(--danger-light);}
-.add-ing-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:7px;border:1px dashed var(--border);border-radius:var(--radius-sm);background:transparent;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text2);cursor:pointer;transition:all .2s;margin-bottom:6px;}
+.add-ing-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:6px;border:1px dashed var(--border);border-radius:var(--radius-sm);background:transparent;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text2);cursor:pointer;transition:all .2s;margin-bottom:6px;}
 .add-ing-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
-.add-ing-form{display:none;background:var(--surface2);border-radius:var(--radius-sm);padding:11px;margin-bottom:14px;}
+.add-ing-form{display:none;background:var(--surface2);border-radius:var(--radius-sm);padding:10px;margin-bottom:12px;}
 .add-ing-form.open{display:block;}
-.add-ing-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr;gap:4px;margin-bottom:8px;}
-.add-ing-grid input{padding:5px 7px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text);background:var(--surface);outline:none;width:100%;}
+.add-ing-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr;gap:4px;margin-bottom:7px;}
+.add-ing-grid input{padding:5px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text);background:var(--surface);outline:none;width:100%;}
 .add-ing-grid input:focus{border-color:var(--accent);}
 .add-ing-grid input::placeholder{color:var(--text3);}
 .add-ing-acts{display:flex;gap:6px;align-items:center;}
-.btn-ai-confirm{padding:6px 14px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;}
+.btn-ai-confirm{padding:5px 12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;}
 .btn-ai-confirm:hover{background:#1e3d1a;}
-.btn-ai-cancel{padding:6px 10px;background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;}
-.result-actions{display:flex;gap:8px;margin-top:4px;}
-.btn-accept{flex:1;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-ai-cancel{padding:5px 9px;background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;}
+.result-actions{display:flex;gap:7px;margin-top:4px;}
+.btn-accept{flex:1;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
 .btn-accept:hover{background:#1e3d1a;}
-.btn-reject{padding:11px 16px;background:var(--surface);color:var(--text2);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;}
+.btn-reject{padding:10px 15px;background:var(--surface);color:var(--text2);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;}
 .btn-reject:hover{background:var(--danger-light);color:var(--danger);border-color:var(--danger);}
 
-/* charts */
-.chart-controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;}
+/* CHARTS */
+.chart-controls{display:flex;flex-wrap:wrap;gap:9px;align-items:center;justify-content:space-between;}
 .period-btns{display:flex;gap:5px;}
-.period-btn{padding:6px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .2s;}
+.period-btn{padding:6px 13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .2s;}
 .period-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
 .period-btn:hover:not(.active){background:var(--accent-light);color:var(--accent);border-color:var(--accent);}
-.series-toggles{display:flex;gap:7px;flex-wrap:wrap;}
-.series-toggle{display:flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid var(--border);border-radius:20px;cursor:pointer;font-size:11px;font-weight:500;transition:all .2s;user-select:none;}
+.series-toggles{display:flex;gap:6px;flex-wrap:wrap;}
+.series-toggle{display:flex;align-items:center;gap:5px;padding:4px 9px;border:1px solid var(--border);border-radius:20px;cursor:pointer;font-size:11px;font-weight:500;transition:all .2s;user-select:none;}
 .series-toggle input{display:none;}
-.series-toggle .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.series-toggle .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .series-toggle.off{opacity:.4;}
-.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);}
-.chart-card h3{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:16px;}
-.chart-wrap{position:relative;height:280px;}
-.chart-wrap-sm{position:relative;height:170px;}
-.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
-.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
-.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;}
-.stat-box .sb-label{font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;}
-.stat-box .sb-val{font-size:20px;font-weight:600;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+.chart-card h3{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:14px;}
+.chart-wrap{position:relative;height:270px;}
+.chart-wrap-sm{position:relative;height:160px;}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;}
+.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px;text-align:center;}
+.stat-box .sb-label{font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);margin-bottom:3px;}
+.stat-box .sb-val{font-size:19px;font-weight:600;}
 .stat-box .sb-unit{font-size:10px;color:var(--text2);}
 .stat-box.cal .sb-val{color:var(--accent);}
 .stat-box.prot .sb-val{color:var(--protein);}
 .stat-box.fat .sb-val{color:var(--fat);}
 .stat-box.water .sb-val{color:var(--water);}
 
-.toast{position:fixed;bottom:22px;right:22px;background:var(--accent);color:#fff;padding:12px 16px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.15);transform:translateY(80px);opacity:0;transition:all .3s ease;z-index:200;}
+/* HISTORY */
+.hist-nav{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.hist-nav button{padding:6px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;color:var(--text2);transition:all .2s;}
+.hist-nav button:hover{background:var(--accent-light);color:var(--accent);border-color:var(--accent);}
+.hist-day-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:12px;}
+.hist-day-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;cursor:pointer;}
+.hist-day-title{font-family:'DM Serif Display',serif;font-size:16px;color:var(--text);}
+.hist-day-sum{display:flex;gap:12px;font-size:12px;}
+.hist-sum-chip{padding:3px 9px;border-radius:20px;font-weight:600;font-size:11px;}
+.hist-sum-chip.cal{background:var(--accent-light);color:var(--accent);}
+.hist-sum-chip.water{background:var(--water-light);color:var(--water);}
+.hist-meals{display:none;}
+.hist-meals.open{display:block;}
+.hist-meal-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--surface2);font-size:12px;}
+.hist-meal-row:last-child{border-bottom:none;}
+.hist-meal-icon{width:26px;height:26px;border-radius:5px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.hist-meal-name{flex:1;font-weight:500;}
+.hist-meal-detail{font-size:10px;color:var(--text2);}
+.hist-meal-cal{font-weight:600;color:var(--accent);white-space:nowrap;}
+.hist-water-row{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:11px;color:var(--water);}
+.hist-load-btn{width:100%;padding:10px;border:1px dashed var(--border);border-radius:var(--radius-sm);background:transparent;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text2);cursor:pointer;transition:all .2s;}
+.hist-load-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
+
+.toast{position:fixed;bottom:20px;right:20px;background:var(--accent);color:#fff;padding:11px 15px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.15);transform:translateY(80px);opacity:0;transition:all .3s ease;z-index:200;}
 .toast.show{transform:translateY(0);opacity:1;}
 .toast.error{background:var(--danger);}
-
-/* loading overlay */
-#loadingOverlay{position:fixed;inset:0;background:rgba(247,245,240,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:300;gap:16px;}
-#loadingOverlay .big-spinner{width:40px;height:40px;border:3px solid rgba(45,90,39,.2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
-#loadingOverlay p{font-size:14px;color:var(--text2);}
-
+#loadingOverlay{position:fixed;inset:0;background:rgba(247,245,240,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:300;gap:14px;}
+#loadingOverlay .big-spinner{width:38px;height:38px;border:3px solid rgba(45,90,39,.2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+#loadingOverlay p{font-size:13px;color:var(--text2);}
 @media(max-width:900px){
   .app{grid-template-columns:1fr;}
   .panel-left{position:static;height:auto;}
-  .view{padding:20px;}
-  .main-nav{padding:0 20px;}
+  .view{padding:18px;}
+  .main-nav{padding:0 16px;}
   .add-ing-grid{grid-template-columns:1fr 1fr 1fr;}
   .chart-grid{grid-template-columns:1fr;}
   .stat-row{grid-template-columns:repeat(2,1fr);}
+  .manual-fields{grid-template-columns:1fr 1fr;}
 }
 </style>
 </head>
 <body>
 
-<!-- ══ LOADING OVERLAY ══ -->
-<div id="loadingOverlay">
-  <div class="big-spinner"></div>
-  <p>Ładowanie…</p>
-</div>
+<div id="loadingOverlay"><div class="big-spinner"></div><p>Ładowanie…</p></div>
 
-<!-- ══ LOGIN SCREEN ══ -->
+<!-- LOGIN -->
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-logo">KaloAI</div>
     <div class="login-tagline">Inteligentny licznik kalorii z AI</div>
     <div class="login-features">
       <div class="login-feature"><span>🤖</span><span>Analiza posiłków przez AI — tekst lub zdjęcie</span></div>
-      <div class="login-feature"><span>☁️</span><span>Dane zapisywane w chmurze — dostęp z każdego urządzenia</span></div>
+      <div class="login-feature"><span>☁️</span><span>Dane w chmurze — dostęp z każdego urządzenia</span></div>
       <div class="login-feature"><span>👥</span><span>Osobne konto dla każdego użytkownika</span></div>
-      <div class="login-feature"><span>📊</span><span>Wykresy i statystyki tygodniowe i miesięczne</span></div>
+      <div class="login-feature"><span>📊</span><span>Wykresy, historia i personalizacja celów</span></div>
     </div>
     <button class="google-btn" onclick="signInWithGoogle()">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-      </svg>
+      <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
       Zaloguj się przez Google
     </button>
-    <div class="login-privacy">Twoje dane są prywatne i widoczne tylko dla Ciebie.<br>Aplikacja korzysta z Google Firebase.</div>
+    <div class="login-privacy">Twoje dane są prywatne i widoczne tylko dla Ciebie.</div>
   </div>
 </div>
 
-<!-- ══ MAIN APP ══ -->
-<div class="app" id="mainApp">
+<!-- PROFILE WIZARD MODAL -->
+<div class="modal-overlay hidden" id="profileModal">
+  <div class="modal-box">
+    <h2>Twój profil żywieniowy</h2>
+    <p class="modal-sub">Odpowiedz na kilka pytań — AI wyliczy Twoje dzienne zapotrzebowanie.</p>
+    <div class="wizard-progress" id="wizardProgress"></div>
 
-  <!-- LEFT PANEL -->
+    <!-- Step 1: Basic -->
+    <div class="wizard-step active" id="ws1">
+      <div class="form-row">
+        <div class="form-group"><label>Płeć</label>
+          <select id="wp-sex"><option value="m">Mężczyzna</option><option value="f">Kobieta</option></select>
+        </div>
+        <div class="form-group"><label>Wiek (lata)</label><input type="number" id="wp-age" min="10" max="100" placeholder="np. 30"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Wzrost (cm)</label><input type="number" id="wp-height" min="100" max="250" placeholder="np. 175"></div>
+        <div class="form-group"><label>Waga (kg)</label><input type="number" id="wp-weight" min="30" max="300" placeholder="np. 75"></div>
+      </div>
+      <div class="wizard-nav"><button class="btn-next" onclick="wizardNext(1)">Dalej →</button></div>
+    </div>
+
+    <!-- Step 2: Activity -->
+    <div class="wizard-step" id="ws2">
+      <div class="form-group"><label>Poziom aktywności fizycznej</label>
+        <div class="option-grid" id="activityGrid">
+          <div class="option-card" data-val="1.2" onclick="selectOption(this,'activityGrid')"><div class="oc-icon">🛋️</div>Siedzący<div style="font-size:10px;color:var(--text3);margin-top:2px;">praca biurowa, brak sportu</div></div>
+          <div class="option-card" data-val="1.375" onclick="selectOption(this,'activityGrid')"><div class="oc-icon">🚶</div>Lekko aktywny<div style="font-size:10px;color:var(--text3);margin-top:2px;">1-3 treningi/tydzień</div></div>
+          <div class="option-card" data-val="1.55" onclick="selectOption(this,'activityGrid')"><div class="oc-icon">🏃</div>Umiarkowanie<div style="font-size:10px;color:var(--text3);margin-top:2px;">3-5 treningów/tydzień</div></div>
+          <div class="option-card" data-val="1.725" onclick="selectOption(this,'activityGrid')"><div class="oc-icon">💪</div>Bardzo aktywny<div style="font-size:10px;color:var(--text3);margin-top:2px;">6-7 treningów/tydzień</div></div>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="btn-back" onclick="wizardBack(2)">← Wróć</button>
+        <button class="btn-next" onclick="wizardNext(2)">Dalej →</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Goal -->
+    <div class="wizard-step" id="ws3">
+      <div class="form-group"><label>Cel</label>
+        <div class="option-grid" id="goalGrid">
+          <div class="option-card" data-val="-500" onclick="selectOption(this,'goalGrid')"><div class="oc-icon">📉</div>Schudnąć<div style="font-size:10px;color:var(--text3);margin-top:2px;">deficyt ~500 kcal</div></div>
+          <div class="option-card" data-val="0" onclick="selectOption(this,'goalGrid')"><div class="oc-icon">⚖️</div>Utrzymać wagę<div style="font-size:10px;color:var(--text3);margin-top:2px;">bez zmian</div></div>
+          <div class="option-card" data-val="300" onclick="selectOption(this,'goalGrid')"><div class="oc-icon">📈</div>Przybrać masę<div style="font-size:10px;color:var(--text3);margin-top:2px;">nadwyżka ~300 kcal</div></div>
+          <div class="option-card" data-val="muscle" onclick="selectOption(this,'goalGrid')"><div class="oc-icon">🏋️</div>Budować mięśnie<div style="font-size:10px;color:var(--text3);margin-top:2px;">wysokie białko</div></div>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="btn-back" onclick="wizardBack(3)">← Wróć</button>
+        <button class="btn-next" onclick="wizardNext(3)">Dalej →</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Results + manual override -->
+    <div class="wizard-step" id="ws4">
+      <p style="font-size:13px;color:var(--text2);margin-bottom:14px;">Na podstawie Twoich danych AI wyliczyła:</p>
+      <div class="wizard-result" id="wizardResult"></div>
+      <details class="manual-override">
+        <summary>✏️ Ręczna korekta wartości</summary>
+        <div class="manual-fields">
+          <div class="form-group"><label>Kalorie (kcal)</label><input type="number" id="mo-cal" min="500" max="10000"></div>
+          <div class="form-group"><label>Białko (g)</label><input type="number" id="mo-prot" min="0" max="500" step="1"></div>
+          <div class="form-group"><label>Tłuszcze (g)</label><input type="number" id="mo-fat" min="0" max="500" step="1"></div>
+          <div class="form-group"><label>Węglowodany (g)</label><input type="number" id="mo-carb" min="0" max="500" step="1"></div>
+          <div class="form-group"><label>Woda (ml)</label><input type="number" id="mo-water" min="500" max="6000" step="100"></div>
+        </div>
+      </details>
+      <div class="wizard-nav">
+        <button class="btn-back" onclick="wizardBack(4)">← Wróć</button>
+        <button class="btn-next" onclick="saveProfile()">✓ Zapisz profil</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="app" id="mainApp">
   <aside class="panel-left" style="position:relative;">
     <div class="logo">
-      <div class="logo-text"><h1>KaloAI</h1><p>Inteligentny licznik kalorii</p></div>
+      <div class="logo-text"><h1>KaloAI</h1><p>Licznik kalorii</p></div>
       <div id="userAvatarBtn" onclick="toggleUserMenu()"></div>
     </div>
     <div id="userMenu" class="user-menu">
-      <div class="user-menu-name" id="userMenuName">—<br><span class="user-menu-email" id="userMenuEmail"></span></div>
-      <button class="user-menu-btn" onclick="signOut()">🚪 Wyloguj się</button>
+      <div class="user-menu-name" id="userMenuName">—</div>
+      <button class="user-menu-btn profile" onclick="openProfile()">⚙️ Dane i cele</button>
+      <button class="user-menu-btn logout" onclick="signOut()">🚪 Wyloguj się</button>
     </div>
-
     <div class="date-bar">
-      <span id="currentDate"></span>
-      <span class="date-badge">dziś</span>
+      <span id="currentDate"></span><span class="date-badge">dziś</span>
       <div class="sync-badge"><div class="sync-dot" id="syncDot"></div><span id="syncText">zsync</span></div>
     </div>
-
     <div class="daily-summary">
       <div class="summary-title">Kalorie – dziś</div>
       <div class="cal-display"><span class="cal-num" id="totalCal">0</span><span class="cal-unit">kcal</span></div>
-      <div class="cal-goal" id="calGoalText">cel: 2000 kcal</div>
+      <div class="cal-goal" id="calGoalText">cel: — kcal</div>
       <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
       <div class="macros-grid">
-        <div class="macro-card protein"><div class="m-label">Białko</div><div><span class="m-val" id="totalProtein">0</span><span class="m-unit">g</span></div></div>
-        <div class="macro-card fat"><div class="m-label">Tłuszcze</div><div><span class="m-val" id="totalFat">0</span><span class="m-unit">g</span></div></div>
-        <div class="macro-card carb"><div class="m-label">Węglowodany</div><div><span class="m-val" id="totalCarb">0</span><span class="m-unit">g</span></div></div>
+        <div class="macro-card protein">
+          <div class="m-label">Białko</div>
+          <div><span class="m-val" id="totalProtein">0</span><span class="m-unit">g</span></div>
+          <div class="m-pct" id="pctProtein">— %</div>
+          <div class="macro-prog"><div class="macro-prog-fill" id="progProtein" style="width:0%;background:var(--protein)"></div></div>
+        </div>
+        <div class="macro-card fat">
+          <div class="m-label">Tłuszcze</div>
+          <div><span class="m-val" id="totalFat">0</span><span class="m-unit">g</span></div>
+          <div class="m-pct" id="pctFat">— %</div>
+          <div class="macro-prog"><div class="macro-prog-fill" id="progFat" style="width:0%;background:var(--fat)"></div></div>
+        </div>
+        <div class="macro-card carb">
+          <div class="m-label">Węglowodany</div>
+          <div><span class="m-val" id="totalCarb">0</span><span class="m-unit">g</span></div>
+          <div class="m-pct" id="pctCarb">— %</div>
+          <div class="macro-prog"><div class="macro-prog-fill" id="progCarb" style="width:0%;background:var(--carb)"></div></div>
+        </div>
       </div>
     </div>
-
     <div class="water-block">
       <div class="water-header">
         <span class="water-title">💧 Nawodnienie</span>
-        <div><span class="water-num" id="totalWater">0</span><span class="water-unit">ml</span> <span class="water-goal">/ 2500</span></div>
+        <div><span class="water-num" id="totalWater">0</span><span class="water-unit">ml</span> <span class="water-goal-txt" id="waterGoalDisp">/ 2500</span></div>
       </div>
       <div class="water-bar"><div class="water-fill" id="waterFill" style="width:0%"></div></div>
       <div class="water-btns">
-        <button class="w-add-btn" onclick="addWater(150,'Kawa / herbata','☕')">☕ 150</button>
-        <button class="w-add-btn" onclick="addWater(200,'Szklanka wody','💧')">💧 200</button>
-        <button class="w-add-btn" onclick="addWater(250,'Szklanka wody','💧')">💧 250</button>
-        <button class="w-add-btn" onclick="addWater(500,'Butelka wody','🍶')">🍶 500</button>
+        <button class="w-add-btn" onclick="addWater(150,'Kawa/herbata','☕')">☕ 150</button>
+        <button class="w-add-btn" onclick="addWater(200,'Woda','💧')">💧 200</button>
+        <button class="w-add-btn" onclick="addWater(250,'Woda','💧')">💧 250</button>
+        <button class="w-add-btn" onclick="addWater(500,'Butelka','🍶')">🍶 500</button>
       </div>
       <div class="w-custom">
         <input type="number" id="customWaterMl" placeholder="Inna ilość (ml)" min="1">
         <button onclick="addCustomWater()">Dodaj</button>
       </div>
     </div>
-
     <div class="meals-section">
       <div class="meals-section-title">Wpisy dnia (<span id="mealCount">0</span>)</div>
       <div id="mealList"><div class="empty-state">Brak wpisów.<br>Dodaj pierwszy posiłek →</div></div>
     </div>
   </aside>
 
-  <!-- RIGHT PANEL -->
   <div class="panel-right">
     <nav class="main-nav">
       <button class="nav-btn active" onclick="showView('food')" id="nav-food">🍽️ Posiłki</button>
       <button class="nav-btn" onclick="showView('charts')" id="nav-charts">📊 Wykresy</button>
+      <button class="nav-btn" onclick="showView('history')" id="nav-history">📅 Historia</button>
     </nav>
 
     <!-- FOOD VIEW -->
     <div class="view active" id="view-food">
       <div>
         <h2>Dodaj <em>posiłek</em></h2>
-        <p style="font-size:12px;color:var(--text2);margin-top:5px;">Opisz posiłek lub wgraj zdjęcie — AI rozpozna składniki. Płyny są automatycznie zliczane w nawodnieniu.</p>
+        <p style="font-size:12px;color:var(--text2);margin-top:5px;">Opisz posiłek lub wgraj zdjęcie — AI rozpozna składniki. Płyny zliczane w nawodnieniu.</p>
       </div>
       <div class="input-card">
         <div class="tab-row">
@@ -368,14 +497,14 @@ textarea::placeholder{color:var(--text3);}
           </div>
         </div>
         <div class="tab-content" id="content-photo">
-          <div style="display:flex;gap:8px;margin-bottom:10px;">
-            <button class="tab-btn active" id="photo-lib-btn" onclick="setPhotoSource(false)" style="flex:1;font-size:12px;">🖼️ Biblioteka zdjęć</button>
-            <button class="tab-btn" id="photo-cam-btn" onclick="setPhotoSource(true)" style="flex:1;font-size:12px;">📸 Aparat</button>
+          <div style="display:flex;gap:7px;margin-bottom:9px;">
+            <button class="tab-btn active" id="photo-lib-btn" onclick="setPhotoSource(false)" style="flex:1;font-size:11px;">🖼️ Biblioteka</button>
+            <button class="tab-btn" id="photo-cam-btn" onclick="setPhotoSource(true)" style="flex:1;font-size:11px;">📸 Aparat</button>
           </div>
           <div class="upload-zone" id="uploadZone">
             <input type="file" id="photoInput" accept="image/*" onchange="handlePhotoUpload(event)">
             <div class="uz-icon">🍽️</div>
-            <p>Kliknij lub przeciągnij zdjęcie posiłku</p>
+            <p>Kliknij lub przeciągnij zdjęcie</p>
             <span>JPG, PNG, WEBP</span>
           </div>
           <img class="preview-img" id="previewImg" alt="">
@@ -384,13 +513,12 @@ textarea::placeholder{color:var(--text3);}
         <div class="loading" id="loadingIndicator"><div class="spinner"></div><span id="loadingText">AI analizuje…</span></div>
         <div class="error-msg" id="errorMsg"></div>
       </div>
-
       <div class="result-card" id="resultCard">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-          <input class="dish-name-input" id="editName" type="text" placeholder="Nazwa posiłku" style="margin-bottom:0;flex:1;">
-          <div style="flex-shrink:0;display:flex;flex-direction:column;gap:3px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:11px;">
+          <input class="dish-name-input" id="editName" type="text" placeholder="Nazwa posiłku" style="flex:1;">
+          <div style="flex-shrink:0;display:flex;flex-direction:column;gap:2px;">
             <label style="font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);">Data i godzina</label>
-            <input type="datetime-local" id="editDateTime" style="padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);background:var(--bg);outline:none;cursor:pointer;" onchange="" title="Zmień datę i godzinę posiłku">
+            <input type="datetime-local" id="editDateTime" style="padding:3px 7px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text);background:var(--bg);outline:none;cursor:pointer;">
           </div>
         </div>
         <div class="totals-bar">
@@ -399,7 +527,7 @@ textarea::placeholder{color:var(--text3);}
           <div class="total-chip fat"><span class="tc-label">Tłuszcze</span><span class="tc-val" id="tcFat">0</span><span class="tc-unit">g</span></div>
           <div class="total-chip carb"><span class="tc-label">Węglow.</span><span class="tc-val" id="tcCarb">0</span><span class="tc-unit">g</span></div>
         </div>
-        <div id="waterDetected" style="display:none;background:var(--water-light);border:1px solid rgba(26,122,191,.25);border-radius:var(--radius-sm);padding:8px 12px;font-size:11px;color:var(--water);margin-bottom:12px;">
+        <div id="waterDetected" style="display:none;background:var(--water-light);border:1px solid rgba(26,122,191,.25);border-radius:var(--radius-sm);padding:7px 11px;font-size:11px;color:var(--water);margin-bottom:11px;">
           💧 Wykryto płyn: <strong id="waterDetectedMl">0 ml</strong> zostanie dodane do nawodnienia
         </div>
         <div class="ai-note" id="resNote"></div>
@@ -411,14 +539,14 @@ textarea::placeholder{color:var(--text3);}
         <button class="add-ing-btn" onclick="toggleAddForm()">＋ Dodaj składnik ręcznie</button>
         <div class="add-ing-form" id="addIngForm">
           <div class="add-ing-grid">
-            <input type="text"   id="ni-name"   placeholder="Nazwa składnika" onblur="autofillNewIng(this.value)">
-            <input type="number" id="ni-weight" placeholder="Waga g"   min="0">
-            <input type="number" id="ni-cal"    placeholder="Kcal"     min="0">
-            <input type="number" id="ni-prot"   placeholder="Białko"   min="0" step="0.1">
-            <input type="number" id="ni-fat"    placeholder="Tłuszcz"  min="0" step="0.1">
-            <input type="number" id="ni-carb"   placeholder="Węglow."  min="0" step="0.1">
+            <input type="text" id="ni-name" placeholder="Nazwa składnika" onblur="autofillNewIng(this.value)">
+            <input type="number" id="ni-weight" placeholder="Waga g" min="0">
+            <input type="number" id="ni-cal" placeholder="Kcal" min="0">
+            <input type="number" id="ni-prot" placeholder="Białko" min="0" step="0.1">
+            <input type="number" id="ni-fat" placeholder="Tłuszcz" min="0" step="0.1">
+            <input type="number" id="ni-carb" placeholder="Węglow." min="0" step="0.1">
           </div>
-          <div id="ni-hint" style="font-size:10px;color:var(--text3);margin-bottom:7px;display:none;"></div>
+          <div id="ni-hint" style="font-size:10px;color:var(--text3);margin-bottom:6px;display:none;"></div>
           <div class="add-ing-acts">
             <button class="btn-ai-confirm" onclick="confirmAddIng()">Dodaj</button>
             <button class="btn-ai-cancel" onclick="toggleAddForm()">Anuluj</button>
@@ -433,7 +561,7 @@ textarea::placeholder{color:var(--text3);}
 
     <!-- CHARTS VIEW -->
     <div class="view" id="view-charts">
-      <div><h2>📊 <em>Wykresy</em></h2><p style="font-size:12px;color:var(--text2);margin-top:5px;">Twoje dane żywieniowe w czasie — zsynchronizowane z chmurą.</p></div>
+      <div><h2>📊 <em>Wykresy</em></h2><p style="font-size:12px;color:var(--text2);margin-top:4px;">Twoje dane żywieniowe — zsynchronizowane z chmurą.</p></div>
       <div class="chart-controls">
         <div class="period-btns">
           <button class="period-btn active" onclick="setPeriod('day')" id="pb-day">Dzienny</button>
@@ -460,136 +588,231 @@ textarea::placeholder{color:var(--text3);}
         <div class="chart-card"><h3>🥧 Rozkład makroskładników</h3><div class="chart-wrap-sm"><canvas id="macroDonut"></canvas></div></div>
       </div>
     </div>
+
+    <!-- HISTORY VIEW -->
+    <div class="view" id="view-history">
+      <div><h2>📅 <em>Historia</em></h2><p style="font-size:12px;color:var(--text2);margin-top:4px;">Przeglądaj posiłki z poprzednich dni.</p></div>
+      <div class="hist-nav">
+        <button onclick="histLoadMore()">Załaduj więcej dni</button>
+        <span id="histRange" style="font-size:12px;color:var(--text2);"></span>
+      </div>
+      <div id="histList"><div class="empty-state">Ładowanie historii…</div></div>
+    </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- ══ FIREBASE + APP SCRIPT ══ -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, collection, query, orderBy, getDocs, Timestamp }
+import { getFirestore, doc, getDoc, setDoc, Timestamp }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-// ── Firebase init ─────────────────────────────────────────
-const firebaseConfig = {
-  apiKey: "AIzaSyCHQHT7DFIDvYUHQFUqw8FySNXF05KnGdQ",
-  authDomain: "kaloai-7ad32.firebaseapp.com",
-  projectId: "kaloai-7ad32",
-  storageBucket: "kaloai-7ad32.firebasestorage.app",
-  messagingSenderId: "1075345738387",
-  appId: "1:1075345738387:web:785d9f69a0b34be7559b66"
-};
-const fbApp  = initializeApp(firebaseConfig);
-const auth   = getAuth(fbApp);
-const db     = getFirestore(fbApp);
+const firebaseConfig={apiKey:"AIzaSyCHQHT7DFIDvYUHQFUqw8FySNXF05KnGdQ",authDomain:"kaloai-7ad32.firebaseapp.com",projectId:"kaloai-7ad32",storageBucket:"kaloai-7ad32.firebasestorage.app",messagingSenderId:"1075345738387",appId:"1:1075345738387:web:785d9f69a0b34be7559b66"};
+const fbApp=initializeApp(firebaseConfig);
+const auth=getAuth(fbApp);
+const db=getFirestore(fbApp);
 
 // ── State ─────────────────────────────────────────────────
-const GOAL_CAL=2000, GOAL_WATER=2500;
 let currentUser=null;
-let meals=[], waterLog=[], waterMl=0;
-let ings=[], pendingWaterMl=0;
-let currentTab='text', currentPhotoB64=null;
-let mainChartInst=null, waterChartInst=null, donutInst=null;
+let meals=[],waterLog=[],waterMl=0;
+let ings=[],pendingWaterMl=0;
+let currentTab='text',currentPhotoB64=null;
+let mainChartInst=null,waterChartInst=null,donutInst=null;
 let currentPeriod='day';
 let seriesVisible={cal:true,prot:true,fat:true,carb:true,water:true};
+let histDaysLoaded=7;
 
-function todayKey(){ return new Date().toISOString().split('T')[0]; } // YYYY-MM-DD
+// profile defaults
+let profile={cal:2000,prot:150,fat:65,carb:250,water:2500};
 
-// ── Firestore helpers ─────────────────────────────────────
-function userDayRef(uid, dateKey){
-  return doc(db,'users',uid,'days',dateKey);
+// wizard state
+let wData={sex:'m',age:30,height:175,weight:75,activity:1.55,goal:0};
+let wizardStep=1;
+
+const r0=v=>Math.round(+v||0),r1=v=>Math.round((+v||0)*10)/10;
+const pad=n=>String(n).padStart(2,'0');
+
+// ── Date helpers ──────────────────────────────────────────
+function todayKey(){
+  const d=new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 }
+function dateKey(d){
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+
+document.getElementById('currentDate').textContent=
+  new Date().toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long'});
+
+// ── Firestore ─────────────────────────────────────────────
+function userDayRef(uid,k){return doc(db,'users',uid,'days',k);}
+function userProfileRef(uid){return doc(db,'users',uid,'meta','profile');}
 
 function setSyncing(on){
-  const dot=document.getElementById('syncDot');
-  const txt=document.getElementById('syncText');
-  dot.className='sync-dot'+(on?' syncing':'');
-  txt.textContent=on?'sync…':'zsync';
+  document.getElementById('syncDot').className='sync-dot'+(on?' syncing':'');
+  document.getElementById('syncText').textContent=on?'sync…':'zsync';
 }
 
-async function loadDay(dateKey){
+async function loadDay(k){
   if(!currentUser)return;
   setSyncing(true);
   try{
-    const snap=await getDoc(userDayRef(currentUser.uid, dateKey));
-    if(snap.exists()){
-      const d=snap.data();
-      if(dateKey===todayKey()){
-        meals=d.meals||[];
-        waterLog=d.waterLog||[];
-        waterMl=d.waterMl||0;
-      }
-      return d;
-    }
-    if(dateKey===todayKey()){meals=[];waterLog=[];waterMl=0;}
-    return null;
+    const snap=await getDoc(userDayRef(currentUser.uid,k));
+    if(snap.exists()&&k===todayKey()){const d=snap.data();meals=d.meals||[];waterLog=d.waterLog||[];waterMl=d.waterMl||0;}
+    else if(k===todayKey()){meals=[];waterLog=[];waterMl=0;}
+    return snap.exists()?snap.data():null;
   }finally{setSyncing(false);}
 }
 
 async function saveDay(){
   if(!currentUser)return;
   setSyncing(true);
-  try{
-    await setDoc(userDayRef(currentUser.uid, todayKey()),{
-      meals, waterLog, waterMl,
-      updatedAt: Timestamp.now()
-    });
-  }finally{setSyncing(false);}
+  try{await setDoc(userDayRef(currentUser.uid,todayKey()),{meals,waterLog,waterMl,updatedAt:Timestamp.now()});}
+  finally{setSyncing(false);}
 }
 
-async function loadDateRange(days){
-  if(!currentUser)return[];
-  const results=[];
-  for(const d of days){
-    const k=d.toISOString().split('T')[0];
-    const snap=await getDoc(userDayRef(currentUser.uid,k));
-    results.push({date:d, data:snap.exists()?snap.data():{meals:[],waterMl:0}});
-  }
-  return results;
+async function loadProfile(){
+  if(!currentUser)return;
+  try{
+    const snap=await getDoc(userProfileRef(currentUser.uid));
+    if(snap.exists())profile={...profile,...snap.data()};
+  }catch(e){console.warn('profile load',e);}
 }
+
+async function saveProfile(){
+  // read manual overrides
+  const moCal=+document.getElementById('mo-cal').value;
+  const moProt=+document.getElementById('mo-prot').value;
+  const moFat=+document.getElementById('mo-fat').value;
+  const moCarb=+document.getElementById('mo-carb').value;
+  const moWater=+document.getElementById('mo-water').value;
+  if(moCal>0)profile.cal=moCal;
+  if(moProt>0)profile.prot=moProt;
+  if(moFat>0)profile.fat=moFat;
+  if(moCarb>0)profile.carb=moCarb;
+  if(moWater>0)profile.water=moWater;
+
+  if(currentUser){
+    try{await setDoc(userProfileRef(currentUser.uid),profile);}
+    catch(e){console.warn('profile save',e);}
+  }
+  document.getElementById('profileModal').classList.add('hidden');
+  updateSummary();renderMeals();
+  showToast('✓ Profil zapisany');
+}
+window.saveProfile=saveProfile;
+
+// ── Wizard ────────────────────────────────────────────────
+function buildWizardProgress(total,current){
+  const el=document.getElementById('wizardProgress');
+  el.innerHTML=Array.from({length:total},(_,i)=>`<div class="wp-dot${i<current?' done':''}"></div>`).join('');
+}
+
+window.selectOption=(el,gridId)=>{
+  document.querySelectorAll(`#${gridId} .option-card`).forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+};
+
+window.wizardNext=step=>{
+  if(step===1){
+    wData.sex=document.getElementById('wp-sex').value;
+    wData.age=+document.getElementById('wp-age').value||30;
+    wData.height=+document.getElementById('wp-height').value||175;
+    wData.weight=+document.getElementById('wp-weight').value||75;
+  }
+  if(step===2){
+    const sel=document.querySelector('#activityGrid .selected');
+    if(!sel){showToast('Wybierz poziom aktywności',true);return;}
+    wData.activity=+sel.dataset.val;
+  }
+  if(step===3){
+    const sel=document.querySelector('#goalGrid .selected');
+    if(!sel){showToast('Wybierz cel',true);return;}
+    wData.goal=sel.dataset.val;
+    calcWizardResult();
+  }
+  wizardStep=step+1;
+  showWizardStep(wizardStep);
+};
+
+window.wizardBack=step=>{wizardStep=step-1;showWizardStep(wizardStep);};
+
+function showWizardStep(s){
+  document.querySelectorAll('.wizard-step').forEach(el=>el.classList.remove('active'));
+  document.getElementById('ws'+s).classList.add('active');
+  buildWizardProgress(4,s);
+}
+
+function calcWizardResult(){
+  // Mifflin-St Jeor BMR
+  let bmr;
+  if(wData.sex==='m') bmr=10*wData.weight+6.25*wData.height-5*wData.age+5;
+  else bmr=10*wData.weight+6.25*wData.height-5*wData.age-161;
+  let tdee=Math.round(bmr*wData.activity);
+  let goalAdj=wData.goal==='muscle'?300:(+wData.goal||0);
+  const targetCal=Math.max(1200,tdee+goalAdj);
+  const targetProt=Math.round(wData.goal==='muscle'?wData.weight*2.2:wData.weight*1.6);
+  const targetFat=Math.round(targetCal*0.25/9);
+  const targetCarb=Math.round((targetCal-targetProt*4-targetFat*9)/4);
+  const targetWater=Math.round(wData.weight*35);
+
+  profile={cal:targetCal,prot:targetProt,fat:targetFat,carb:targetCarb,water:targetWater};
+
+  document.getElementById('wizardResult').innerHTML=`
+    <div class="wr-row"><span class="wr-label">Kalorie dziennie</span><span class="wr-val">${targetCal} kcal</span></div>
+    <div class="wr-row"><span class="wr-label">Białko</span><span class="wr-val">${targetProt} g</span></div>
+    <div class="wr-row"><span class="wr-label">Tłuszcze</span><span class="wr-val">${targetFat} g</span></div>
+    <div class="wr-row"><span class="wr-label">Węglowodany</span><span class="wr-val">${targetCarb} g</span></div>
+    <div class="wr-row"><span class="wr-label">Woda dziennie</span><span class="wr-val">${targetWater} ml</span></div>`;
+
+  // prefill manual fields
+  document.getElementById('mo-cal').value=targetCal;
+  document.getElementById('mo-prot').value=targetProt;
+  document.getElementById('mo-fat').value=targetFat;
+  document.getElementById('mo-carb').value=targetCarb;
+  document.getElementById('mo-water').value=targetWater;
+}
+
+window.openProfile=()=>{
+  document.getElementById('userMenu').classList.remove('open');
+  wizardStep=1;showWizardStep(1);
+  document.getElementById('profileModal').classList.remove('hidden');
+};
 
 // ── Auth ──────────────────────────────────────────────────
 window.signInWithGoogle=async()=>{
-  try{
-    const provider=new GoogleAuthProvider();
-    await signInWithPopup(auth,provider);
-  }catch(e){showToast('Błąd logowania: '+e.message,true);}
+  try{const provider=new GoogleAuthProvider();await signInWithPopup(auth,provider);}
+  catch(e){showToast('Błąd logowania: '+e.message,true);}
 };
-
-window.signOut=async()=>{
-  await fbSignOut(auth);
-  document.getElementById('userMenu').classList.remove('open');
-};
-
-window.toggleUserMenu=()=>{
-  document.getElementById('userMenu').classList.toggle('open');
-};
+window.signOut=async()=>{await fbSignOut(auth);document.getElementById('userMenu').classList.remove('open');};
+window.toggleUserMenu=()=>document.getElementById('userMenu').classList.toggle('open');
 document.addEventListener('click',e=>{
-  const menu=document.getElementById('userMenu');
-  const btn=document.getElementById('userAvatarBtn');
-  if(!menu.contains(e.target)&&!btn.contains(e.target)) menu.classList.remove('open');
+  const menu=document.getElementById('userMenu'),btn=document.getElementById('userAvatarBtn');
+  if(!menu.contains(e.target)&&!btn.contains(e.target))menu.classList.remove('open');
 });
 
-onAuthStateChanged(auth, async user=>{
+onAuthStateChanged(auth,async user=>{
   document.getElementById('loadingOverlay').style.display='none';
   if(user){
     currentUser=user;
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('mainApp').classList.add('visible');
-    // avatar
-    const avatarBtn=document.getElementById('userAvatarBtn');
-    if(user.photoURL){
-      avatarBtn.innerHTML=`<img class="user-avatar" src="${user.photoURL}" alt="${user.displayName||''}">`;
-    }else{
-      const initials=(user.displayName||user.email||'U').charAt(0).toUpperCase();
-      avatarBtn.innerHTML=`<div class="user-avatar-placeholder">${initials}</div>`;
-    }
-    document.getElementById('userMenuName').innerHTML=`${user.displayName||'Użytkownik'}<br><span class="user-menu-email">${user.email||''}</span>`;
+    const ab=document.getElementById('userAvatarBtn');
+    ab.innerHTML=user.photoURL
+      ?`<img class="user-avatar" src="${user.photoURL}" alt="">`
+      :`<div class="user-avatar-placeholder">${(user.displayName||user.email||'U')[0].toUpperCase()}</div>`;
+    document.getElementById('userMenuName').innerHTML=`${user.displayName||'Użytkownik'}<br><span class="user-menu-email" style="font-size:11px;color:var(--text2);font-weight:400;">${user.email||''}</span>`;
+    await loadProfile();
     await loadDay(todayKey());
-    updateSummary(); renderMeals();
+    updateSummary();renderMeals();
+    // show wizard on first login
+    if(!profile.cal||profile.cal===2000){
+      const snap=await getDoc(userProfileRef(user.uid));
+      if(!snap.exists()) openProfile();
+    }
   }else{
     currentUser=null;
     document.getElementById('loginScreen').style.display='flex';
@@ -598,24 +821,6 @@ onAuthStateChanged(auth, async user=>{
   }
 });
 
-// ── Utils ─────────────────────────────────────────────────
-const r0=v=>Math.round(+v||0), r1=v=>Math.round((+v||0)*10)/10;
-function foodEmoji(n=''){n=n.toLowerCase();
-  if(/pizza/.test(n))return'🍕';if(/makaron|pasta|spaghetti|bolognese/.test(n))return'🍝';
-  if(/ryż|rice/.test(n))return'🍚';if(/sałat|salad/.test(n))return'🥗';
-  if(/burger|hambur/.test(n))return'🍔';if(/kanapka|sandwich|tost/.test(n))return'🥪';
-  if(/jajk|omlet/.test(n))return'🍳';if(/kurczak|chicken/.test(n))return'🍗';
-  if(/zupa|soup/.test(n))return'🍲';if(/jogurt|kefir/.test(n))return'🥛';
-  if(/ryba|fish|łosoś|tuńczyk/.test(n))return'🐟';if(/chleb|bread/.test(n))return'🍞';
-  if(/ciast|cake|tort/.test(n))return'🍰';
-  if(/kawa|coffee/.test(n))return'☕';if(/herbata|tea/.test(n))return'🍵';
-  if(/woda|water/.test(n))return'💧';if(/sok|juice/.test(n))return'🧃';
-  return'🍽️';
-}
-
-document.getElementById('currentDate').textContent=
-  new Date().toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long'});
-
 // ── Views ─────────────────────────────────────────────────
 window.showView=v=>{
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
@@ -623,6 +828,7 @@ window.showView=v=>{
   document.getElementById('view-'+v).classList.add('active');
   document.getElementById('nav-'+v).classList.add('active');
   if(v==='charts')setTimeout(buildCharts,50);
+  if(v==='history')loadHistory();
 };
 
 // ── Summary ───────────────────────────────────────────────
@@ -632,45 +838,51 @@ window.updateSummary=()=>{
   document.getElementById('totalProtein').textContent=r0(t.prot);
   document.getElementById('totalFat').textContent=r0(t.fat);
   document.getElementById('totalCarb').textContent=r0(t.carb);
-  const pct=Math.min((t.cal/GOAL_CAL)*100,100);
+
+  // macro progress bars
+  const goalProt=profile.prot||150,goalFat=profile.fat||65,goalCarb=profile.carb||250;
+  const pp=Math.min(Math.round((t.prot/goalProt)*100),100);
+  const pf=Math.min(Math.round((t.fat/goalFat)*100),100);
+  const pc=Math.min(Math.round((t.carb/goalCarb)*100),100);
+  document.getElementById('pctProtein').textContent=pp+'%';
+  document.getElementById('pctFat').textContent=pf+'%';
+  document.getElementById('pctCarb').textContent=pc+'%';
+  document.getElementById('progProtein').style.width=pp+'%';
+  document.getElementById('progFat').style.width=pf+'%';
+  document.getElementById('progCarb').style.width=pc+'%';
+
+  const goalCal=profile.cal||2000;
+  const pct=Math.min((t.cal/goalCal)*100,100);
   const fill=document.getElementById('progressFill');
-  fill.style.width=pct+'%';fill.className='progress-fill'+(t.cal>GOAL_CAL?' over':'');
-  const rem=GOAL_CAL-r0(t.cal);
-  document.getElementById('calGoalText').textContent=`cel: ${GOAL_CAL} kcal — ${rem>=0?'pozostało':'przekroczono o'}: ${Math.abs(rem)} kcal`;
+  fill.style.width=pct+'%';fill.className='progress-fill'+(t.cal>goalCal?' over':'');
+  const rem=goalCal-r0(t.cal);
+  document.getElementById('calGoalText').textContent=`cel: ${goalCal} kcal — ${rem>=0?'pozostało':'przekroczono o'}: ${Math.abs(rem)} kcal`;
+
+  const goalW=profile.water||2500;
   document.getElementById('totalWater').textContent=waterMl;
-  document.getElementById('waterFill').style.width=Math.min((waterMl/GOAL_WATER)*100,100)+'%';
+  document.getElementById('waterGoalDisp').textContent=`/ ${goalW}`;
+  document.getElementById('waterFill').style.width=Math.min((waterMl/goalW)*100,100)+'%';
   document.getElementById('mealCount').textContent=meals.length+waterLog.length;
 };
 
 window.renderMeals=()=>{
   const list=document.getElementById('mealList');
   if(!meals.length&&!waterLog.length){list.innerHTML='<div class="empty-state">Brak wpisów.<br>Dodaj pierwszy posiłek →</div>';return;}
-  // merge meals and water, sort by sortKey (timestamp)
-  const allEntries=[
-    ...meals.map((m,i)=>({...m,_type:'meal',_idx:i,_sortKey:m.sortKey||0})),
-    ...waterLog.map((w,i)=>({...w,_type:'water',_idx:i,_sortKey:w.sortKey||0}))
-  ].sort((a,b)=>a._sortKey-b._sortKey);
-  list.innerHTML=allEntries.map(entry=>{
-    if(entry._type==='meal'){const i=entry._idx;const m=entry;return `
-    <div class="meal-item">
-      <div class="meal-icon">${foodEmoji(m.name)}</div>
-      <div class="meal-info">
-        <div class="meal-name">${m.name}</div>
-        <div class="meal-macros">${r0(m.weight)}g · B:${r0(m.protein)}g · T:${r0(m.fat)}g · W:${r0(m.carb)}g</div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;">
-        <div class="meal-cal">${r0(m.cal)} kcal</div>
-        <div style="font-size:9px;color:var(--text3);">${m.time||''}</div>
-      </div>
-      <button class="meal-delete" onclick="window.deleteMeal(${i})">✕</button>
-    </div>`;}
-    else{const i=entry._idx;const w=entry;return `
-    <div class="water-item">
-      <span style="font-size:14px;">${w.icon||'💧'}</span>
-      <div style="flex:1"><div style="font-weight:500">${w.name}</div><div style="font-size:9px;opacity:.7">${w.time}</div></div>
-      <div style="font-weight:600;font-size:12px;margin-right:7px;">${w.ml} ml</div>
-      <button class="meal-delete" onclick="window.deleteWater(${i})">✕</button>
-    </div>`;}
+  const all=[
+    ...meals.map((m,i)=>({...m,_type:'meal',_idx:i,_sk:m.sortKey||0})),
+    ...waterLog.map((w,i)=>({...w,_type:'water',_idx:i,_sk:w.sortKey||0}))
+  ].sort((a,b)=>a._sk-b._sk);
+  list.innerHTML=all.map(e=>{
+    if(e._type==='meal'){const i=e._idx;return `<div class="meal-item">
+      <div class="meal-icon">${foodEmoji(e.name)}</div>
+      <div class="meal-info"><div class="meal-name">${e.name}</div><div class="meal-macros">${r0(e.weight)}g · B:${r0(e.protein)}g · T:${r0(e.fat)}g · W:${r0(e.carb)}g</div></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;"><div class="meal-cal">${r0(e.cal)} kcal</div><div class="meal-time-lbl">${e.time||''}</div></div>
+      <button class="meal-delete" onclick="window.deleteMeal(${i})">✕</button></div>`;}
+    else{const i=e._idx;return `<div class="water-item">
+      <span style="font-size:13px;">${e.icon||'💧'}</span>
+      <div style="flex:1"><div style="font-weight:500">${e.name}</div><div style="font-size:9px;opacity:.7">${e.time}</div></div>
+      <div style="font-weight:600;font-size:11px;margin-right:6px;">${e.ml} ml</div>
+      <button class="meal-delete" onclick="window.deleteWater(${i})">✕</button></div>`;}
   }).join('');
 };
 
@@ -679,8 +891,10 @@ window.deleteWater=i=>{waterMl-=waterLog[i].ml;if(waterMl<0)waterMl=0;waterLog.s
 
 // ── Water ─────────────────────────────────────────────────
 window.addWater=(ml,name,icon)=>{
-  const entry={ml,name:name||'Woda',icon:icon||'💧',time:new Date().toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'})};
-  waterMl+=ml;waterLog.push(entry);saveDay();updateSummary();renderMeals();showToast(`💧 +${ml} ml`);
+  const t=new Date().toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'});
+  waterLog.push({ml,name,icon,time:t,sortKey:Date.now()});
+  waterMl+=ml;waterLog.sort((a,b)=>(a.sortKey||0)-(b.sortKey||0));
+  saveDay();updateSummary();renderMeals();showToast(`💧 +${ml} ml`);
 };
 window.addCustomWater=()=>{const v=parseInt(document.getElementById('customWaterMl').value)||0;if(v>0){addWater(v,'Woda','💧');document.getElementById('customWaterMl').value='';}};
 
@@ -692,7 +906,6 @@ window.switchTab=tab=>{
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('content-'+tab).classList.add('active');
 };
-
 window.handlePhotoUpload=e=>{
   const file=e.target.files[0];if(!file)return;
   const reader=new FileReader();
@@ -700,22 +913,12 @@ window.handlePhotoUpload=e=>{
   reader.readAsDataURL(file);
   const zone=document.getElementById('uploadZone');zone.querySelector('.uz-icon').textContent='✅';zone.querySelector('p').textContent=file.name;
 };
-
 window.setPhotoSource=useCamera=>{
   const input=document.getElementById('photoInput');
-  const libBtn=document.getElementById('photo-lib-btn');
-  const camBtn=document.getElementById('photo-cam-btn');
-  if(useCamera){
-    input.setAttribute('capture','environment'); // rear camera
-    input.removeAttribute('multiple');
-    camBtn.classList.add('active'); libBtn.classList.remove('active');
-    // trigger immediately
-    input.click();
-  } else {
-    input.removeAttribute('capture');
-    libBtn.classList.add('active'); camBtn.classList.remove('active');
-    input.click();
-  }
+  document.getElementById('photo-lib-btn').classList.toggle('active',!useCamera);
+  document.getElementById('photo-cam-btn').classList.toggle('active',useCamera);
+  if(useCamera){input.setAttribute('capture','environment');}else{input.removeAttribute('capture');}
+  input.click();
 };
 
 // ── Analyze ───────────────────────────────────────────────
@@ -726,43 +929,34 @@ function showError(msg){const el=document.getElementById('errorMsg');el.textCont
 window.analyze=async()=>{
   const txt=document.getElementById('foodText').value.trim();
   if(currentTab==='text'&&!txt){showError('Opisz posiłek.');return;}
-  if(currentTab==='photo'&&!currentPhotoB64){showError('Wgraj zdjęcie posiłku.');return;}
+  if(currentTab==='photo'&&!currentPhotoB64){showError('Wgraj zdjęcie.');return;}
   showLoading(currentTab==='photo'?'AI rozpoznaje zdjęcie…':'AI analizuje składniki…');
-  const sys=`Jesteś ekspertem od żywienia. Analizujesz posiłki i napoje, szacujesz wartości odżywcze dla każdego składnika osobno.
-Odpowiadaj WYŁĄCZNIE poprawnym JSON bez dodatkowego tekstu ani znaczników Markdown.
-Format:
-{"name":"Nazwa posiłku po polsku","note":"1-2 zdania o szacunkach","total_liquid_ml":liczba,
-"ingredients":[{"name":"Składnik","weight_g":liczba,"calories":liczba,"protein_g":liczba,"fat_g":liczba,"carbs_g":liczba,"is_liquid":true/false}]}
-total_liquid_ml to suma płynów w ml (woda/kawa/herbata/sok/mleko). Napoje oznacz is_liquid:true.`;
+  const sys=`Jesteś ekspertem od żywienia. Analizujesz posiłki i szacujesz wartości odżywcze dla każdego składnika osobno. Odpowiadaj WYŁĄCZNIE poprawnym JSON bez dodatkowego tekstu ani znaczników Markdown.
+Format:{"name":"Nazwa posiłku po polsku","note":"1-2 zdania","total_liquid_ml":liczba,"ingredients":[{"name":"Składnik","weight_g":liczba,"calories":liczba,"protein_g":liczba,"fat_g":liczba,"carbs_g":liczba,"is_liquid":true/false}]}`;
   const msgs=currentTab==='photo'
     ?[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:currentPhotoB64}},{type:'text',text:'Przeanalizuj i podaj JSON.'}]}]
     :[{role:'user',content:`Przeanalizuj i podaj JSON:\n\n${txt}`}];
   try{
     const resp=await fetch('https://kaloai-proxy.tomasz-mazur-lg.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:2000,system:sys,messages:msgs})});
     const rawText=await resp.text();
-    console.log('Worker response status:',resp.status);
-    console.log('Worker response body:',rawText);
     if(!resp.ok)throw new Error('HTTP '+resp.status+': '+rawText);
     const data=JSON.parse(rawText);
     if(data.error)throw new Error('API error: '+JSON.stringify(data.error));
-    if(!data.content||!Array.isArray(data.content))throw new Error('Brak pola content w odpowiedzi: '+JSON.stringify(data));
+    if(!data.content||!Array.isArray(data.content))throw new Error('Brak content: '+rawText);
     const result=JSON.parse(data.content.map(c=>c.text||'').join('').replace(/```json|```/g,'').trim());
     showResult(result);
-  }catch(err){console.error('Analyze error:',err);showError('Błąd analizy: '+err.message);}
+  }catch(err){console.error(err);showError('Błąd analizy: '+err.message);}
   finally{hideLoading();}
 };
 
 function showResult(r){
   document.getElementById('editName').value=r.name||'';
   document.getElementById('resNote').innerHTML=`<strong>AI:</strong> ${r.note||''}`;
-  // set current datetime as default, allow user to change
   const now=new Date();
-  const pad=n=>String(n).padStart(2,'0');
-  const localDT=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
-  document.getElementById('editDateTime').value=localDT;
+  document.getElementById('editDateTime').value=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
   pendingWaterMl=r.total_liquid_ml||0;
   if(pendingWaterMl>0){document.getElementById('waterDetectedMl').textContent=pendingWaterMl+' ml';document.getElementById('waterDetected').style.display='block';}
-  else{document.getElementById('waterDetected').style.display='none';}
+  else document.getElementById('waterDetected').style.display='none';
   ings=(r.ingredients||[]).map(g=>({name:g.name,weight:g.weight_g,cal:g.calories,protein:g.protein_g,fat:g.fat_g,carb:g.carbs_g,isLiquid:g.is_liquid||false}));
   renderIngs();
   document.getElementById('resultCard').classList.add('visible');
@@ -771,32 +965,27 @@ function showResult(r){
 
 // ── Ingredients ───────────────────────────────────────────
 function density(ing){const w=+ing.weight||0;if(!w)return{cal:0,prot:0,fat:0,carb:0};return{cal:ing.cal/w,prot:(ing.protein||0)/w,fat:(ing.fat||0)/w,carb:(ing.carb||0)/w};}
-
 function recalcTotals(){
   const t=ings.reduce((a,g)=>({cal:a.cal+(+g.cal||0),prot:a.prot+(+g.protein||0),fat:a.fat+(+g.fat||0),carb:a.carb+(+g.carb||0)}),{cal:0,prot:0,fat:0,carb:0});
   document.getElementById('tcCal').textContent=r0(t.cal);document.getElementById('tcProt').textContent=r1(t.prot);
   document.getElementById('tcFat').textContent=r1(t.fat);document.getElementById('tcCarb').textContent=r1(t.carb);
   return t;
 }
-
 function renderIngs(){
-  document.getElementById('ingBody').innerHTML=ings.map((g,i)=>`
-    <tr id="ing-row-${i}">
-      <td><div class="ing-name-wrap"><input class="ing-name-inp" value="${g.name}" onchange="ings[${i}].name=this.value" onblur="window.lookupIngredientByName(${i},this.value)"><div class="ing-lookup-spin" id="ing-spin-${i}"></div></div></td>
-      <td><input class="ing-num-inp w-inp" type="number" min="0" step="1" value="${r0(g.weight)}" onchange="window.changeWeight(${i},+this.value)"></td>
-      <td><input class="ing-num-inp" type="number" min="0" step="1" value="${r0(g.cal)}" onchange="ings[${i}].cal=+this.value;recalcTotals()"></td>
-      <td><input class="ing-num-inp" type="number" min="0" step="0.1" value="${r1(g.protein)}" onchange="ings[${i}].protein=+this.value;recalcTotals()"></td>
-      <td><input class="ing-num-inp" type="number" min="0" step="0.1" value="${r1(g.fat)}" onchange="ings[${i}].fat=+this.value;recalcTotals()"></td>
-      <td><input class="ing-num-inp" type="number" min="0" step="0.1" value="${r1(g.carb)}" onchange="ings[${i}].carb=+this.value;recalcTotals()"></td>
-      <td><button class="ing-del" onclick="window.deleteIng(${i})">✕</button></td>
-    </tr>`).join('');
+  document.getElementById('ingBody').innerHTML=ings.map((g,i)=>`<tr id="ing-row-${i}">
+    <td><div class="ing-name-wrap"><input class="ing-name-inp" value="${g.name}" onchange="ings[${i}].name=this.value" onblur="window.lookupIngredientByName(${i},this.value)"><div class="ing-lookup-spin" id="ing-spin-${i}"></div></div></td>
+    <td><input class="ing-num-inp w-inp" type="number" min="0" step="1" value="${r0(g.weight)}" onchange="window.changeWeight(${i},+this.value)"></td>
+    <td><input class="ing-num-inp" type="number" min="0" step="1" value="${r0(g.cal)}" onchange="ings[${i}].cal=+this.value;recalcTotals()"></td>
+    <td><input class="ing-num-inp" type="number" min="0" step="0.1" value="${r1(g.protein)}" onchange="ings[${i}].protein=+this.value;recalcTotals()"></td>
+    <td><input class="ing-num-inp" type="number" min="0" step="0.1" value="${r1(g.fat)}" onchange="ings[${i}].fat=+this.value;recalcTotals()"></td>
+    <td><input class="ing-num-inp" type="number" min="0" step="0.1" value="${r1(g.carb)}" onchange="ings[${i}].carb=+this.value;recalcTotals()"></td>
+    <td><button class="ing-del" onclick="window.deleteIng(${i})">✕</button></td>
+  </tr>`).join('');
   recalcTotals();
 }
-
 window.changeWeight=(i,newW)=>{const d=density(ings[i]);ings[i]={...ings[i],weight:newW,cal:d.cal*newW,protein:d.prot*newW,fat:d.fat*newW,carb:d.carb*newW};renderIngs();};
 window.deleteIng=i=>{ings.splice(i,1);renderIngs();};
 window.toggleAddForm=()=>{const f=document.getElementById('addIngForm');f.classList.toggle('open');if(f.classList.contains('open'))document.getElementById('ni-name').focus();};
-
 window.confirmAddIng=()=>{
   const name=document.getElementById('ni-name').value.trim();
   if(!name){document.getElementById('ni-name').style.borderColor='var(--danger)';return;}
@@ -805,22 +994,19 @@ window.confirmAddIng=()=>{
   ['ni-name','ni-weight','ni-cal','ni-prot','ni-fat','ni-carb'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('addIngForm').classList.remove('open');renderIngs();
 };
-
 window.acceptMeal=()=>{
   const t=recalcTotals();
   const dtVal=document.getElementById('editDateTime').value;
   const mealDt=dtVal?new Date(dtVal):new Date();
+  const sk=mealDt.getTime();
   const timeStr=mealDt.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'});
-  const dateStr=mealDt.toLocaleDateString('pl-PL',{day:'numeric',month:'short'});
   const isToday=mealDt.toDateString()===new Date().toDateString();
-  const displayTime=isToday?timeStr:dateStr+' '+timeStr;
-  const sortKey=mealDt.getTime();
-  const meal={name:document.getElementById('editName').value||'Posiłek',weight:r0(ings.reduce((s,g)=>s+(+g.weight||0),0)),cal:r0(t.cal),protein:r1(t.prot),fat:r1(t.fat),carb:r1(t.carb),time:displayTime,sortKey};
-  meals.push(meal);
-  meals.sort((a,b)=>(a.sortKey||0)-(b.sortKey||0));
+  const displayTime=isToday?timeStr:mealDt.toLocaleDateString('pl-PL',{day:'numeric',month:'short'})+' '+timeStr;
+  const meal={name:document.getElementById('editName').value||'Posiłek',weight:r0(ings.reduce((s,g)=>s+(+g.weight||0),0)),cal:r0(t.cal),protein:r1(t.prot),fat:r1(t.fat),carb:r1(t.carb),time:displayTime,sortKey:sk};
+  meals.push(meal);meals.sort((a,b)=>(a.sortKey||0)-(b.sortKey||0));
   if(pendingWaterMl>0){
-    const liqNames=ings.filter(g=>g.isLiquid).map(g=>g.name).join(', ')||meal.name;
-    waterLog.push({ml:pendingWaterMl,name:liqNames,icon:'💧',time:displayTime,sortKey});
+    const ln=ings.filter(g=>g.isLiquid).map(g=>g.name).join(', ')||meal.name;
+    waterLog.push({ml:pendingWaterMl,name:ln,icon:'💧',time:displayTime,sortKey:sk});
     waterLog.sort((a,b)=>(a.sortKey||0)-(b.sortKey||0));
     waterMl+=pendingWaterMl;pendingWaterMl=0;
   }
@@ -828,21 +1014,24 @@ window.acceptMeal=()=>{
   document.getElementById('resultCard').classList.remove('visible');
   document.getElementById('foodText').value='';currentPhotoB64=null;ings=[];
   const img=document.getElementById('previewImg');img.style.display='none';img.src='';
-  const zone=document.getElementById('uploadZone');zone.querySelector('.uz-icon').textContent='🍽️';zone.querySelector('p').textContent='Kliknij lub przeciągnij zdjęcie posiłku';
+  const zone=document.getElementById('uploadZone');zone.querySelector('.uz-icon').textContent='🍽️';zone.querySelector('p').textContent='Kliknij lub przeciągnij zdjęcie';
   document.getElementById('photoInput').value='';
   showToast(`✓ Dodano: ${meal.name} (${meal.cal} kcal)`);
 };
-
 window.rejectMeal=()=>{document.getElementById('resultCard').classList.remove('visible');ings=[];pendingWaterMl=0;showToast('Analiza odrzucona');};
 
 // ── Charts ────────────────────────────────────────────────
+// FIXED: use local timezone date string, not UTC ISO
+function localDateStr(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
+
 function getDateRange(){
   const today=new Date();today.setHours(0,0,0,0);
   const count=currentPeriod==='day'?1:currentPeriod==='week'?7:30;
   return Array.from({length:count},(_,i)=>{const d=new Date(today);d.setDate(d.getDate()-(count-1-i));return d;});
 }
+
 function fmtLabel(d){
-  if(currentPeriod==='day')return'Dziś';
+  if(currentPeriod==='day')return'';
   if(currentPeriod==='week')return d.toLocaleDateString('pl-PL',{weekday:'short',day:'numeric'});
   return d.toLocaleDateString('pl-PL',{day:'numeric',month:'short'});
 }
@@ -852,64 +1041,179 @@ window.toggleSeries=s=>{seriesVisible[s]=!seriesVisible[s];document.getElementBy
 
 async function buildCharts(){
   const days=getDateRange();
-  const todayStr=todayKey();
-  const dayData=await loadDateRange(days);
-  const data=dayData.map(({date,data:d})=>{
-    // always use live in-memory data for today
-    const k=date.toISOString().split('T')[0];
-    const src=(k===todayStr)?{meals,waterMl}:d;
-    return {
-      date,
-      cal:(src.meals||[]).reduce((s,m)=>s+(m.cal||0),0),
-      prot:(src.meals||[]).reduce((s,m)=>s+(m.protein||0),0),
-      fat:(src.meals||[]).reduce((s,m)=>s+(m.fat||0),0),
-      carb:(src.meals||[]).reduce((s,m)=>s+(m.carb||0),0),
-      water:src.waterMl||0
-    };
-  });
-  const labels=days.map(fmtLabel);
-  const active=data.filter(d=>d.cal>0||d.water>0);
-  const n=Math.max(active.length,1);
-  document.getElementById('avgCal').textContent=r0(active.reduce((s,d)=>s+d.cal,0)/n);
-  document.getElementById('avgProt').textContent=r0(active.reduce((s,d)=>s+d.prot,0)/n);
-  document.getElementById('avgFat').textContent=r0(active.reduce((s,d)=>s+d.fat,0)/n);
-  document.getElementById('avgWater').textContent=r0(active.reduce((s,d)=>s+d.water,0)/n);
+  const tk=todayKey(); // FIXED: use local date string
 
-  // main chart
+  let chartData;
+  if(currentPeriod==='day'){
+    // hourly breakdown of today from in-memory meals
+    chartData=buildHourlyData();
+    buildHourlyChart(chartData);
+  } else {
+    // weekly/monthly - load from Firestore
+    const dayResults=await Promise.all(days.map(async d=>{
+      const k=localDateStr(d);
+      // FIXED: always use live data for today, Firestore for past
+      if(k===tk) return {date:d,meals,waterMl};
+      const snap=await getDoc(userDayRef(currentUser.uid,k));
+      return {date:d,...(snap.exists()?snap.data():{meals:[],waterMl:0})};
+    }));
+    const data=dayResults.map(({date,meals:m,waterMl:wm})=>({
+      date,
+      cal:(m||[]).reduce((s,x)=>s+(x.cal||0),0),
+      prot:(m||[]).reduce((s,x)=>s+(x.protein||0),0),
+      fat:(m||[]).reduce((s,x)=>s+(x.fat||0),0),
+      carb:(m||[]).reduce((s,x)=>s+(x.carb||0),0),
+      water:wm||0
+    }));
+    const labels=days.map(fmtLabel);
+    const active=data.filter(d=>d.cal>0||d.water>0);
+    const n=Math.max(active.length,1);
+    document.getElementById('avgCal').textContent=r0(active.reduce((s,d)=>s+d.cal,0)/n);
+    document.getElementById('avgProt').textContent=r0(active.reduce((s,d)=>s+d.prot,0)/n);
+    document.getElementById('avgFat').textContent=r0(active.reduce((s,d)=>s+d.fat,0)/n);
+    document.getElementById('avgWater').textContent=r0(active.reduce((s,d)=>s+d.water,0)/n);
+    buildMainChart(labels,data);
+    buildWaterChart(labels,data);
+    buildDonut(active,n);
+  }
+}
+
+function buildHourlyData(){
+  // 24 hour slots
+  const slots=Array.from({length:24},(_,h)=>({h,cal:0,prot:0,fat:0,carb:0,water:0}));
+  meals.forEach(m=>{
+    const h=m.sortKey?new Date(m.sortKey).getHours():0;
+    slots[h].cal+=m.cal||0;slots[h].prot+=m.protein||0;slots[h].fat+=m.fat||0;slots[h].carb+=m.carb||0;
+  });
+  waterLog.forEach(w=>{
+    const h=w.sortKey?new Date(w.sortKey).getHours():0;
+    slots[h].water+=w.ml||0;
+  });
+  return slots;
+}
+
+function buildHourlyChart(slots){
+  const labels=slots.map(s=>s.h+':00');
+  const ds=[];
+  if(seriesVisible.cal)ds.push({type:'bar',label:'Kalorie',data:slots.map(s=>s.cal),backgroundColor:'rgba(45,90,39,.7)',borderColor:'#2D5A27',borderWidth:1,borderRadius:3,yAxisID:'yL'});
+  if(seriesVisible.prot)ds.push({type:'line',label:'Białko (g)',data:slots.map(s=>r1(s.prot)),borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,.08)',fill:true,tension:.4,pointRadius:2,yAxisID:'yR'});
+  if(seriesVisible.fat)ds.push({type:'line',label:'Tłuszcze (g)',data:slots.map(s=>r1(s.fat)),borderColor:'#993556',backgroundColor:'rgba(153,53,86,.08)',fill:true,tension:.4,pointRadius:2,yAxisID:'yR'});
+  if(seriesVisible.carb)ds.push({type:'line',label:'Węglow. (g)',data:slots.map(s=>r1(s.carb)),borderColor:'#BA7517',backgroundColor:'rgba(186,117,23,.08)',fill:true,tension:.4,pointRadius:2,yAxisID:'yR'});
+  const ctx=document.getElementById('mainChart').getContext('2d');
+  if(mainChartInst)mainChartInst.destroy();
+  mainChartInst=new Chart(ctx,{data:{labels,datasets:ds},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{font:{family:'DM Sans',size:11},padding:9}}},scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10},maxTicksLimit:12}},yL:{type:'linear',position:'left',grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'DM Sans',size:10}}},yR:{type:'linear',position:'right',grid:{display:false},ticks:{font:{family:'DM Sans',size:10}}}}}});
+  document.getElementById('mainChartTitle').textContent='Rozkład godzinowy – dziś';
+
+  // stats for today
+  const totCal=meals.reduce((s,m)=>s+(m.cal||0),0);
+  const totProt=meals.reduce((s,m)=>s+(m.protein||0),0);
+  const totFat=meals.reduce((s,m)=>s+(m.fat||0),0);
+  document.getElementById('avgCal').textContent=r0(totCal);
+  document.getElementById('avgProt').textContent=r0(totProt);
+  document.getElementById('avgFat').textContent=r0(totFat);
+  document.getElementById('avgWater').textContent=r0(waterMl);
+
+  // water chart for today hourly
+  const wCtx=document.getElementById('waterChart').getContext('2d');
+  if(waterChartInst)waterChartInst.destroy();
+  waterChartInst=new Chart(wCtx,{type:'bar',data:{labels,datasets:[{label:'Woda (ml)',data:slots.map(s=>s.water),backgroundColor:'rgba(26,122,191,.5)',borderColor:'#1a7abf',borderWidth:1,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{family:'DM Sans',size:11}}}},scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10},maxTicksLimit:12}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'DM Sans',size:10}}}}}});
+
+  buildDonut([{prot:totProt,fat:totFat,carb:meals.reduce((s,m)=>s+(m.carb||0),0)}],1);
+}
+
+function buildMainChart(labels,data){
+  document.getElementById('mainChartTitle').textContent='Kalorie i makroskładniki';
   const ds=[];
   if(seriesVisible.cal)ds.push({type:'bar',label:'Kalorie',data:data.map(d=>d.cal),backgroundColor:'rgba(45,90,39,.72)',borderColor:'#2D5A27',borderWidth:1,borderRadius:3,yAxisID:'yL'});
   if(seriesVisible.prot)ds.push({type:'line',label:'Białko (g)',data:data.map(d=>r1(d.prot)),borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,.08)',fill:true,tension:.4,pointRadius:3,yAxisID:'yR'});
   if(seriesVisible.fat)ds.push({type:'line',label:'Tłuszcze (g)',data:data.map(d=>r1(d.fat)),borderColor:'#993556',backgroundColor:'rgba(153,53,86,.08)',fill:true,tension:.4,pointRadius:3,yAxisID:'yR'});
   if(seriesVisible.carb)ds.push({type:'line',label:'Węglow. (g)',data:data.map(d=>r1(d.carb)),borderColor:'#BA7517',backgroundColor:'rgba(186,117,23,.08)',fill:true,tension:.4,pointRadius:3,yAxisID:'yR'});
-  const mCtx=document.getElementById('mainChart').getContext('2d');
+  const ctx=document.getElementById('mainChart').getContext('2d');
   if(mainChartInst)mainChartInst.destroy();
-  mainChartInst=new Chart(mCtx,{data:{labels,datasets:ds},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{font:{family:'DM Sans',size:11},padding:10}}},scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10}}},yL:{type:'linear',position:'left',grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'DM Sans',size:10}}},yR:{type:'linear',position:'right',grid:{display:false},ticks:{font:{family:'DM Sans',size:10}}}}}});
-
-  // water chart
-  const wCtx=document.getElementById('waterChart').getContext('2d');
-  if(waterChartInst)waterChartInst.destroy();
-  waterChartInst=new Chart(wCtx,{type:'bar',data:{labels,datasets:[{label:'Woda (ml)',data:data.map(d=>d.water),backgroundColor:data.map(d=>d.water>=GOAL_WATER?'rgba(26,122,191,.8)':'rgba(26,122,191,.4)'),borderColor:'#1a7abf',borderWidth:1,borderRadius:3},{type:'line',label:`Cel ${GOAL_WATER}ml`,data:data.map(()=>GOAL_WATER),borderColor:'rgba(26,122,191,.4)',borderDash:[4,4],borderWidth:1.5,pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{family:'DM Sans',size:11}}}},scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10}}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'DM Sans',size:10}}}}}});
-
-  // donut
-  const avgP=active.reduce((s,d)=>s+d.prot,0)/n;
-  const avgF=active.reduce((s,d)=>s+d.fat,0)/n;
-  const avgC=active.reduce((s,d)=>s+d.carb,0)/n;
-  const dCtx=document.getElementById('macroDonut').getContext('2d');
-  if(donutInst)donutInst.destroy();
-  donutInst=new Chart(dCtx,{type:'doughnut',data:{labels:['Białko','Tłuszcze','Węglowodany'],datasets:[{data:[r1(avgP*4),r1(avgF*9),r1(avgC*4)],backgroundColor:['rgba(24,95,165,.8)','rgba(153,53,86,.8)','rgba(186,117,23,.8)'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:9}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.parsed} kcal`}}}}});
+  mainChartInst=new Chart(ctx,{data:{labels,datasets:ds},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{font:{family:'DM Sans',size:11},padding:9}}},scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10}}},yL:{type:'linear',position:'left',grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'DM Sans',size:10}}},yR:{type:'linear',position:'right',grid:{display:false},ticks:{font:{family:'DM Sans',size:10}}}}}});
 }
+function buildWaterChart(labels,data){
+  const goalW=profile.water||2500;
+  const ctx=document.getElementById('waterChart').getContext('2d');
+  if(waterChartInst)waterChartInst.destroy();
+  waterChartInst=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Woda (ml)',data:data.map(d=>d.water),backgroundColor:data.map(d=>d.water>=goalW?'rgba(26,122,191,.8)':'rgba(26,122,191,.4)'),borderColor:'#1a7abf',borderWidth:1,borderRadius:3},{type:'line',label:`Cel ${goalW}ml`,data:data.map(()=>goalW),borderColor:'rgba(26,122,191,.4)',borderDash:[4,4],borderWidth:1.5,pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{family:'DM Sans',size:11}}}},scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10}}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'DM Sans',size:10}}}}}});
+}
+function buildDonut(active,n){
+  const avgP=active.reduce((s,d)=>s+(d.prot||0),0)/n;
+  const avgF=active.reduce((s,d)=>s+(d.fat||0),0)/n;
+  const avgC=active.reduce((s,d)=>s+(d.carb||0),0)/n;
+  const ctx=document.getElementById('macroDonut').getContext('2d');
+  if(donutInst)donutInst.destroy();
+  donutInst=new Chart(ctx,{type:'doughnut',data:{labels:['Białko','Tłuszcze','Węglowodany'],datasets:[{data:[r1(avgP*4),r1(avgF*9),r1(avgC*4)],backgroundColor:['rgba(24,95,165,.8)','rgba(153,53,86,.8)','rgba(186,117,23,.8)'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:8}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.parsed} kcal`}}}}});
+}
+
+// ── History ───────────────────────────────────────────────
+async function loadHistory(){
+  if(!currentUser){document.getElementById('histList').innerHTML='<div class="empty-state">Zaloguj się</div>';return;}
+  document.getElementById('histList').innerHTML='<div class="empty-state">Ładowanie…</div>';
+  const today=new Date();today.setHours(0,0,0,0);
+  const days=[];
+  for(let i=1;i<=histDaysLoaded;i++){const d=new Date(today);d.setDate(d.getDate()-i);days.push(d);}
+  document.getElementById('histRange').textContent=`Ostatnie ${histDaysLoaded} dni`;
+
+  const results=await Promise.all(days.map(async d=>{
+    const k=localDateStr(d);
+    const snap=await getDoc(userDayRef(currentUser.uid,k));
+    return {date:d,k,data:snap.exists()?snap.data():{meals:[],waterMl:0,waterLog:[]}};
+  }));
+
+  const nonEmpty=results.filter(r=>(r.data.meals||[]).length>0||r.data.waterMl>0);
+  if(!nonEmpty.length){document.getElementById('histList').innerHTML='<div class="empty-state">Brak danych w tym okresie.<br>Dodaj posiłki aby zobaczyć historię.</div>';return;}
+
+  document.getElementById('histList').innerHTML=nonEmpty.map(({date,k,data})=>{
+    const m=data.meals||[];
+    const totCal=m.reduce((s,x)=>s+(x.cal||0),0);
+    const wm=data.waterMl||0;
+    const dateLabel=date.toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long'});
+    const mealsHtml=m.map(meal=>`
+      <div class="hist-meal-row">
+        <div class="hist-meal-icon">${foodEmoji(meal.name)}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="hist-meal-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${meal.name}</div>
+          <div class="hist-meal-detail">${r0(meal.weight)}g · B:${r0(meal.protein)}g · T:${r0(meal.fat)}g · W:${r0(meal.carb)}g · ${meal.time||''}</div>
+        </div>
+        <div class="hist-meal-cal">${r0(meal.cal)} kcal</div>
+      </div>`).join('');
+    const waterHtml=wm>0?`<div class="hist-water-row">💧 Wypite płyny: <strong style="margin-left:4px;">${wm} ml</strong></div>`:'';
+    return `<div class="hist-day-card">
+      <div class="hist-day-header" onclick="toggleHistDay('${k}')">
+        <div class="hist-day-title">${dateLabel}</div>
+        <div class="hist-day-sum">
+          <span class="hist-sum-chip cal">${r0(totCal)} kcal</span>
+          ${wm>0?`<span class="hist-sum-chip water">${wm} ml</span>`:''}
+          <span style="font-size:14px;color:var(--text3);" id="hist-arrow-${k}">▼</span>
+        </div>
+      </div>
+      <div class="hist-meals" id="hist-meals-${k}">${mealsHtml}${waterHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+window.toggleHistDay=k=>{
+  const el=document.getElementById('hist-meals-'+k);
+  const arrow=document.getElementById('hist-arrow-'+k);
+  el.classList.toggle('open');
+  arrow.textContent=el.classList.contains('open')?'▲':'▼';
+};
+
+window.histLoadMore=()=>{histDaysLoaded+=14;loadHistory();};
 
 // ── Voice ─────────────────────────────────────────────────
 let recognition=null,isRecording=false;
 function initSpeech(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return null;
   const rec=new SR();rec.lang='pl-PL';rec.continuous=true;rec.interimResults=true;let final='';
-  rec.onstart=()=>{final=document.getElementById('foodText').value;document.getElementById('micBtn').classList.add('recording');document.getElementById('micBtn').textContent='⏹️';document.getElementById('micStatus').style.display='flex';document.getElementById('micStatusText').textContent='Słucham…';};
+  rec.onstart=()=>{final=document.getElementById('foodText').value;document.getElementById('micBtn').classList.add('recording');document.getElementById('micBtn').textContent='⏹️';document.getElementById('micStatus').style.display='flex';};
   rec.onresult=e=>{let interim='';for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)final+=e.results[i][0].transcript+' ';else interim=e.results[i][0].transcript;}document.getElementById('foodText').value=final+interim;document.getElementById('micStatusText').textContent=interim?`"${interim}"…`:'Słucham…';};
-  rec.onerror=e=>{const m={'not-allowed':'Brak dostępu do mikrofonu.','no-speech':'Nie wykryto mowy.'};showError(m[e.error]||'Błąd dyktowania');stopMic();};
+  rec.onerror=e=>{showError({'not-allowed':'Brak dostępu do mikrofonu.','no-speech':'Nie wykryto mowy.'}[e.error]||'Błąd');stopMic();};
   rec.onend=()=>{if(isRecording)rec.start();};return rec;
 }
-window.toggleMic=()=>{if(!(window.SpeechRecognition||window.webkitSpeechRecognition)){showError('Dyktowanie nie jest obsługiwane. Użyj Chrome.');return;}isRecording?stopMic():startMic();};
+window.toggleMic=()=>{if(!(window.SpeechRecognition||window.webkitSpeechRecognition)){showError('Dyktowanie wymaga Chrome/Edge.');return;}isRecording?stopMic():startMic();};
 function startMic(){switchTab('text');if(!recognition)recognition=initSpeech();isRecording=true;recognition.start();}
 function stopMic(){isRecording=false;if(recognition){try{recognition.stop();}catch(e){}}document.getElementById('micBtn').classList.remove('recording');document.getElementById('micBtn').textContent='🎙️';document.getElementById('micStatus').style.display='none';}
 
@@ -927,30 +1231,40 @@ window.lookupIngredientByName=async(idx,name)=>{
   if(!trimmed||g.cal||g.protein||g.fat||g.carb)return;
   const spin=document.getElementById(`ing-spin-${idx}`);if(spin)spin.classList.add('active');
   try{const d=await lookupNutrients(trimmed);const w=g.weight||100;const f=w/100;ings[idx]={...g,cal:d.calories*f,protein:d.protein_g*f,fat:d.fat_g*f,carb:d.carbs_g*f};renderIngs();showToast(`✓ Pobrano: ${trimmed}`);}
-  catch(e){console.warn(e);if(spin)spin.classList.remove('active');}
+  catch(e){if(spin)spin.classList.remove('active');}
 };
 window.autofillNewIng=async name=>{
   const trimmed=name.trim();if(!trimmed)return;
   if(+document.getElementById('ni-cal').value||+document.getElementById('ni-prot').value)return;
-  const hint=document.getElementById('ni-hint');hint.style.display='block';hint.style.color='var(--text3)';hint.textContent=`⏳ Pobieranie wartości dla "${trimmed}"…`;
+  const hint=document.getElementById('ni-hint');hint.style.display='block';hint.style.color='var(--text3)';hint.textContent=`⏳ Pobieranie dla "${trimmed}"…`;
   document.querySelector('.btn-ai-confirm').disabled=true;
   try{
     const d=await lookupNutrients(trimmed);const w=+document.getElementById('ni-weight').value||100;const f=w/100;
     document.getElementById('ni-cal').value=r0(d.calories*f);document.getElementById('ni-prot').value=r1(d.protein_g*f);
     document.getElementById('ni-fat').value=r1(d.fat_g*f);document.getElementById('ni-carb').value=r1(d.carbs_g*f);
     if(!document.getElementById('ni-weight').value)document.getElementById('ni-weight').value=100;
-    hint.textContent=`✓ Wartości na ${w}g pobrane`;hint.style.color='var(--accent)';
+    hint.textContent=`✓ Wartości na ${w}g`;hint.style.color='var(--accent)';
   }catch(e){hint.textContent='Nie udało się — wpisz ręcznie.';hint.style.color='var(--danger)';}
   finally{document.querySelector('.btn-ai-confirm').disabled=false;}
 };
 document.getElementById('ni-name').addEventListener('input',()=>{const h=document.getElementById('ni-hint');h.style.display='none';});
 
 // ── Toast ─────────────────────────────────────────────────
-function showToast(msg,err=false){
-  const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(err?' error':'');
-  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);
-}
+function showToast(msg,err=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(err?' error':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 window.showToast=showToast;
+
+function foodEmoji(n=''){n=n.toLowerCase();
+  if(/pizza/.test(n))return'🍕';if(/makaron|pasta|spaghetti|bolognese/.test(n))return'🍝';
+  if(/ryż|rice/.test(n))return'🍚';if(/sałat|salad/.test(n))return'🥗';
+  if(/burger|hambur/.test(n))return'🍔';if(/kanapka|sandwich|tost/.test(n))return'🥪';
+  if(/jajk|omlet/.test(n))return'🍳';if(/kurczak|chicken/.test(n))return'🍗';
+  if(/zupa|soup/.test(n))return'🍲';if(/jogurt|kefir/.test(n))return'🥛';
+  if(/ryba|fish|łosoś|tuńczyk/.test(n))return'🐟';if(/chleb|bread/.test(n))return'🍞';
+  if(/ciast|cake|tort/.test(n))return'🍰';
+  if(/kawa|coffee/.test(n))return'☕';if(/herbata|tea/.test(n))return'🍵';
+  if(/woda|water/.test(n))return'💧';if(/sok|juice/.test(n))return'🧃';
+  return'🍽️';
+}
 
 // ── Drag & drop ───────────────────────────────────────────
 const zone=document.getElementById('uploadZone');
