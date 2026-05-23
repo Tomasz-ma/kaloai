@@ -69,8 +69,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .logo{padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
 .logo-text h1{font-family:'DM Serif Display',serif;font-size:22px;letter-spacing:-.5px;color:var(--accent);}
 .logo-text p{font-size:11px;color:var(--text2);margin-top:1px;}
-.user-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--accent-light);cursor:pointer;flex-shrink:0;}
-.user-avatar-placeholder{width:34px;height:34px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--accent);cursor:pointer;flex-shrink:0;}
+.avatar-wrap{position:relative;cursor:pointer;flex-shrink:0;}
+.user-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--accent-light);display:block;}
+.user-avatar-placeholder{width:34px;height:34px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--accent);}
+.avatar-badge{position:absolute;bottom:-2px;right:-2px;width:16px;height:16px;border-radius:50%;background:var(--surface);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;line-height:1;}
 .user-menu{position:absolute;top:62px;left:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:50;min-width:210px;display:none;}
 .user-menu.open{display:block;}
 .user-menu-name{padding:8px 10px;font-size:13px;font-weight:500;color:var(--text);border-bottom:1px solid var(--border);margin-bottom:6px;}
@@ -295,10 +297,97 @@ textarea::placeholder{color:var(--text3);}
   .stat-row{grid-template-columns:repeat(2,1fr);}
   .manual-fields{grid-template-columns:1fr 1fr;}
 }
+
+/* ── THEMES ───────────────────────────────────────────── */
+body.theme-dark{
+  --bg:#0f1117;--surface:#1a1d27;--surface2:#242736;--border:#2e3347;
+  --text:#e8eaf0;--text2:#8b90a0;--text3:#555c70;
+  --accent:#4caf50;--accent-light:#1a2e1b;
+  --danger:#ef5350;--danger-light:#2a1515;
+  --protein:#42a5f5;--protein-light:#0d1f2d;
+  --fat:#f06292;--fat-light:#2a1220;
+  --carb:#ffa726;--carb-light:#2a1f0a;
+  --water:#29b6f6;--water-light:#0a1f2a;
+  --shadow:0 1px 3px rgba(0,0,0,.3),0 4px 12px rgba(0,0,0,.2);
+}
+body.theme-pastel{
+  --bg:#fdf6f0;--surface:#fff9f5;--surface2:#fdeee5;--border:#f0d9cc;
+  --text:#4a3728;--text2:#8b6a58;--text3:#b89080;
+  --accent:#e07a5f;--accent-light:#fde8e2;
+  --danger:#c0392b;--danger-light:#fde8e6;
+  --protein:#7b9ed9;--protein-light:#e8eef8;
+  --fat:#e8a598;--fat-light:#fdf0ee;
+  --carb:#f0c080;--carb-light:#fdf5e4;
+  --water:#85c1d4;--water-light:#e4f4f8;
+}
+body.theme-vivid{
+  --bg:#0a0a1a;--surface:#12122a;--surface2:#1a1a35;--border:#2a2a5a;
+  --text:#ffffff;--text2:#aaaacc;--text3:#6666aa;
+  --accent:#00e676;--accent-light:#002211;
+  --danger:#ff1744;--danger-light:#220011;
+  --protein:#2979ff;--protein-light:#001133;
+  --fat:#ff6d00;--fat-light:#220e00;
+  --carb:#ffd600;--carb-light:#221e00;
+  --water:#00b0ff;--water-light:#001122;
+  --shadow:0 0 20px rgba(0,230,118,.08),0 4px 12px rgba(0,0,0,.4);
+}
+/* diet mode */
+body.diet-vege .meal-icon.meat-icon{opacity:.4;filter:grayscale(1);}
+/* theme modal */
+.theme-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:450;display:flex;align-items:center;justify-content:center;padding:20px;}
+.theme-modal.hidden{display:none;}
+.theme-box{background:var(--surface);border-radius:16px;padding:28px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);}
+.theme-box h3{font-family:'DM Serif Display',serif;font-size:20px;color:var(--text);margin-bottom:18px;}
+.theme-section{margin-bottom:20px;}
+.theme-section-label{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
+.theme-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;}
+.theme-card{padding:12px 14px;border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;color:var(--text2);}
+.theme-card:hover{border-color:var(--accent);color:var(--text);}
+.theme-card.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent);font-weight:600;}
+.theme-swatch{width:28px;height:28px;border-radius:6px;flex-shrink:0;}
+.diet-toggle{display:flex;gap:9px;}
+.diet-btn{flex:1;padding:10px;border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text2);background:transparent;display:flex;align-items:center;justify-content:center;gap:7px;}
+.diet-btn:hover{border-color:var(--accent);color:var(--text);}
+.diet-btn.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent);font-weight:600;}
+body.diet-vege .vege-hide{display:none;}
+body.diet-vege .analyze-btn::after{content:" 🥦";}
+.theme-close{width:100%;margin-top:16px;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;}
 </style>
 </head>
 <body>
 <div id="loadingOverlay"><div class="big-spinner"></div><p>Ładowanie…</p></div>
+
+<!-- THEME MODAL -->
+<div class="theme-modal hidden" id="themeModal">
+  <div class="theme-box">
+    <h3>🎨 Wygląd aplikacji</h3>
+    <div class="theme-section">
+      <div class="theme-section-label">Szata graficzna</div>
+      <div class="theme-grid">
+        <button class="theme-card active" onclick="setTheme('')" id="tc-default">
+          <span class="theme-swatch" style="background:linear-gradient(135deg,#F7F5F0,#2D5A27)"></span>Klasyczna
+        </button>
+        <button class="theme-card" onclick="setTheme('dark')" id="tc-dark">
+          <span class="theme-swatch" style="background:linear-gradient(135deg,#0f1117,#4caf50)"></span>Dark
+        </button>
+        <button class="theme-card" onclick="setTheme('pastel')" id="tc-pastel">
+          <span class="theme-swatch" style="background:linear-gradient(135deg,#fdf6f0,#e07a5f)"></span>Pastelowa
+        </button>
+        <button class="theme-card" onclick="setTheme('vivid')" id="tc-vivid">
+          <span class="theme-swatch" style="background:linear-gradient(135deg,#0a0a1a,#00e676)"></span>Neon
+        </button>
+      </div>
+    </div>
+    <div class="theme-section">
+      <div class="theme-section-label">Tryb diety</div>
+      <div class="diet-toggle">
+        <button class="diet-btn active" onclick="setDiet('meat')" id="db-meat">🥩 Mięsna</button>
+        <button class="diet-btn" onclick="setDiet('vege')" id="db-vege">🥦 Wegetariańska</button>
+      </div>
+    </div>
+    <button class="theme-close" onclick="closeThemeModal()">✓ Gotowe</button>
+  </div>
+</div>
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-logo">KaloAI</div>
@@ -377,10 +466,11 @@ textarea::placeholder{color:var(--text3);}
   <aside class="panel-left" style="position:relative;">
     <div class="logo">
       <div class="logo-text"><h1>KaloAI</h1><p>Licznik kalorii</p></div>
-      <div id="userAvatarBtn" onclick="toggleUserMenu()"></div>
+      <div class="avatar-wrap" id="userAvatarBtn" onclick="toggleUserMenu()"><div id="avatarInner"></div><span class="avatar-badge">⚙️</span></div>
     </div>
     <div id="userMenu" class="user-menu">
       <div class="user-menu-name" id="userMenuName">—</div>
+      <button class="user-menu-btn profile" onclick="openThemeModal()">🎨 Wygląd aplikacji</button>
       <button class="user-menu-btn profile" onclick="openProfile()">⚙️ Dane i cele</button>
       <button class="user-menu-btn logout" onclick="signOut()">🚪 Wyloguj się</button>
     </div>
@@ -388,14 +478,14 @@ textarea::placeholder{color:var(--text3);}
       <div class="sync-badge"><div class="sync-dot" id="syncDot"></div><span id="syncText">zsync</span></div>
     </div>
     <div class="daily-summary">
-      <div class="summary-title">Kalorie – dziś</div>
+      <div class="summary-title">🔥 Kalorie – dziś</div>
       <div class="cal-display"><span class="cal-num" id="totalCal">0</span><span class="cal-unit">kcal</span></div>
       <div class="cal-goal" id="calGoalText">cel: — kcal</div>
       <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
       <div class="macros-grid">
-        <div class="macro-card protein"><div class="m-label">Białko</div><div><span class="m-val" id="totalProtein">0</span><span class="m-unit">g</span></div><div class="m-pct" id="pctProtein">—%</div><div class="macro-prog"><div class="macro-prog-fill" id="progProtein" style="width:0%;background:var(--protein)"></div></div></div>
-        <div class="macro-card fat"><div class="m-label">Tłuszcze</div><div><span class="m-val" id="totalFat">0</span><span class="m-unit">g</span></div><div class="m-pct" id="pctFat">—%</div><div class="macro-prog"><div class="macro-prog-fill" id="progFat" style="width:0%;background:var(--fat)"></div></div></div>
-        <div class="macro-card carb"><div class="m-label">Węglowodany</div><div><span class="m-val" id="totalCarb">0</span><span class="m-unit">g</span></div><div class="m-pct" id="pctCarb">—%</div><div class="macro-prog"><div class="macro-prog-fill" id="progCarb" style="width:0%;background:var(--carb)"></div></div></div>
+        <div class="macro-card protein"><div class="m-label">🥩 Białko</div><div><span class="m-val" id="totalProtein">0</span><span class="m-unit">g</span></div><div class="m-pct" id="pctProtein">—%</div><div class="macro-prog"><div class="macro-prog-fill" id="progProtein" style="width:0%;background:var(--protein)"></div></div></div>
+        <div class="macro-card fat"><div class="m-label">🥑 Tłuszcze</div><div><span class="m-val" id="totalFat">0</span><span class="m-unit">g</span></div><div class="m-pct" id="pctFat">—%</div><div class="macro-prog"><div class="macro-prog-fill" id="progFat" style="width:0%;background:var(--fat)"></div></div></div>
+        <div class="macro-card carb"><div class="m-label">🌾 Węglowodany</div><div><span class="m-val" id="totalCarb">0</span><span class="m-unit">g</span></div><div class="m-pct" id="pctCarb">—%</div><div class="macro-prog"><div class="macro-prog-fill" id="progCarb" style="width:0%;background:var(--carb)"></div></div></div>
       </div>
     </div>
     <div class="water-block">
@@ -478,7 +568,7 @@ textarea::placeholder{color:var(--text3);}
         <div class="ai-note" id="resNote"></div>
         <div class="ing-header"><span class="ing-title">Składniki</span><span class="ing-hint">— zmień wagę → proporcjonalne przeliczenie</span></div>
         <table class="ing-table">
-          <thead><tr><th style="width:38%;overflow:hidden;">Składnik</th><th>Waga g</th><th>Kcal</th><th>Białko</th><th>Tłuszcz</th><th>Węgl.</th><th></th></tr></thead>
+          <thead><tr><th style="width:38%;overflow:hidden;">Składnik</th><th title="Waga (g)">⚖️</th><th title="Kalorie (kcal)">🔥</th><th title="Białko (g)">🥩</th><th title="Tłuszcze (g)">🥑</th><th title="Węglowodany (g)">🌾</th><th></th></tr></thead>
           <tbody id="ingBody"></tbody>
         </table>
         <button class="add-ing-btn" onclick="toggleAddForm()">＋ Dodaj składnik ręcznie</button>
@@ -686,7 +776,8 @@ onAuthStateChanged(auth,async user=>{
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('mainApp').classList.add('visible');
     const ab=document.getElementById('userAvatarBtn');
-    ab.innerHTML=user.photoURL?`<img class="user-avatar" src="${user.photoURL}" alt="">`:`<div class="user-avatar-placeholder">${(user.displayName||user.email||'U')[0].toUpperCase()}</div>`;
+    const avatarInner=document.getElementById('avatarInner');
+    avatarInner.innerHTML=user.photoURL?`<img class="user-avatar" src="${user.photoURL}" alt="">`:`<div class="user-avatar-placeholder">${(user.displayName||user.email||'U')[0].toUpperCase()}</div>`;
     document.getElementById('userMenuName').innerHTML=`${user.displayName||'Użytkownik'}<br><span style="font-size:11px;color:var(--text2);font-weight:400;">${user.email||''}</span>`;
     await loadProfile();
     await loadDay(todayKey());
@@ -1108,6 +1199,57 @@ const zone=document.getElementById('uploadZone');
 zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('dragover');});
 zone.addEventListener('dragleave',()=>zone.classList.remove('dragover'));
 zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('dragover');const file=e.dataTransfer.files[0];if(file&&file.type.startsWith('image/')){const dt=new DataTransfer();dt.items.add(file);document.getElementById('photoInput').files=dt.files;handlePhotoUpload({target:{files:dt.files}});}});
+
+// ── THEME & DIET ──────────────────────────────────────────
+let currentTheme='', currentDiet='meat';
+
+function applyTheme(theme){
+  document.body.className=document.body.className
+    .replace(/theme-\w+/g,'').replace(/diet-\w+/g,'').trim();
+  if(theme)document.body.classList.add('theme-'+theme);
+  if(currentDiet==='vege')document.body.classList.add('diet-vege');
+  // update active state
+  ['default','dark','pastel','vivid'].forEach(t=>{
+    const el=document.getElementById('tc-'+t);
+    if(el)el.classList.toggle('active',t===(theme||'default'));
+  });
+}
+
+window.setTheme=theme=>{
+  currentTheme=theme;applyTheme(theme);
+  try{localStorage.setItem('kaloai_theme',theme);}catch(e){}
+};
+
+window.setDiet=diet=>{
+  currentDiet=diet;
+  document.getElementById('db-meat').classList.toggle('active',diet==='meat');
+  document.getElementById('db-vege').classList.toggle('active',diet==='vege');
+  // apply diet class
+  document.body.classList.toggle('diet-vege',diet==='vege');
+  try{localStorage.setItem('kaloai_diet',diet);}catch(e){}
+};
+
+window.openThemeModal=()=>{
+  document.getElementById('userMenu').classList.remove('open');
+  document.getElementById('themeModal').classList.remove('hidden');
+};
+window.closeThemeModal=()=>{
+  document.getElementById('themeModal').classList.add('hidden');
+};
+
+// close theme modal on outside click
+document.getElementById('themeModal').addEventListener('click',e=>{
+  if(e.target===document.getElementById('themeModal'))closeThemeModal();
+});
+
+// restore saved theme on load
+try{
+  const savedTheme=localStorage.getItem('kaloai_theme')||'';
+  const savedDiet=localStorage.getItem('kaloai_diet')||'meat';
+  currentTheme=savedTheme;currentDiet=savedDiet;
+  applyTheme(savedTheme);
+  if(savedDiet==='vege'){document.getElementById('db-vege').classList.add('active');document.getElementById('db-meat').classList.remove('active');}
+}catch(e){}
 </script>
 </body>
 </html>
