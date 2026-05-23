@@ -163,10 +163,12 @@ textarea::placeholder{color:var(--text3);}
 .upload-zone p{font-size:12px;color:var(--text2);}
 .upload-zone span{font-size:10px;color:var(--text3);}
 .preview-img{width:100%;max-height:180px;object-fit:cover;border-radius:var(--radius-sm);margin-top:9px;display:none;}
-.portion-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface2);border-radius:var(--radius-sm);margin-top:10px;display:none;}
-.portion-row label{font-size:12px;color:var(--text2);font-weight:500;white-space:nowrap;}
+.portion-row{display:none;align-items:center;gap:8px;padding:10px 14px;background:var(--accent-light);border:1px solid rgba(45,90,39,.2);border-radius:var(--radius-sm);margin-bottom:12px;}
+.portion-row label{font-size:12px;color:var(--accent);font-weight:600;white-space:nowrap;}
 .portion-row input[type=range]{flex:1;accent-color:var(--accent);}
-.portion-val{font-size:14px;font-weight:700;color:var(--accent);min-width:46px;text-align:right;}
+.portion-gram-inp{width:72px;padding:4px 7px;border:1px solid var(--accent);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--accent);text-align:center;background:var(--surface);outline:none;}
+.portion-gram-inp:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-light);}
+.portion-unit{font-size:11px;color:var(--text2);}
 .analyze-btn{width:100%;margin-top:12px;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;}
 .analyze-btn:hover{background:#1e3d1a;transform:translateY(-1px);}
 .analyze-btn:disabled{background:var(--text3);cursor:not-allowed;transform:none;}
@@ -196,14 +198,14 @@ textarea::placeholder{color:var(--text3);}
 .ing-header{display:flex;align-items:baseline;gap:6px;margin-bottom:7px;}
 .ing-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);}
 .ing-hint{font-size:10px;color:var(--text3);}
-.ing-table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:10px;}
+.ing-table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:10px;table-layout:fixed;}
 .ing-table th{text-align:left;font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);padding:3px 4px 5px;border-bottom:1px solid var(--border);}
 .ing-table th:not(:first-child){text-align:right;}
 .ing-table td{padding:3px 4px;border-bottom:1px solid var(--surface2);vertical-align:middle;}
 .ing-table td:not(:first-child){text-align:right;}
 .ing-table tr:last-child td{border-bottom:none;}
-.ing-name-wrap{position:relative;display:inline-block;}
-.ing-name-inp{border:1px solid transparent;border-radius:3px;padding:2px 22px 2px 4px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text);background:transparent;outline:none;width:180px;transition:border-color .2s;}
+.ing-name-wrap{position:relative;display:block;overflow:hidden;}
+.ing-name-inp{border:1px solid transparent;border-radius:3px;padding:2px 22px 2px 4px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text);background:transparent;outline:none;width:100%;max-width:180px;transition:border-color .2s;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .ing-name-inp:focus{border-color:var(--accent);background:var(--bg);}
 .ing-lookup-spin{position:absolute;right:3px;top:50%;transform:translateY(-50%);width:10px;height:10px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;display:none;}
 .ing-lookup-spin.active{display:block;}
@@ -447,9 +449,10 @@ textarea::placeholder{color:var(--text3);}
           <img class="preview-img" id="previewImg" alt="">
         </div>
         <div class="portion-row" id="portionRow">
-          <label>🍽️ Wielkość porcji:</label>
-          <input type="range" min="25" max="300" value="100" step="5" oninput="updatePortion(+this.value)">
-          <span class="portion-val" id="portionVal">100%</span>
+          <label>🍽️ Porcja:</label>
+          <input type="range" id="portionSlider" min="10" max="2000" value="100" step="10" oninput="updatePortionGrams(+this.value)">
+          <input class="portion-gram-inp" type="number" id="portionGrams" value="100" min="10" max="2000" step="10" onchange="updatePortionGrams(+this.value)">
+          <span class="portion-unit">g</span>
         </div>
         <button class="analyze-btn" id="analyzeBtn" onclick="analyze()"><span>🔍</span><span>Analizuj posiłek</span></button>
         <div class="loading" id="loadingIndicator"><div class="spinner"></div><span id="loadingText">AI analizuje…</span></div>
@@ -475,7 +478,7 @@ textarea::placeholder{color:var(--text3);}
         <div class="ai-note" id="resNote"></div>
         <div class="ing-header"><span class="ing-title">Składniki</span><span class="ing-hint">— zmień wagę → proporcjonalne przeliczenie</span></div>
         <table class="ing-table">
-          <thead><tr><th style="width:40%">Składnik</th><th>Waga g</th><th>Kcal</th><th>Białko</th><th>Tłuszcz</th><th>Węgl.</th><th></th></tr></thead>
+          <thead><tr><th style="width:38%;overflow:hidden;">Składnik</th><th>Waga g</th><th>Kcal</th><th>Białko</th><th>Tłuszcz</th><th>Węgl.</th><th></th></tr></thead>
           <tbody id="ingBody"></tbody>
         </table>
         <button class="add-ing-btn" onclick="toggleAddForm()">＋ Dodaj składnik ręcznie</button>
@@ -525,11 +528,13 @@ textarea::placeholder{color:var(--text3);}
       <div class="chart-card"><h3 id="mainChartTitle">Kalorie i makroskładniki</h3><div class="chart-wrap"><canvas id="mainChart"></canvas></div></div>
       <div class="chart-card">
         <h3>🩸 Ładunek Glikemiczny (teoretyczny)</h3>
-        <p class="chart-sub">Skumulowany ŁG z prognozą do końca dnia. Aktualizuje się po każdym posiłku.</p>
+        <p class="chart-sub">Symulacja stężenia glukozy we krwi — wzrost po posiłku, opadanie w czasie. Linia niebieska = dane rzeczywiste, pomarańczowa = prognoza do końca dnia.</p>
         <div class="gi-legend">
-          <span class="gi-badge"><span class="gi-swatch" style="background:rgba(45,90,39,.25)"></span>0–80 Niski (długa sytość)</span>
-          <span class="gi-badge"><span class="gi-swatch" style="background:rgba(186,117,23,.3)"></span>80–120 Umiarkowany</span>
-          <span class="gi-badge"><span class="gi-swatch" style="background:rgba(153,60,29,.25)"></span>120+ Wysoki (szybki głód)</span>
+          <span class="gi-badge"><span class="gi-swatch" style="background:rgba(26,122,191,.2)"></span>&lt;70 Hipoglikemia (głód)</span>
+          <span class="gi-badge"><span class="gi-swatch" style="background:rgba(45,90,39,.2)"></span>70–140 Normoglikemia (sytość)</span>
+          <span class="gi-badge"><span class="gi-swatch" style="background:rgba(153,60,29,.2)"></span>&gt;140 Hiperglikemia (ryzyko)</span>
+          <span class="gi-badge"><span class="gi-swatch" style="background:#185FA5;border-radius:50%"></span>Rzeczywiste</span>
+          <span class="gi-badge"><span class="gi-swatch" style="background:#BA7517;border-radius:50%"></span>Prognoza</span>
         </div>
         <div class="chart-wrap-gi"><canvas id="giChart"></canvas></div>
       </div>
@@ -756,9 +761,11 @@ window.handlePhotoUpload=e=>{const file=e.target.files[0];if(!file)return;const 
 window.setPhotoSource=useCamera=>{const input=document.getElementById('photoInput');document.getElementById('photo-lib-btn').classList.toggle('active',!useCamera);document.getElementById('photo-cam-btn').classList.toggle('active',useCamera);if(useCamera)input.setAttribute('capture','environment');else input.removeAttribute('capture');input.click();};
 
 // ── PORTION CONTROL ────────────────────────────────────────
-window.updatePortion=pct=>{
-  portionPct=pct;document.getElementById('portionVal').textContent=pct+'%';
-  const f=pct/100;
+window.updatePortionGrams=grams=>{
+  const totalBase=ingBase.reduce((s,b)=>s+(+b.weight||0),0)||100;
+  const f=grams/totalBase;
+  document.getElementById('portionGrams').value=grams;
+  document.getElementById('portionSlider').value=grams;
   ings=ingBase.map(b=>({...b,weight:r0(b.weight*f),cal:r1(b.cal*f),protein:r1(b.protein*f),fat:r1(b.fat*f),carb:r1(b.carb*f)}));
   renderIngs();
 };
@@ -798,10 +805,12 @@ function showResult(r){
   document.getElementById('waterDetected').style.display=pendingWaterMl>0?'block':'none';
   if(pendingWaterMl>0)document.getElementById('waterDetectedMl').textContent=pendingWaterMl+' ml';
   ings=(r.ingredients||[]).map(g=>({name:g.name,weight:g.weight_g,cal:g.calories,protein:g.protein_g,fat:g.fat_g,carb:g.carbs_g,isLiquid:g.is_liquid||false}));
-  ingBase=ings.map(g=>({...g}));portionPct=100;
+  ingBase=ings.map(g=>({...g}));
+  const totalBaseG=ings.reduce((s,b)=>s+(+b.weight||0),0)||100;
   document.getElementById('portionRow').style.display='flex';
-  const slider=document.querySelector('#portionRow input[type=range]');if(slider)slider.value=100;
-  document.getElementById('portionVal').textContent='100%';
+  document.getElementById('portionSlider').max=Math.max(totalBaseG*3,2000);
+  document.getElementById('portionSlider').value=totalBaseG;
+  document.getElementById('portionGrams').value=totalBaseG;
   renderIngs();
   document.getElementById('resultCard').classList.add('visible');
   document.getElementById('resultCard').scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -884,41 +893,85 @@ function estimateGI(name){
 function calcMealGL(meal){return(estimateGI(meal.name)*(meal.carb||0))/100;}
 
 function buildGiChart(){
-  const now=new Date();const curH=now.getHours()+now.getMinutes()/60;
-  const labels=Array.from({length:25},(_,h)=>h+':00');
-  const hourGL=Array(25).fill(0);
-  meals.forEach(m=>{if(!m.sortKey)return;const h=new Date(m.sortKey).getHours();hourGL[h]+=calcMealGL(m);});
-  const cumGL=[];let running=0;
-  for(let h=0;h<=24;h++){running+=hourGL[h]||0;cumGL.push(r1(running));}
+  // Build glucose-like curve: baseline 80, each meal causes a rise (peak ~1h after) then fall (~3h after)
+  // Using 30-min resolution (48 slots per day)
+  const SLOTS=48; // 30min each
+  const BASELINE=80; // fasting baseline mg/dl equivalent
+  const now=new Date();
+  const curSlot=now.getHours()*2+Math.floor(now.getMinutes()/30);
+  const labels=Array.from({length:SLOTS},(_,i)=>{const h=Math.floor(i/2);const m=i%2===0?'00':'30';return h+':'+m;});
+
+  // glucoseLevel[slot] = blood glucose simulation
+  const glucose=Array(SLOTS).fill(BASELINE);
+
+  // For each meal, add a bell-curve shaped glucose response
+  meals.forEach(m=>{
+    if(!m.sortKey)return;
+    const mealDt=new Date(m.sortKey);
+    const mealSlot=mealDt.getHours()*2+Math.floor(mealDt.getMinutes()/30);
+    const gl=calcMealGL(m);
+    if(gl<=0)return;
+    // Peak rise proportional to GL, peak at +1h (2 slots), decay over 3h (6 slots)
+    const peakRise=Math.min(gl*2.5, 80); // cap at +80 above baseline
+    for(let s=0;s<SLOTS;s++){
+      const dt=(s-mealSlot)*0.5; // hours after meal
+      if(dt<0||dt>5)continue;
+      // Gamma-like curve: rise fast, fall slow
+      let effect=0;
+      if(dt<=1)effect=peakRise*(dt/1); // rise over 1h
+      else effect=peakRise*Math.exp(-(dt-1)*0.9); // exponential decay
+      glucose[s]+=effect;
+    }
+  });
+
+  // Split into actual (past) and forecast (future)
   const actualData=[],forecastData=[];
-  const lastGL=cumGL[Math.floor(curH)]||0;
-  const rate=lastGL/Math.max(curH,1);
-  for(let h=0;h<=24;h++){
-    if(h<=curH){actualData.push(cumGL[h]);forecastData.push(null);}
-    else{actualData.push(null);forecastData.push(r1(lastGL+rate*(h-curH)));}
+  for(let s=0;s<SLOTS;s++){
+    const val=r1(glucose[s]);
+    if(s<=curSlot){actualData.push(val);forecastData.push(null);}
+    else{actualData.push(null);forecastData.push(val);}
   }
-  const maxY=Math.max(r1(rate*24)+20,180);
+  // connect actual to forecast at current slot
+  if(curSlot<SLOTS-1){forecastData[curSlot]=actualData[curSlot];}
+
+  const maxY=Math.max(...glucose,180)+10;
   const ctx=document.getElementById('giChart').getContext('2d');
   if(giChartInst)giChartInst.destroy();
   giChartInst=new Chart(ctx,{
     type:'line',
     data:{labels,datasets:[
-      {label:'_z1',data:Array(25).fill(80),borderWidth:0,pointRadius:0,fill:{target:'origin',above:'rgba(45,90,39,.1)'},tension:0},
-      {label:'_z2',data:Array(25).fill(120),borderWidth:0,pointRadius:0,fill:{target:'-1',above:'rgba(186,117,23,.12)'},tension:0},
-      {label:'_z3',data:Array(25).fill(Math.max(maxY,181)),borderWidth:0,pointRadius:0,fill:{target:'-1',above:'rgba(153,60,29,.1)'},tension:0},
-      {label:'Rzeczywisty ŁG',data:actualData,borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,.12)',fill:true,tension:.4,pointRadius:3,borderWidth:2.5},
-      {label:'Prognoza ŁG',data:forecastData,borderColor:'#BA7517',backgroundColor:'rgba(186,117,23,.08)',fill:true,tension:.4,pointRadius:2,borderWidth:2,borderDash:[5,4]},
+      // zone: hypoglycemia <70
+      {label:'_zhypo',data:Array(SLOTS).fill(70),borderWidth:0,pointRadius:0,fill:{target:'origin',above:'rgba(26,122,191,.08)'},tension:0},
+      // zone: normal 70-140 (euglikemia)
+      {label:'_znorm',data:Array(SLOTS).fill(140),borderWidth:0,pointRadius:0,fill:{target:'-1',above:'rgba(45,90,39,.09)'},tension:0},
+      // zone: high >140
+      {label:'_zhigh',data:Array(SLOTS).fill(Math.max(maxY,141)),borderWidth:0,pointRadius:0,fill:{target:'-1',above:'rgba(153,60,29,.1)'},tension:0},
+      // actual glucose
+      {label:'Stężenie glukozy',data:actualData,borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,.1)',fill:true,tension:.4,pointRadius:2,borderWidth:2.5},
+      // forecast
+      {label:'Prognoza',data:forecastData,borderColor:'#BA7517',backgroundColor:'rgba(186,117,23,.06)',fill:true,tension:.4,pointRadius:1,borderWidth:2,borderDash:[5,4]},
     ]},
     options:{
       responsive:true,maintainAspectRatio:false,
       interaction:{mode:'index',intersect:false},
       plugins:{
         legend:{labels:{filter:i=>!i.text.startsWith('_'),font:{family:'DM Sans',size:11},padding:10},position:'top'},
-        tooltip:{filter:i=>!i.dataset.label.startsWith('_'),callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y} ŁG`}}
+        tooltip:{filter:i=>!i.dataset.label.startsWith('_'),callbacks:{
+          label:ctx=>{
+            const v=ctx.parsed.y;
+            const zone=v<70?'⚠️ Hipoglikemia':v<140?'✅ Normoglikemia':'🔴 Hiperglikemia';
+            return `${ctx.dataset.label}: ${v} mg/dl — ${zone}`;
+          }
+        }}
       },
       scales:{
         x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:9},maxTicksLimit:13}},
-        y:{min:0,suggestedMax:maxY,grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'DM Sans',size:10}},title:{display:true,text:'Ładunek Glikemiczny',font:{family:'DM Sans',size:10},color:'#9E9893'}}
+        y:{
+          min:50,suggestedMax:maxY,
+          grid:{color:'rgba(0,0,0,.04)'},
+          ticks:{font:{family:'DM Sans',size:10}},
+          title:{display:true,text:'Glukoza (mg/dl)',font:{family:'DM Sans',size:10},color:'#9E9893'}
+        }
       }
     }
   });
