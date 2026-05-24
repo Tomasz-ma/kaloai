@@ -215,26 +215,28 @@ textarea::placeholder{color:var(--text3);}
 .ing-weight-unit{font-size:10px;color:var(--text3);}
 .ing-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:2px 4px;border-radius:3px;flex-shrink:0;}
 .ing-del:hover{color:var(--danger);background:var(--danger-light);}
-.ing-card-macros{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;}
-.ing-macro{display:flex;flex-direction:column;align-items:center;padding:4px 3px;border-radius:4px;background:var(--surface);}
-.ing-macro .im-icon{font-size:11px;line-height:1;}
-.ing-macro .im-val{font-size:11px;font-weight:600;line-height:1.2;}
-.ing-macro .im-unit{font-size:9px;color:var(--text3);}
-.ing-macro.kcal{background:var(--accent-light);}.ing-macro.kcal .im-val{color:var(--accent);}
-.ing-macro.prot{background:var(--protein-light);}.ing-macro.prot .im-val{color:var(--protein);}
-.ing-macro.fat{background:var(--fat-light);}.ing-macro.fat .im-val{color:var(--fat);}
-.ing-macro.carb{background:var(--carb-light);}.ing-macro.carb .im-val{color:var(--carb);}
+.ing-card-macros{display:flex;align-items:center;gap:0;background:var(--surface);border-radius:4px;overflow:hidden;}
+.ing-macro{display:flex;align-items:center;gap:3px;padding:4px 7px;border-right:1px solid var(--border);flex:1;justify-content:center;}
+.ing-macro:last-child{border-right:none;}
+.ing-macro .im-icon{font-size:12px;flex-shrink:0;}
+.ing-macro .im-val{font-size:12px;font-weight:600;}
+.ing-macro .im-unit{font-size:9px;color:var(--text3);margin-left:1px;}
+.ing-macro.kcal .im-val{color:var(--accent);}
+.ing-macro.prot .im-val{color:var(--protein);}
+.ing-macro.fat .im-val{color:var(--fat);}
+.ing-macro.carb .im-val{color:var(--carb);}
 .ing-num-inp{border:1px solid transparent;border-radius:3px;padding:2px 2px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;color:inherit;background:transparent;outline:none;text-align:center;width:40px;transition:border-color .2s;}
 .ing-num-inp:focus{border-color:var(--accent);background:var(--surface);}
 .ing-num-inp.im-val{width:36px;font-size:11px;}
 .add-ing-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:6px;border:1px dashed var(--border);border-radius:var(--radius-sm);background:transparent;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text2);cursor:pointer;transition:all .2s;margin-bottom:6px;}
 .add-ing-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
-.add-ing-form{display:none;background:var(--surface2);border-radius:var(--radius-sm);padding:10px;margin-bottom:12px;}
+.add-ing-form{display:none;background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:12px;}
 .add-ing-form.open{display:block;}
-.add-ing-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr;gap:4px;margin-bottom:7px;}
-.add-ing-grid input{padding:5px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text);background:var(--surface);outline:none;width:100%;}
-.add-ing-grid input:focus{border-color:var(--accent);}
-.add-ing-grid input::placeholder{color:var(--text3);}
+.add-ing-name-row{display:flex;gap:7px;margin-bottom:7px;}
+.add-ing-name-row input{flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--surface);outline:none;}
+.add-ing-name-row input:focus{border-color:var(--accent);}
+.add-ing-name-row input::placeholder{color:var(--text3);}
+.add-ing-hint{font-size:11px;color:var(--text3);margin-bottom:8px;display:none;}
 .add-ing-acts{display:flex;gap:6px;align-items:center;}
 .btn-ai-confirm{padding:5px 12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;}
 .btn-ai-confirm:hover{background:#1e3d1a;}
@@ -303,7 +305,7 @@ textarea::placeholder{color:var(--text3);}
   .panel-left{position:static;height:auto;}
   .view{padding:18px;}
   .main-nav{padding:0 16px;}
-  .add-ing-grid{grid-template-columns:1fr 1fr 1fr;}
+
   .chart-grid{grid-template-columns:1fr;}
   .stat-row{grid-template-columns:repeat(2,1fr);}
   .manual-fields{grid-template-columns:1fr 1fr;}
@@ -581,19 +583,12 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
         <div class="ing-list" id="ingBody"></div>
         <button class="add-ing-btn" onclick="toggleAddForm()">＋ Dodaj składnik ręcznie</button>
         <div class="add-ing-form" id="addIngForm">
-          <div class="add-ing-grid">
-            <input type="text" id="ni-name" placeholder="Nazwa składnika" onblur="autofillNewIng(this.value)">
-            <input type="number" id="ni-weight" placeholder="Waga g" min="0">
-            <input type="number" id="ni-cal" placeholder="Kcal" min="0">
-            <input type="number" id="ni-prot" placeholder="Białko" min="0" step="0.1">
-            <input type="number" id="ni-fat" placeholder="Tłuszcz" min="0" step="0.1">
-            <input type="number" id="ni-carb" placeholder="Węglow." min="0" step="0.1">
-          </div>
-          <div id="ni-hint" style="font-size:10px;color:var(--text3);margin-bottom:6px;display:none;"></div>
-          <div class="add-ing-acts">
+          <div class="add-ing-name-row">
+            <input type="text" id="ni-name" placeholder="Wpisz nazwę składnika…" onkeydown="if(event.key==='Enter')confirmAddIng()">
             <button class="btn-ai-confirm" onclick="confirmAddIng()">Dodaj</button>
-            <button class="btn-ai-cancel" onclick="toggleAddForm()">Anuluj</button>
+            <button class="btn-ai-cancel" onclick="toggleAddForm()">✕</button>
           </div>
+          <div id="ni-hint" class="add-ing-hint"></div>
         </div>
         <div class="result-actions">
           <button class="btn-accept" onclick="acceptMeal()">✓ Dodaj do dziennika</button>
@@ -941,30 +936,10 @@ function renderIngs(){
         <button class="ing-del" onclick="window.deleteIng(${i})" title="Usuń składnik">✕</button>
       </div>
       <div class="ing-card-macros">
-        <div class="ing-macro kcal">
-          <span class="im-icon">🔥</span>
-          <input class="ing-num-inp im-val" type="number" min="0" step="1" value="${r0(g.cal)}"
-            onchange="ings[${i}].cal=+this.value;recalcTotals()">
-          <span class="im-unit">kcal</span>
-        </div>
-        <div class="ing-macro prot">
-          <span class="im-icon">🥩</span>
-          <input class="ing-num-inp im-val" type="number" min="0" step="0.1" value="${r1(g.protein)}"
-            onchange="ings[${i}].protein=+this.value;recalcTotals()">
-          <span class="im-unit">g</span>
-        </div>
-        <div class="ing-macro fat">
-          <span class="im-icon">🥑</span>
-          <input class="ing-num-inp im-val" type="number" min="0" step="0.1" value="${r1(g.fat)}"
-            onchange="ings[${i}].fat=+this.value;recalcTotals()">
-          <span class="im-unit">g</span>
-        </div>
-        <div class="ing-macro carb">
-          <span class="im-icon">🌾</span>
-          <input class="ing-num-inp im-val" type="number" min="0" step="0.1" value="${r1(g.carb)}"
-            onchange="ings[${i}].carb=+this.value;recalcTotals()">
-          <span class="im-unit">g</span>
-        </div>
+        <div class="ing-macro kcal"><span class="im-icon">🔥</span><span class="im-val">${r0(g.cal)}</span><span class="im-unit">kcal</span></div>
+        <div class="ing-macro prot"><span class="im-icon">🥩</span><span class="im-val">${r1(g.protein)}</span><span class="im-unit">g</span></div>
+        <div class="ing-macro fat"><span class="im-icon">🥑</span><span class="im-val">${r1(g.fat)}</span><span class="im-unit">g</span></div>
+        <div class="ing-macro carb"><span class="im-icon">🌾</span><span class="im-val">${r1(g.carb)}</span><span class="im-unit">g</span></div>
       </div>
     </div>`).join('');
   recalcTotals();
@@ -972,14 +947,20 @@ function renderIngs(){
 window.changeWeight=(i,newW)=>{const d=density(ings[i]);ings[i]={...ings[i],weight:newW,cal:d.cal*newW,protein:d.prot*newW,fat:d.fat*newW,carb:d.carb*newW};renderIngs();};
 window.deleteIng=i=>{ings.splice(i,1);ingBase.splice(i,1);renderIngs();};
 window.toggleAddForm=()=>{const f=document.getElementById('addIngForm');f.classList.toggle('open');if(f.classList.contains('open'))document.getElementById('ni-name').focus();};
-window.confirmAddIng=()=>{
-  const name=document.getElementById('ni-name').value.trim();
-  if(!name){document.getElementById('ni-name').style.borderColor='var(--danger)';return;}
-  document.getElementById('ni-name').style.borderColor='';
-  const ng={name,weight:+document.getElementById('ni-weight').value||0,cal:+document.getElementById('ni-cal').value||0,protein:+document.getElementById('ni-prot').value||0,fat:+document.getElementById('ni-fat').value||0,carb:+document.getElementById('ni-carb').value||0};
+window.confirmAddIng=async()=>{
+  const nameEl=document.getElementById('ni-name');
+  const name=nameEl.value.trim();
+  if(!name){nameEl.style.borderColor='var(--danger)';nameEl.focus();return;}
+  nameEl.style.borderColor='';
+  // add immediately with 0 values, then lookup fills them
+  const ng={name,weight:100,cal:0,protein:0,fat:0,carb:0};
   ings.push(ng);ingBase.push({...ng});
-  ['ni-name','ni-weight','ni-cal','ni-prot','ni-fat','ni-carb'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('addIngForm').classList.remove('open');renderIngs();
+  nameEl.value='';
+  document.getElementById('addIngForm').classList.remove('open');
+  renderIngs();
+  // auto-lookup nutrients for the new ingredient
+  const idx=ings.length-1;
+  await lookupIngredientByName(idx,name);
 };
 window.acceptMeal=()=>{
   const t=recalcTotals();
@@ -1229,7 +1210,7 @@ const LSYS=`Jesteś ekspertem od żywienia. Zwróć WYŁĄCZNIE JSON (bez Markdo
 async function lookupNutrients(name){const resp=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:200,system:LSYS,messages:[{role:'user',content:`Składnik: ${name}`}]})});if(!resp.ok)throw new Error('HTTP '+resp.status);const data=await resp.json();return JSON.parse(data.content.map(c=>c.text||'').join('').replace(/```json|```/g,'').trim());}
 window.lookupIngredientByName=async(idx,name)=>{const t=name.trim();const g=ings[idx];if(!t||g.cal||g.protein||g.fat||g.carb)return;const spin=document.getElementById(`ing-spin-${idx}`);if(spin)spin.classList.add('active');try{const d=await lookupNutrients(t);const w=g.weight||100;const f=w/100;ings[idx]={...g,cal:d.calories*f,protein:d.protein_g*f,fat:d.fat_g*f,carb:d.carbs_g*f};renderIngs();showToast(`✓ Pobrano: ${t}`);}catch(e){if(spin)spin.classList.remove('active');}};
 window.autofillNewIng=async name=>{const t=name.trim();if(!t)return;if(+document.getElementById('ni-cal').value||+document.getElementById('ni-prot').value)return;const hint=document.getElementById('ni-hint');hint.style.display='block';hint.style.color='var(--text3)';hint.textContent=`⏳ Pobieranie dla "${t}"…`;document.querySelector('.btn-ai-confirm').disabled=true;try{const d=await lookupNutrients(t);const w=+document.getElementById('ni-weight').value||100;const f=w/100;document.getElementById('ni-cal').value=r0(d.calories*f);document.getElementById('ni-prot').value=r1(d.protein_g*f);document.getElementById('ni-fat').value=r1(d.fat_g*f);document.getElementById('ni-carb').value=r1(d.carbs_g*f);if(!document.getElementById('ni-weight').value)document.getElementById('ni-weight').value=100;hint.textContent=`✓ Wartości na ${w}g`;hint.style.color='var(--accent)';}catch(e){hint.textContent='Nie udało się — wpisz ręcznie.';hint.style.color='var(--danger)';}finally{document.querySelector('.btn-ai-confirm').disabled=false;}};
-document.getElementById('ni-name').addEventListener('input',()=>{const h=document.getElementById('ni-hint');h.style.display='none';});
+document.getElementById('ni-name').addEventListener('input',()=>{const h=document.getElementById('ni-hint');if(h)h.style.display='none';});
 
 // ── TOAST ──────────────────────────────────────────────────
 function showToast(msg,err=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(err?' error':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
