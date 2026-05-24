@@ -200,22 +200,33 @@ textarea::placeholder{color:var(--text3);}
 .ing-header{display:flex;align-items:baseline;gap:6px;margin-bottom:7px;}
 .ing-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);}
 .ing-hint{font-size:10px;color:var(--text3);}
-.ing-table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:10px;table-layout:fixed;}
-.ing-table th{text-align:left;font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);padding:3px 4px 5px;border-bottom:1px solid var(--border);}
-.ing-table th:not(:first-child){text-align:right;}
-.ing-table td{padding:3px 4px;border-bottom:1px solid var(--surface2);vertical-align:middle;}
-.ing-table td:not(:first-child){text-align:right;}
-.ing-table tr:last-child td{border-bottom:none;}
-.ing-name-wrap{position:relative;display:block;overflow:hidden;}
-.ing-name-inp{border:1px solid transparent;border-radius:3px;padding:2px 22px 2px 4px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text);background:transparent;outline:none;width:100%;max-width:180px;transition:border-color .2s;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.ing-name-inp:focus{border-color:var(--accent);background:var(--bg);}
-.ing-lookup-spin{position:absolute;right:3px;top:50%;transform:translateY(-50%);width:10px;height:10px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;display:none;}
+/* ── INGREDIENT CARDS ── */
+.ing-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.ing-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 11px;}
+.ing-card-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.ing-name-wrap{position:relative;flex:1;min-width:0;}
+.ing-lookup-spin{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:10px;height:10px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;display:none;}
 .ing-lookup-spin.active{display:block;}
-.ing-num-inp{border:1px solid transparent;border-radius:3px;padding:2px 3px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text);background:transparent;outline:none;text-align:right;width:48px;transition:border-color .2s;}
-.ing-num-inp:focus{border-color:var(--accent);background:var(--bg);}
-.ing-num-inp.w-inp{width:52px;}
-.ing-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:11px;padding:2px 3px;border-radius:3px;}
+.ing-name-inp{width:100%;border:1px solid transparent;border-radius:4px;padding:4px 24px 4px 6px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--text);background:transparent;outline:none;transition:border-color .2s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ing-name-inp:focus{border-color:var(--accent);background:var(--surface);white-space:normal;}
+.ing-weight-wrap{display:flex;align-items:center;gap:3px;flex-shrink:0;}
+.ing-weight-inp{width:54px;border:1px solid var(--border);border-radius:4px;padding:4px 5px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--accent);text-align:center;background:var(--surface);outline:none;transition:border-color .2s;}
+.ing-weight-inp:focus{border-color:var(--accent);}
+.ing-weight-unit{font-size:10px;color:var(--text3);}
+.ing-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:2px 4px;border-radius:3px;flex-shrink:0;}
 .ing-del:hover{color:var(--danger);background:var(--danger-light);}
+.ing-card-macros{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;}
+.ing-macro{display:flex;flex-direction:column;align-items:center;padding:4px 3px;border-radius:4px;background:var(--surface);}
+.ing-macro .im-icon{font-size:11px;line-height:1;}
+.ing-macro .im-val{font-size:11px;font-weight:600;line-height:1.2;}
+.ing-macro .im-unit{font-size:9px;color:var(--text3);}
+.ing-macro.kcal{background:var(--accent-light);}.ing-macro.kcal .im-val{color:var(--accent);}
+.ing-macro.prot{background:var(--protein-light);}.ing-macro.prot .im-val{color:var(--protein);}
+.ing-macro.fat{background:var(--fat-light);}.ing-macro.fat .im-val{color:var(--fat);}
+.ing-macro.carb{background:var(--carb-light);}.ing-macro.carb .im-val{color:var(--carb);}
+.ing-num-inp{border:1px solid transparent;border-radius:3px;padding:2px 2px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;color:inherit;background:transparent;outline:none;text-align:center;width:40px;transition:border-color .2s;}
+.ing-num-inp:focus{border-color:var(--accent);background:var(--surface);}
+.ing-num-inp.im-val{width:36px;font-size:11px;}
 .add-ing-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:6px;border:1px dashed var(--border);border-radius:var(--radius-sm);background:transparent;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text2);cursor:pointer;transition:all .2s;margin-bottom:6px;}
 .add-ing-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
 .add-ing-form{display:none;background:var(--surface2);border-radius:var(--radius-sm);padding:10px;margin-bottom:12px;}
@@ -538,12 +549,6 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
           </div>
           <img class="preview-img" id="previewImg" alt="">
         </div>
-        <div class="portion-row" id="portionRow">
-          <label>🍽️ Porcja:</label>
-          <input type="range" id="portionSlider" min="10" max="2000" value="100" step="10" oninput="updatePortionGrams(+this.value)">
-          <input class="portion-gram-inp" type="number" id="portionGrams" value="100" min="10" max="2000" step="10" onchange="updatePortionGrams(+this.value)">
-          <span class="portion-unit">g</span>
-        </div>
         <button class="analyze-btn" id="analyzeBtn" onclick="analyze()"><span>🔍</span><span>Analizuj posiłek</span></button>
         <div class="loading" id="loadingIndicator"><div class="spinner"></div><span id="loadingText">AI analizuje…</span></div>
         <div class="error-msg" id="errorMsg"></div>
@@ -566,11 +571,14 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
           💧 Wykryto płyn: <strong id="waterDetectedMl">0 ml</strong> zostanie dodane do nawodnienia
         </div>
         <div class="ai-note" id="resNote"></div>
-        <div class="ing-header"><span class="ing-title">Składniki</span><span class="ing-hint">— zmień wagę → proporcjonalne przeliczenie</span></div>
-        <table class="ing-table">
-          <thead><tr><th style="width:38%;overflow:hidden;">Składnik</th><th title="Waga (g)">⚖️</th><th title="Kalorie (kcal)">🔥</th><th title="Białko (g)">🥩</th><th title="Tłuszcze (g)">🥑</th><th title="Węglowodany (g)">🌾</th><th></th></tr></thead>
-          <tbody id="ingBody"></tbody>
-        </table>
+        <div class="portion-row" id="portionRow">
+          <label>🍽️ Porcja:</label>
+          <input type="range" id="portionSlider" min="10" max="2000" value="100" step="10" oninput="updatePortionGrams(+this.value)">
+          <input class="portion-gram-inp" type="number" id="portionGrams" value="100" min="10" max="2000" step="10" onchange="updatePortionGrams(+this.value)">
+          <span class="portion-unit">g</span>
+        </div>
+        <div class="ing-header"><span class="ing-title">Składniki</span><span class="ing-hint">— edytuj wagę → przelicza proporcjonalnie</span></div>
+        <div class="ing-list" id="ingBody"></div>
         <button class="add-ing-btn" onclick="toggleAddForm()">＋ Dodaj składnik ręcznie</button>
         <div class="add-ing-form" id="addIngForm">
           <div class="add-ing-grid">
@@ -915,15 +923,50 @@ function recalcTotals(){
   return t;
 }
 function renderIngs(){
-  document.getElementById('ingBody').innerHTML=ings.map((g,i)=>`<tr>
-    <td><div class="ing-name-wrap"><input class="ing-name-inp" value="${g.name}" onchange="ings[${i}].name=this.value" onblur="window.lookupIngredientByName(${i},this.value)"><div class="ing-lookup-spin" id="ing-spin-${i}"></div></div></td>
-    <td><input class="ing-num-inp w-inp" type="number" min="0" step="1" value="${r0(g.weight)}" onchange="window.changeWeight(${i},+this.value)"></td>
-    <td><input class="ing-num-inp" type="number" min="0" step="1" value="${r0(g.cal)}" onchange="ings[${i}].cal=+this.value;recalcTotals()"></td>
-    <td><input class="ing-num-inp" type="number" min="0" step="0.1" value="${r1(g.protein)}" onchange="ings[${i}].protein=+this.value;recalcTotals()"></td>
-    <td><input class="ing-num-inp" type="number" min="0" step="0.1" value="${r1(g.fat)}" onchange="ings[${i}].fat=+this.value;recalcTotals()"></td>
-    <td><input class="ing-num-inp" type="number" min="0" step="0.1" value="${r1(g.carb)}" onchange="ings[${i}].carb=+this.value;recalcTotals()"></td>
-    <td><button class="ing-del" onclick="window.deleteIng(${i})">✕</button></td>
-  </tr>`).join('');
+  document.getElementById('ingBody').innerHTML=ings.map((g,i)=>`
+    <div class="ing-card">
+      <div class="ing-card-top">
+        <div class="ing-name-wrap">
+          <input class="ing-name-inp" value="${g.name}" title="${g.name}"
+            onchange="ings[${i}].name=this.value;this.title=this.value"
+            onblur="window.lookupIngredientByName(${i},this.value)">
+          <div class="ing-lookup-spin" id="ing-spin-${i}"></div>
+        </div>
+        <div class="ing-weight-wrap">
+          <input class="ing-weight-inp" type="number" min="0" step="1" value="${r0(g.weight)}"
+            title="Zmień wagę — wartości zostaną przeliczone proporcjonalnie"
+            onchange="window.changeWeight(${i},+this.value)">
+          <span class="ing-weight-unit">g</span>
+        </div>
+        <button class="ing-del" onclick="window.deleteIng(${i})" title="Usuń składnik">✕</button>
+      </div>
+      <div class="ing-card-macros">
+        <div class="ing-macro kcal">
+          <span class="im-icon">🔥</span>
+          <input class="ing-num-inp im-val" type="number" min="0" step="1" value="${r0(g.cal)}"
+            onchange="ings[${i}].cal=+this.value;recalcTotals()">
+          <span class="im-unit">kcal</span>
+        </div>
+        <div class="ing-macro prot">
+          <span class="im-icon">🥩</span>
+          <input class="ing-num-inp im-val" type="number" min="0" step="0.1" value="${r1(g.protein)}"
+            onchange="ings[${i}].protein=+this.value;recalcTotals()">
+          <span class="im-unit">g</span>
+        </div>
+        <div class="ing-macro fat">
+          <span class="im-icon">🥑</span>
+          <input class="ing-num-inp im-val" type="number" min="0" step="0.1" value="${r1(g.fat)}"
+            onchange="ings[${i}].fat=+this.value;recalcTotals()">
+          <span class="im-unit">g</span>
+        </div>
+        <div class="ing-macro carb">
+          <span class="im-icon">🌾</span>
+          <input class="ing-num-inp im-val" type="number" min="0" step="0.1" value="${r1(g.carb)}"
+            onchange="ings[${i}].carb=+this.value;recalcTotals()">
+          <span class="im-unit">g</span>
+        </div>
+      </div>
+    </div>`).join('');
   recalcTotals();
 }
 window.changeWeight=(i,newW)=>{const d=density(ings[i]);ings[i]={...ings[i],weight:newW,cal:d.cal*newW,protein:d.prot*newW,fat:d.fat*newW,carb:d.carb*newW};renderIngs();};
