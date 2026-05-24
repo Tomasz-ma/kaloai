@@ -354,6 +354,8 @@ body.diet-vege .meal-icon.meat-icon{opacity:.4;filter:grayscale(1);}
 .theme-section{margin-bottom:20px;}
 .theme-section-label{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
 .theme-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;}
+#langGrid{grid-template-columns:repeat(3,1fr);}
+.lang-btn{font-size:12px;padding:9px 8px;justify-content:center;}
 .theme-card{padding:12px 14px;border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;color:var(--text2);}
 .theme-card:hover{border-color:var(--accent);color:var(--text);}
 .theme-card.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent);font-weight:600;}
@@ -396,6 +398,18 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
       <div class="diet-toggle">
         <button class="diet-btn active" onclick="setDiet('meat')" id="db-meat">🥩 Mięsna</button>
         <button class="diet-btn" onclick="setDiet('vege')" id="db-vege">🥦 Wegetariańska</button>
+      </div>
+    </div>
+    <div class="theme-section">
+      <div class="theme-section-label">Język / Language</div>
+      <div class="theme-grid" id="langGrid">
+        <button class="lang-btn theme-card" data-lang="pl" onclick="setLang('pl')">🇵🇱 Polski</button>
+        <button class="lang-btn theme-card" data-lang="en" onclick="setLang('en')">🇬🇧 English</button>
+        <button class="lang-btn theme-card" data-lang="fr" onclick="setLang('fr')">🇫🇷 Français</button>
+        <button class="lang-btn theme-card" data-lang="de" onclick="setLang('de')">🇩🇪 Deutsch</button>
+        <button class="lang-btn theme-card" data-lang="es" onclick="setLang('es')">🇪🇸 Español</button>
+        <button class="lang-btn theme-card" data-lang="it" onclick="setLang('it')">🇮🇹 Italiano</button>
+        <button class="lang-btn theme-card" data-lang="cs" onclick="setLang('cs')">🇨🇿 Čeština</button>
       </div>
     </div>
     <button class="theme-close" onclick="closeThemeModal()">✓ Gotowe</button>
@@ -570,7 +584,7 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
           <div class="total-chip carb"><span class="tc-label">Węglow.</span><span class="tc-val" id="tcCarb">0</span><span class="tc-unit">g</span></div>
         </div>
         <div id="waterDetected" style="display:none;background:var(--water-light);border:1px solid rgba(26,122,191,.25);border-radius:var(--radius-sm);padding:7px 11px;font-size:11px;color:var(--water);margin-bottom:11px;">
-          💧 Wykryto płyn: <strong id="waterDetectedMl">0 ml</strong> zostanie dodane do nawodnienia
+          <span id="waterDetectedLabel">💧 Wykryto płyn: </span><strong id="waterDetectedMl">0 ml</strong><span id="waterDetectedSuffix"> zostanie dodane do nawodnienia</span>
         </div>
         <div class="ai-note" id="resNote"></div>
         <div class="portion-row" id="portionRow">
@@ -714,7 +728,7 @@ async function saveProfile(){
   profile.sex=wData.sex;profile.age=wData.age;profile.height=wData.height;profile.weight=wData.weight;profile.activity=wData.activity;profile.goal=String(wData.goal);
   if(currentUser)try{await setDoc(userProfileRef(currentUser.uid),profile);}catch(e){console.warn(e);}
   document.getElementById('profileModal').classList.add('hidden');
-  updateSummary();renderMeals();showToast('✓ Profil zapisany');
+  updateSummary();renderMeals();showToast(T.savedToast);
 }
 window.saveProfile=saveProfile;
 
@@ -787,6 +801,11 @@ onAuthStateChanged(auth,async user=>{
     updateSummary();renderMeals();
     const snap=await getDoc(userProfileRef(user.uid));
     if(!snap.exists())openProfile();
+    // apply saved language
+    try{const sl=localStorage.getItem('kaloai_lang')||'pl';currentLang=sl;T=LANGS[sl]||LANGS.pl;}catch(e){}
+    applyTranslations();
+    // mark active lang button
+    document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===currentLang));
   }else{
     currentUser=null;
     document.getElementById('loginScreen').style.display='flex';
@@ -820,7 +839,7 @@ window.updateSummary=()=>{
   const gCal=profile.cal||2000,pct=Math.min(t.cal/gCal*100,100);
   const fill=document.getElementById('progressFill');
   fill.style.width=pct+'%';fill.className='progress-fill'+(t.cal>gCal?' over':'');
-  document.getElementById('calGoalText').textContent=`cel: ${gCal} kcal — ${t.cal<=gCal?'pozostało':'przekroczono o'}: ${Math.abs(gCal-r0(t.cal))} kcal`;
+  document.getElementById('calGoalText').textContent=`${T.goal}: ${gCal} kcal — ${t.cal<=gCal?T.left:T.over}: ${Math.abs(gCal-r0(t.cal))} kcal`;
   const gW=profile.water||2500;
   document.getElementById('totalWater').textContent=waterMl;
   document.getElementById('waterGoalDisp').textContent=`/ ${gW}`;
@@ -842,8 +861,8 @@ window.renderMeals=()=>{
     <div style="font-weight:600;font-size:11px;margin-right:6px;">${e.ml} ml</div>
     <button class="meal-delete" onclick="window.deleteWater(${e._i})">✕</button></div>`).join('');
 };
-window.deleteMeal=i=>{meals.splice(i,1);saveDay();updateSummary();renderMeals();showToast('Posiłek usunięty');};
-window.deleteWater=i=>{waterMl-=waterLog[i].ml;if(waterMl<0)waterMl=0;waterLog.splice(i,1);saveDay();updateSummary();renderMeals();showToast('Wpis usunięty');};
+window.deleteMeal=i=>{meals.splice(i,1);saveDay();updateSummary();renderMeals();showToast(T.deletedMeal);};
+window.deleteWater=i=>{waterMl-=waterLog[i].ml;if(waterMl<0)waterMl=0;waterLog.splice(i,1);saveDay();updateSummary();renderMeals();showToast(T.deletedEntry);};
 
 // ── WATER ──────────────────────────────────────────────────
 window.addWater=(ml,name,icon)=>{const t=new Date().toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'});waterLog.push({ml,name,icon,time:t,sortKey:Date.now()});waterMl+=ml;waterLog.sort((a,b)=>(a.sortKey||0)-(b.sortKey||0));saveDay();updateSummary();renderMeals();showToast(`💧 +${ml} ml`);};
@@ -871,12 +890,12 @@ function showError(msg){const el=document.getElementById('errorMsg');el.textCont
 
 window.analyze=async()=>{
   const txt=document.getElementById('foodText').value.trim();
-  if(currentTab==='text'&&!txt){showError('Opisz posiłek.');return;}
-  if(currentTab==='photo'&&!currentPhotoB64){showError('Wgraj zdjęcie.');return;}
-  showLoading(currentTab==='photo'?'AI rozpoznaje zdjęcie…':'AI analizuje składniki…');
-  const sys=`Jesteś ekspertem od żywienia. Analizujesz posiłki i szacujesz wartości odżywcze dla każdego składnika osobno. Odpowiadaj WYŁĄCZNIE poprawnym JSON bez dodatkowego tekstu ani znaczników Markdown.
-Format:{"name":"Nazwa posiłku po polsku","note":"1-2 zdania","total_liquid_ml":liczba,"ingredients":[{"name":"Składnik","weight_g":liczba,"calories":liczba,"protein_g":liczba,"fat_g":liczba,"carbs_g":liczba,"is_liquid":true/false}]}`;
-  const msgs=currentTab==='photo'?[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:currentPhotoB64}},{type:'text',text:'Przeanalizuj i podaj JSON.'}]}]:[{role:'user',content:`Przeanalizuj i podaj JSON:\n\n${txt}`}];
+  if(currentTab==='text'&&!txt){showError(T.errorNoText);return;}
+  if(currentTab==='photo'&&!currentPhotoB64){showError(T.errorNoPhoto);return;}
+  showLoading(currentTab==='photo'?T.analyzingPhoto:T.analyzingText);
+  const sys=T.analyzeAiSys+`
+Format:{"name":"Ingredient name","note":"1-2 sentences","total_liquid_ml":number,"ingredients":[{"name":"Ingredient","weight_g":number,"calories":number,"protein_g":number,"fat_g":number,"carbs_g":number,"is_liquid":true/false}]}`;
+  const msgs=currentTab==='photo'?[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:currentPhotoB64}},{type:'text',text:T.analyzePromptPhoto}]}]:[{role:'user',content:T.analyzePromptText(txt)}];
   try{
     const resp=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:2000,system:sys,messages:msgs})});
     const rawText=await resp.text();
@@ -886,13 +905,13 @@ Format:{"name":"Nazwa posiłku po polsku","note":"1-2 zdania","total_liquid_ml":
     if(!data.content||!Array.isArray(data.content))throw new Error('Brak content');
     const result=JSON.parse(data.content.map(c=>c.text||'').join('').replace(/```json|```/g,'').trim());
     showResult(result);
-  }catch(err){console.error(err);showError('Błąd analizy: '+err.message);}
+  }catch(err){console.error(err);showError(T.errorAnalysis+err.message);}
   finally{hideLoading();}
 };
 
 function showResult(r){
   document.getElementById('editName').value=r.name||'';
-  document.getElementById('resNote').innerHTML=`<strong>AI:</strong> ${r.note||''}`;
+  document.getElementById('resNote').innerHTML=`<strong>${T.aiPrefix}</strong> ${r.note||''}`;
   const now=new Date();
   document.getElementById('editDateTime').value=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
   pendingWaterMl=r.total_liquid_ml||0;
@@ -980,9 +999,9 @@ window.acceptMeal=()=>{
   const img=document.getElementById('previewImg');img.style.display='none';img.src='';
   const zone=document.getElementById('uploadZone');zone.querySelector('.uz-icon').textContent='🍽️';zone.querySelector('p').textContent='Kliknij lub przeciągnij zdjęcie';
   document.getElementById('photoInput').value='';
-  showToast(`✓ Dodano: ${meal.name} (${meal.cal} kcal)`);
+  showToast(T.addedToLog+meal.name+' ('+meal.cal+' kcal)');
 };
-window.rejectMeal=()=>{document.getElementById('resultCard').classList.remove('visible');document.getElementById('portionRow').style.display='none';ings=[];ingBase=[];pendingWaterMl=0;portionPct=100;showToast('Analiza odrzucona');};
+window.rejectMeal=()=>{document.getElementById('resultCard').classList.remove('visible');document.getElementById('portionRow').style.display='none';ings=[];ingBase=[];pendingWaterMl=0;portionPct=100;showToast(T.rejectedAnalysis);};
 
 // ── GI CHART ───────────────────────────────────────────────
 function estimateGI(name){
@@ -1171,18 +1190,18 @@ function buildDonut(active,n){
 // ── HISTORY ────────────────────────────────────────────────
 async function loadHistory(){
   if(!currentUser){document.getElementById('histList').innerHTML='<div class="empty-state">Zaloguj się</div>';return;}
-  document.getElementById('histList').innerHTML='<div class="empty-state">Ładowanie…</div>';
+  document.getElementById('histList').innerHTML='<div class="empty-state">'+T.historyLoading+'</div>';
   const today=new Date();today.setHours(0,0,0,0);
   const days=[];for(let i=1;i<=histDaysLoaded;i++){const d=new Date(today);d.setDate(d.getDate()-i);days.push(d);}
-  document.getElementById('histRange').textContent=`Ostatnie ${histDaysLoaded} dni`;
+  document.getElementById('histRange').textContent=T.lastDays(histDaysLoaded);
   const results=await Promise.all(days.map(async d=>{const k=localDateStr(d);const snap=await getDoc(userDayRef(currentUser.uid,k));return{date:d,k,data:snap.exists()?snap.data():{meals:[],waterMl:0}};}));
   const nonEmpty=results.filter(r=>(r.data.meals||[]).length>0||r.data.waterMl>0);
   if(!nonEmpty.length){document.getElementById('histList').innerHTML='<div class="empty-state">Brak danych.<br>Dodaj posiłki aby zobaczyć historię.</div>';return;}
   document.getElementById('histList').innerHTML=nonEmpty.map(({date,k,data})=>{
     const m=data.meals||[];const totCal=m.reduce((s,x)=>s+(x.cal||0),0);const wm=data.waterMl||0;
-    const dl=date.toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long'});
+    const dl=T.dayLbl(date);
     const mHtml=m.map(meal=>`<div class="hist-meal-row"><div class="hist-meal-icon">${foodEmoji(meal.name)}</div><div style="flex:1;min-width:0;"><div class="hist-meal-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${meal.name}</div><div class="hist-meal-detail">${r0(meal.weight)}g · B:${r0(meal.protein)}g · T:${r0(meal.fat)}g · W:${r0(meal.carb)}g · ${meal.time||''}</div></div><div class="hist-meal-cal">${r0(meal.cal)} kcal</div></div>`).join('');
-    const wHtml=wm>0?`<div class="hist-water-row">💧 Wypite płyny: <strong style="margin-left:4px;">${wm} ml</strong></div>`:'';
+    const wHtml=wm>0?`<div class="hist-water-row">${T.fluidsRow(wm)}</div>`:'';// i18n;
     return `<div class="hist-day-card"><div class="hist-day-header" onclick="toggleHistDay('${k}')"><div class="hist-day-title">${dl}</div><div class="hist-day-sum"><span class="hist-sum-chip cal">${r0(totCal)} kcal</span>${wm>0?`<span class="hist-sum-chip water">${wm} ml</span>`:''}<span style="font-size:14px;color:var(--text3);" id="hist-arrow-${k}">▼</span></div></div><div class="hist-meals" id="hist-meals-${k}">${mHtml}${wHtml}</div></div>`;
   }).join('');
 }
@@ -1193,23 +1212,23 @@ window.histLoadMore=()=>{histDaysLoaded+=14;loadHistory();};
 let recognition=null,isRecording=false,micFinal='';
 function initSpeech(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return null;
-  const rec=new SR();rec.lang='pl-PL';rec.continuous=false;rec.interimResults=true;
-  rec.onstart=()=>{micFinal=document.getElementById('foodText').value;document.getElementById('micBtn').classList.add('recording');document.getElementById('micBtn').textContent='⏹️';document.getElementById('micStatus').style.display='flex';document.getElementById('micStatusText').textContent='Słucham…';};
+  const rec=new SR();rec.lang=T.code==='pl'?'pl-PL':T.code==='en'?'en-GB':T.code==='fr'?'fr-FR':T.code==='de'?'de-DE':T.code==='es'?'es-ES':T.code==='it'?'it-IT':T.code==='cs'?'cs-CZ':'pl-PL';rec.continuous=false;rec.interimResults=true;
+  rec.onstart=()=>{micFinal=document.getElementById('foodText').value;document.getElementById('micBtn').classList.add('recording');document.getElementById('micBtn').textContent='⏹️';document.getElementById('micStatus').style.display='flex';document.getElementById('micStatusText').textContent=T.micListen;};
   rec.onresult=e=>{let interim='';for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)micFinal+=(micFinal&&!micFinal.endsWith(' ')?' ':'')+e.results[i][0].transcript;else interim=e.results[i][0].transcript;}document.getElementById('foodText').value=micFinal+(interim?' '+interim:'');document.getElementById('micStatusText').textContent=interim?`"${interim}"…`:'Słucham…';};
-  rec.onerror=e=>{showError({'not-allowed':'Brak dostępu do mikrofonu.','no-speech':'Nie wykryto mowy.'}[e.error]||'Błąd');stopMic();};
+  rec.onerror=e=>{showError({"not-allowed":T.micNoAccess,"no-speech":T.micNoSpeech}[e.error]||'Error');stopMic();};
   rec.onend=()=>{if(isRecording)setTimeout(()=>{try{rec.start();}catch(e){}},80);};
   return rec;
 }
-window.toggleMic=()=>{if(!(window.SpeechRecognition||window.webkitSpeechRecognition)){showError('Dyktowanie wymaga Chrome/Edge.');return;}isRecording?stopMic():startMic();};
+window.toggleMic=()=>{if(!(window.SpeechRecognition||window.webkitSpeechRecognition)){showError(T.micBrowser);return;}isRecording?stopMic():startMic();};
 function startMic(){switchTab('text');recognition=initSpeech();isRecording=true;micFinal=document.getElementById('foodText').value;try{recognition.start();}catch(e){console.warn(e);}}
 function stopMic(){isRecording=false;if(recognition){try{recognition.stop();}catch(e){}}recognition=null;document.getElementById('micBtn').classList.remove('recording');document.getElementById('micBtn').textContent='🎙️';document.getElementById('micStatus').style.display='none';}
 
 // ── AI LOOKUP ──────────────────────────────────────────────
-const LSYS=`Jesteś ekspertem od żywienia. Zwróć WYŁĄCZNIE JSON (bez Markdown) z wartościami na 100g:
-{"calories":liczba,"protein_g":liczba,"fat_g":liczba,"carbs_g":liczba}`;
-async function lookupNutrients(name){const resp=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:200,system:LSYS,messages:[{role:'user',content:`Składnik: ${name}`}]})});if(!resp.ok)throw new Error('HTTP '+resp.status);const data=await resp.json();return JSON.parse(data.content.map(c=>c.text||'').join('').replace(/```json|```/g,'').trim());}
+const getLSYS=()=>T.analyzeIngSys+`
+{"calories":number,"protein_g":number,"fat_g":number,"carbs_g":number}`;
+async function lookupNutrients(name){const resp=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:200,system:getLSYS(),messages:[{role:'user',content:`Składnik: ${name}`}]})});if(!resp.ok)throw new Error('HTTP '+resp.status);const data=await resp.json();return JSON.parse(data.content.map(c=>c.text||'').join('').replace(/```json|```/g,'').trim());}
 window.lookupIngredientByName=async(idx,name)=>{const t=name.trim();const g=ings[idx];if(!t||g.cal||g.protein||g.fat||g.carb)return;const spin=document.getElementById(`ing-spin-${idx}`);if(spin)spin.classList.add('active');try{const d=await lookupNutrients(t);const w=g.weight||100;const f=w/100;ings[idx]={...g,cal:d.calories*f,protein:d.protein_g*f,fat:d.fat_g*f,carb:d.carbs_g*f};renderIngs();showToast(`✓ Pobrano: ${t}`);}catch(e){if(spin)spin.classList.remove('active');}};
-window.autofillNewIng=async name=>{const t=name.trim();if(!t)return;if(+document.getElementById('ni-cal').value||+document.getElementById('ni-prot').value)return;const hint=document.getElementById('ni-hint');hint.style.display='block';hint.style.color='var(--text3)';hint.textContent=`⏳ Pobieranie dla "${t}"…`;document.querySelector('.btn-ai-confirm').disabled=true;try{const d=await lookupNutrients(t);const w=+document.getElementById('ni-weight').value||100;const f=w/100;document.getElementById('ni-cal').value=r0(d.calories*f);document.getElementById('ni-prot').value=r1(d.protein_g*f);document.getElementById('ni-fat').value=r1(d.fat_g*f);document.getElementById('ni-carb').value=r1(d.carbs_g*f);if(!document.getElementById('ni-weight').value)document.getElementById('ni-weight').value=100;hint.textContent=`✓ Wartości na ${w}g`;hint.style.color='var(--accent)';}catch(e){hint.textContent='Nie udało się — wpisz ręcznie.';hint.style.color='var(--danger)';}finally{document.querySelector('.btn-ai-confirm').disabled=false;}};
+window.autofillNewIng=async name=>{const t=name.trim();if(!t)return;if(+document.getElementById('ni-cal').value||+document.getElementById('ni-prot').value)return;const hint=document.getElementById('ni-hint');hint.style.display='block';hint.style.color='var(--text3)';hint.textContent=`⏳ Pobieranie dla "${t}"…`;document.querySelector('.btn-ai-confirm').disabled=true;try{const d=await lookupNutrients(t);const w=+document.getElementById('ni-weight').value||100;const f=w/100;document.getElementById('ni-cal').value=r0(d.calories*f);document.getElementById('ni-prot').value=r1(d.protein_g*f);document.getElementById('ni-fat').value=r1(d.fat_g*f);document.getElementById('ni-carb').value=r1(d.carbs_g*f);if(!document.getElementById('ni-weight').value)document.getElementById('ni-weight').value=100;hint.textContent=`${T.lookupDone} ${w}g`;hint.style.color='var(--accent)';}catch(e){hint.textContent=T.lookupFail;hint.style.color='var(--danger)';}finally{document.querySelector('.btn-ai-confirm').disabled=false;}};
 document.getElementById('ni-name').addEventListener('input',()=>{const h=document.getElementById('ni-hint');if(h)h.style.display='none';});
 
 // ── TOAST ──────────────────────────────────────────────────
@@ -1274,6 +1293,504 @@ try{
   applyTheme(savedTheme);
   if(savedDiet==='vege'){document.getElementById('db-vege').classList.add('active');document.getElementById('db-meat').classList.remove('active');}
 }catch(e){}
+
+// ══ i18n TRANSLATIONS ══════════════════════════════════════
+const LANGS = {
+  pl:{code:'pl',name:'Polski',flag:'🇵🇱',
+    loading:'Ładowanie…',
+    loginTitle:'Inteligentny licznik kalorii z AI',
+    loginF1:'Analiza posiłków przez AI — tekst lub zdjęcie',
+    loginF2:'Dane w chmurze — dostęp z każdego urządzenia',
+    loginF3:'Wykresy, ładunek glikemiczny i historia',
+    loginBtn:'Zaloguj się przez Google',
+    loginPrivacy:'Twoje dane są prywatne i widoczne tylko dla Ciebie.',
+    menuAppearance:'🎨 Wygląd aplikacji',
+    menuProfile:'⚙️ Dane i cele',
+    menuLogout:'🚪 Wyloguj się',
+    caloriesTitle:'🔥 Kalorie – dziś',
+    goal:'cel',
+    left:'pozostało',
+    over:'przekroczono o',
+    protein:'🥩 Białko',fat:'🥑 Tłuszcze',carb:'🌾 Węglowodany',
+    water:'💧 Nawodnienie',
+    addWaterBtn:'Dodaj',waterPlaceholder:'Inna ilość (ml)',
+    entriesTitle:'Wpisy dnia',
+    navFood:'🍽️ Posiłki',navCharts:'📊 Wykresy',navHistory:'📅 Historia',
+    addMealTitle:'Dodaj',addMealEm:'posiłek',
+    addMealDesc:'Opisz posiłek lub wgraj zdjęcie — AI rozpozna składniki.',
+    tabText:'✏️ Opis tekstowy',tabPhoto:'📷 Zdjęcie',
+    photoLib:'🖼️ Biblioteka',photoCam:'📸 Aparat',
+    textPlaceholder:'Np.: makaron bolognese ok. 400g, szklanka wody\nAlbo: kanapka z serem i sałatą, kawa z mlekiem 200ml...',
+    portionLabel:'🍽️ Porcja:',
+    analyzeBtn:'Analizuj posiłek',
+    analyzing:'AI analizuje…',
+    analyzingPhoto:'AI rozpoznaje zdjęcie…',
+    analyzingText:'AI analizuje składniki…',
+    aiPrefix:'AI:',
+    ingredientsTitle:'Składniki',
+    ingredientsHint:'— edytuj wagę → przelicza proporcjonalnie',
+    addIngredientBtn:'＋ Dodaj składnik ręcznie',
+    addIngPlaceholder:'Wpisz nazwę składnika…',
+    addBtn:'Dodaj',cancelBtn:'✕',
+    acceptBtn:'✓ Dodaj do dziennika',
+    rejectBtn:'✕ Odrzuć',
+    chartsTitle:'Wykresy',chartsDesc:'Twoje dane żywieniowe w czasie.',
+    periodDay:'Dzienny',periodWeek:'Tygodniowy',periodMonth:'Miesięczny',
+    avgCal:'Śr. kalorie',avgProt:'Śr. białko',avgFat:'Śr. tłuszcze',avgWater:'Śr. woda',
+    chartMacros:'Kalorie i makroskładniki',chartHourly:'Rozkład godzinowy – dziś',
+    giTitle:'🩸 Ładunek Glikemiczny (teoretyczny)',
+    giDesc:'Symulacja stężenia glukozy — wzrost po posiłku, opadanie w czasie.',
+    giActual:'Rzeczywiste',giForecast:'Prognoza',
+    giHypo:'<70 Hipoglikemia (głód)',giNorm:'70–140 Normoglikemia (sytość)',giHyper:'>140 Hiperglikemia (ryzyko)',
+    waterChartTitle:'💧 Nawodnienie',macroDonutTitle:'🥧 Rozkład makroskładników',
+    historyTitle:'Historia',historyDesc:'Przeglądaj posiłki z poprzednich dni.',
+    historyLoad:'Załaduj więcej dni',historyEmpty:'Brak danych.\nDodaj posiłki aby zobaczyć historię.',
+    historyLoading:'Ładowanie historii…',
+    emptyState:'Brak wpisów.\nDodaj pierwszy posiłek →',
+    themeTitle:'🎨 Wygląd aplikacji',
+    themeSection:'Szata graficzna',
+    themeClassic:'Klasyczna',themeDark:'Dark',themePastel:'Pastelowa',themeVivid:'Neon',
+    dietSection:'Tryb diety',dietMeat:'🥩 Mięsna',dietVege:'🥦 Wegetariańska',
+    langSection:'Język',
+    doneBtn:'✓ Gotowe',
+    syncDone:'zsync',syncBusy:'sync…',
+    profileTitle:'Twój profil żywieniowy',profileSub:'Odpowiedz na kilka pytań — wyliczymy Twoje dzienne zapotrzebowanie.',
+    sexLabel:'Płeć',sexM:'Mężczyzna',sexF:'Kobieta',
+    ageLabel:'Wiek (lata)',heightLabel:'Wzrost (cm)',weightLabel:'Waga (kg)',
+    activityLabel:'Poziom aktywności fizycznej',
+    act1:'Siedzący',act1sub:'praca biurowa',
+    act2:'Lekko aktywny',act2sub:'1-3 treningi/tydzień',
+    act3:'Umiarkowanie',act3sub:'3-5 treningów/tydzień',
+    act4:'Bardzo aktywny',act4sub:'6-7 treningów/tydzień',
+    goalLabel:'Cel',
+    g1:'Schudnąć',g2:'Utrzymać wagę',g3:'Przybrać masę',g4:'Budować mięśnie',
+    calcTitle:'Na podstawie Twoich danych wyliczyliśmy:',
+    manualOverride:'✏️ Ręczna korekta wartości',
+    wCalLabel:'Kalorie',wProtLabel:'Białko g',wFatLabel:'Tłuszcze g',wCarbLabel:'Węglowodany g',wWaterLabel:'Woda ml',
+    nextBtn:'Dalej →',backBtn:'← Wróć',saveBtn:'✓ Zapisz profil',
+    savedToast:'✓ Profil zapisany',
+    errorAnalysis:'Błąd analizy: ',errorNoText:'Opisz posiłek.',errorNoPhoto:'Wgraj zdjęcie.',
+    waterDetected:'💧 Wykryto płyn: ',waterWillAdd:' zostanie dodane do nawodnienia',
+    deletedMeal:'Posiłek usunięty',deletedEntry:'Wpis usunięty',rejectedAnalysis:'Analiza odrzucona',
+    addedToLog:'✓ Dodano: ',micListen:'Słucham…',micNoAccess:'Brak dostępu do mikrofonu.',micNoSpeech:'Nie wykryto mowy.',micBrowser:'Dyktowanie wymaga Chrome/Edge.',
+    lookupFetch:'⏳ Pobieranie dla',lookupDone:'✓ Wartości na',lookupFail:'Nie udało się — wpisz ręcznie.',
+    dayLbl:(d)=>d.toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long'}),
+    fluidsRow:(ml)=>`💧 Wypite płyny: <strong style="margin-left:4px;">${ml} ml</strong>`,
+    lastDays:(n)=>`Ostatnie ${n} dni`,
+    analyzeAiSys:'Jesteś ekspertem od żywienia. Analizujesz posiłki i szacujesz wartości odżywcze dla każdego składnika osobno. Odpowiadaj WYŁĄCZNIE poprawnym JSON bez dodatkowego tekstu ani znaczników Markdown.',
+    analyzeIngSys:'Jesteś ekspertem od żywienia. Zwróć WYŁĄCZNIE JSON (bez Markdown) z wartościami na 100g:',
+    analyzePromptText:(txt)=>`Przeanalizuj i podaj JSON:\n\n${txt}`,
+    analyzePromptPhoto:'Przeanalizuj i podaj JSON.',
+  },
+  en:{code:'en',name:'English',flag:'🇬🇧',
+    loading:'Loading…',loginTitle:'AI-powered calorie counter',
+    loginF1:'Meal analysis by AI — text or photo',loginF2:'Cloud sync — access from any device',loginF3:'Charts, glycemic load and history',
+    loginBtn:'Sign in with Google',loginPrivacy:'Your data is private and visible only to you.',
+    menuAppearance:'🎨 Appearance',menuProfile:'⚙️ Goals & Profile',menuLogout:'🚪 Sign out',
+    caloriesTitle:'🔥 Calories – today',goal:'goal',left:'remaining',over:'exceeded by',
+    protein:'🥩 Protein',fat:'🥑 Fat',carb:'🌾 Carbs',water:'💧 Hydration',
+    addWaterBtn:'Add',waterPlaceholder:'Other amount (ml)',entriesTitle:'Today\'s entries',
+    navFood:'🍽️ Meals',navCharts:'📊 Charts',navHistory:'📅 History',
+    addMealTitle:'Add',addMealEm:'meal',addMealDesc:'Describe your meal or upload a photo — AI will identify the ingredients.',
+    tabText:'✏️ Text description',tabPhoto:'📷 Photo',photoLib:'🖼️ Gallery',photoCam:'📸 Camera',
+    textPlaceholder:'E.g.: bowl of pasta bolognese ~400g, glass of water\nOr: cheese sandwich with lettuce, coffee with milk 200ml...',
+    portionLabel:'🍽️ Portion:',analyzeBtn:'Analyze meal',analyzing:'AI analyzing…',analyzingPhoto:'AI scanning photo…',analyzingText:'AI analyzing ingredients…',
+    aiPrefix:'AI:',ingredientsTitle:'Ingredients',ingredientsHint:'— edit weight → proportional recalculation',
+    addIngredientBtn:'＋ Add ingredient manually',addIngPlaceholder:'Enter ingredient name…',addBtn:'Add',cancelBtn:'✕',
+    acceptBtn:'✓ Add to log',rejectBtn:'✕ Discard',
+    chartsTitle:'Charts',chartsDesc:'Your nutritional data over time.',
+    periodDay:'Daily',periodWeek:'Weekly',periodMonth:'Monthly',
+    avgCal:'Avg. calories',avgProt:'Avg. protein',avgFat:'Avg. fat',avgWater:'Avg. water',
+    chartMacros:'Calories & macros',chartHourly:'Hourly breakdown – today',
+    giTitle:'🩸 Glycemic Load (theoretical)',giDesc:'Blood glucose simulation — rises after meal, falls over time.',
+    giActual:'Actual',giForecast:'Forecast',giHypo:'<70 Hypoglycemia (hunger)',giNorm:'70–140 Normoglycemia (satiety)',giHyper:'>140 Hyperglycemia (risk)',
+    waterChartTitle:'💧 Hydration',macroDonutTitle:'🥧 Macro distribution',
+    historyTitle:'History',historyDesc:'Browse meals from previous days.',historyLoad:'Load more days',
+    historyEmpty:'No data.\nAdd meals to see history.',historyLoading:'Loading history…',
+    emptyState:'No entries today.\nAdd your first meal →',
+    themeTitle:'🎨 Appearance',themeSection:'Theme',themeClassic:'Classic',themeDark:'Dark',themePastel:'Pastel',themeVivid:'Neon',
+    dietSection:'Diet mode',dietMeat:'🥩 Omnivore',dietVege:'🥦 Vegetarian',
+    langSection:'Language',doneBtn:'✓ Done',syncDone:'synced',syncBusy:'sync…',
+    profileTitle:'Your nutrition profile',profileSub:'Answer a few questions — we\'ll calculate your daily needs.',
+    sexLabel:'Sex',sexM:'Male',sexF:'Female',ageLabel:'Age (years)',heightLabel:'Height (cm)',weightLabel:'Weight (kg)',
+    activityLabel:'Physical activity level',act1:'Sedentary',act1sub:'desk job, no sport',act2:'Lightly active',act2sub:'1-3 workouts/week',act3:'Moderately active',act3sub:'3-5 workouts/week',act4:'Very active',act4sub:'6-7 workouts/week',
+    goalLabel:'Goal',g1:'Lose weight',g2:'Maintain weight',g3:'Gain mass',g4:'Build muscle',
+    calcTitle:'Based on your data we calculated:',manualOverride:'✏️ Manual override',
+    wCalLabel:'Calories',wProtLabel:'Protein g',wFatLabel:'Fat g',wCarbLabel:'Carbs g',wWaterLabel:'Water ml',
+    nextBtn:'Next →',backBtn:'← Back',saveBtn:'✓ Save profile',savedToast:'✓ Profile saved',
+    errorAnalysis:'Analysis error: ',errorNoText:'Please describe the meal.',errorNoPhoto:'Please upload a photo.',
+    waterDetected:'💧 Liquid detected: ',waterWillAdd:' will be added to hydration',
+    deletedMeal:'Meal deleted',deletedEntry:'Entry deleted',rejectedAnalysis:'Analysis discarded',
+    addedToLog:'✓ Added: ',micListen:'Listening…',micNoAccess:'Microphone access denied.',micNoSpeech:'No speech detected.',micBrowser:'Voice input requires Chrome/Edge.',
+    lookupFetch:'⏳ Fetching data for',lookupDone:'✓ Values per',lookupFail:'Failed — enter manually.',
+    dayLbl:(d)=>d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}),
+    fluidsRow:(ml)=>`💧 Fluids consumed: <strong style="margin-left:4px;">${ml} ml</strong>`,
+    lastDays:(n)=>`Last ${n} days`,
+    analyzeAiSys:'You are a nutrition expert. Analyze meals and estimate nutritional values for each ingredient separately. Reply ONLY with valid JSON, no extra text or Markdown.',
+    analyzeIngSys:'You are a nutrition expert. Return ONLY JSON (no Markdown) with values per 100g:',
+    analyzePromptText:(txt)=>`Analyze and return JSON:\n\n${txt}`,
+    analyzePromptPhoto:'Analyze this meal and return JSON.',
+  },
+  fr:{code:'fr',name:'Français',flag:'🇫🇷',
+    loading:'Chargement…',loginTitle:'Compteur de calories intelligent par IA',
+    loginF1:'Analyse des repas par IA — texte ou photo',loginF2:'Synchronisation cloud — accès depuis n\'importe quel appareil',loginF3:'Graphiques, charge glycémique et historique',
+    loginBtn:'Se connecter avec Google',loginPrivacy:'Vos données sont privées et visibles seulement par vous.',
+    menuAppearance:'🎨 Apparence',menuProfile:'⚙️ Profil & objectifs',menuLogout:'🚪 Se déconnecter',
+    caloriesTitle:'🔥 Calories – aujourd\'hui',goal:'objectif',left:'restant',over:'dépassé de',
+    protein:'🥩 Protéines',fat:'🥑 Graisses',carb:'🌾 Glucides',water:'💧 Hydratation',
+    addWaterBtn:'Ajouter',waterPlaceholder:'Autre quantité (ml)',entriesTitle:'Entrées du jour',
+    navFood:'🍽️ Repas',navCharts:'📊 Graphiques',navHistory:'📅 Historique',
+    addMealTitle:'Ajouter',addMealEm:'repas',addMealDesc:'Décrivez votre repas ou téléchargez une photo — l\'IA identifiera les ingrédients.',
+    tabText:'✏️ Description texte',tabPhoto:'📷 Photo',photoLib:'🖼️ Galerie',photoCam:'📸 Appareil photo',
+    textPlaceholder:'Ex. : bol de pâtes bolognaise ~400g, verre d\'eau...',
+    portionLabel:'🍽️ Portion :',analyzeBtn:'Analyser le repas',analyzing:'IA en cours…',analyzingPhoto:'IA analyse la photo…',analyzingText:'IA analyse les ingrédients…',
+    aiPrefix:'IA :',ingredientsTitle:'Ingrédients',ingredientsHint:'— modifiez le poids → recalcul proportionnel',
+    addIngredientBtn:'＋ Ajouter un ingrédient',addIngPlaceholder:'Entrez le nom de l\'ingrédient…',addBtn:'Ajouter',cancelBtn:'✕',
+    acceptBtn:'✓ Ajouter au journal',rejectBtn:'✕ Rejeter',
+    chartsTitle:'Graphiques',chartsDesc:'Vos données nutritionnelles dans le temps.',
+    periodDay:'Journalier',periodWeek:'Hebdomadaire',periodMonth:'Mensuel',
+    avgCal:'Moy. calories',avgProt:'Moy. protéines',avgFat:'Moy. graisses',avgWater:'Moy. eau',
+    chartMacros:'Calories et macros',chartHourly:'Répartition horaire – aujourd\'hui',
+    giTitle:'🩸 Charge Glycémique (théorique)',giDesc:'Simulation de la glycémie — hausse après repas, baisse avec le temps.',
+    giActual:'Réel',giForecast:'Prévision',giHypo:'<70 Hypoglycémie (faim)',giNorm:'70–140 Normoglycémie (satiété)',giHyper:'>140 Hyperglycémie (risque)',
+    waterChartTitle:'💧 Hydratation',macroDonutTitle:'🥧 Répartition des macros',
+    historyTitle:'Historique',historyDesc:'Consultez les repas des jours précédents.',historyLoad:'Charger plus de jours',
+    historyEmpty:'Aucune donnée.\nAjoutez des repas pour voir l\'historique.',historyLoading:'Chargement de l\'historique…',
+    emptyState:'Aucune entrée aujourd\'hui.\nAjoutez votre premier repas →',
+    themeTitle:'🎨 Apparence',themeSection:'Thème',themeClassic:'Classique',themeDark:'Sombre',themePastel:'Pastel',themeVivid:'Néon',
+    dietSection:'Mode alimentaire',dietMeat:'🥩 Omnivore',dietVege:'🥦 Végétarien',
+    langSection:'Langue',doneBtn:'✓ Terminé',syncDone:'sync',syncBusy:'sync…',
+    profileTitle:'Votre profil nutritionnel',profileSub:'Répondez à quelques questions — nous calculerons vos besoins journaliers.',
+    sexLabel:'Sexe',sexM:'Homme',sexF:'Femme',ageLabel:'Âge (ans)',heightLabel:'Taille (cm)',weightLabel:'Poids (kg)',
+    activityLabel:'Niveau d\'activité physique',act1:'Sédentaire',act1sub:'bureau, pas de sport',act2:'Légèrement actif',act2sub:'1-3 séances/semaine',act3:'Modérément actif',act3sub:'3-5 séances/semaine',act4:'Très actif',act4sub:'6-7 séances/semaine',
+    goalLabel:'Objectif',g1:'Perdre du poids',g2:'Maintenir le poids',g3:'Prendre de la masse',g4:'Construire du muscle',
+    calcTitle:'Basé sur vos données nous avons calculé :',manualOverride:'✏️ Ajustement manuel',
+    wCalLabel:'Calories',wProtLabel:'Protéines g',wFatLabel:'Graisses g',wCarbLabel:'Glucides g',wWaterLabel:'Eau ml',
+    nextBtn:'Suivant →',backBtn:'← Retour',saveBtn:'✓ Enregistrer le profil',savedToast:'✓ Profil enregistré',
+    errorAnalysis:'Erreur d\'analyse : ',errorNoText:'Décrivez le repas.',errorNoPhoto:'Téléchargez une photo.',
+    waterDetected:'💧 Liquide détecté : ',waterWillAdd:' sera ajouté à l\'hydratation',
+    deletedMeal:'Repas supprimé',deletedEntry:'Entrée supprimée',rejectedAnalysis:'Analyse rejetée',
+    addedToLog:'✓ Ajouté : ',micListen:'J\'écoute…',micNoAccess:'Accès au micro refusé.',micNoSpeech:'Aucune parole détectée.',micBrowser:'La saisie vocale nécessite Chrome/Edge.',
+    lookupFetch:'⏳ Récupération pour',lookupDone:'✓ Valeurs pour',lookupFail:'Échec — saisir manuellement.',
+    dayLbl:(d)=>d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}),
+    fluidsRow:(ml)=>`💧 Liquides consommés : <strong style="margin-left:4px;">${ml} ml</strong>`,
+    lastDays:(n)=>`${n} derniers jours`,
+    analyzeAiSys:'Vous êtes un expert en nutrition. Analysez les repas et estimez les valeurs nutritionnelles pour chaque ingrédient séparément. Répondez UNIQUEMENT avec du JSON valide, sans texte supplémentaire ni Markdown.',
+    analyzeIngSys:'Vous êtes un expert en nutrition. Retournez UNIQUEMENT du JSON (sans Markdown) avec les valeurs pour 100g :',
+    analyzePromptText:(txt)=>`Analysez et retournez le JSON :\n\n${txt}`,
+    analyzePromptPhoto:'Analysez ce repas et retournez le JSON.',
+  },
+  de:{code:'de',name:'Deutsch',flag:'🇩🇪',
+    loading:'Laden…',loginTitle:'Intelligenter KI-Kalorienzähler',
+    loginF1:'KI-Mahlzeitenanalyse — Text oder Foto',loginF2:'Cloud-Sync — Zugriff von jedem Gerät',loginF3:'Diagramme, glykämische Last und Verlauf',
+    loginBtn:'Mit Google anmelden',loginPrivacy:'Ihre Daten sind privat und nur für Sie sichtbar.',
+    menuAppearance:'🎨 Darstellung',menuProfile:'⚙️ Profil & Ziele',menuLogout:'🚪 Abmelden',
+    caloriesTitle:'🔥 Kalorien – heute',goal:'Ziel',left:'verbleibend',over:'überschritten um',
+    protein:'🥩 Eiweiß',fat:'🥑 Fett',carb:'🌾 Kohlenhydrate',water:'💧 Hydration',
+    addWaterBtn:'Hinzufügen',waterPlaceholder:'Andere Menge (ml)',entriesTitle:'Heutige Einträge',
+    navFood:'🍽️ Mahlzeiten',navCharts:'📊 Diagramme',navHistory:'📅 Verlauf',
+    addMealTitle:'Mahlzeit',addMealEm:'hinzufügen',addMealDesc:'Beschreiben Sie Ihre Mahlzeit oder laden Sie ein Foto hoch — KI erkennt die Zutaten.',
+    tabText:'✏️ Textbeschreibung',tabPhoto:'📷 Foto',photoLib:'🖼️ Galerie',photoCam:'📸 Kamera',
+    textPlaceholder:'Z.B.: Teller Pasta Bolognese ~400g, Glas Wasser...',
+    portionLabel:'🍽️ Portion:',analyzeBtn:'Mahlzeit analysieren',analyzing:'KI analysiert…',analyzingPhoto:'KI analysiert Foto…',analyzingText:'KI analysiert Zutaten…',
+    aiPrefix:'KI:',ingredientsTitle:'Zutaten',ingredientsHint:'— Gewicht bearbeiten → proportionale Neuberechnung',
+    addIngredientBtn:'＋ Zutat manuell hinzufügen',addIngPlaceholder:'Zutatennamen eingeben…',addBtn:'Hinzufügen',cancelBtn:'✕',
+    acceptBtn:'✓ Zum Tagebuch hinzufügen',rejectBtn:'✕ Verwerfen',
+    chartsTitle:'Diagramme',chartsDesc:'Ihre Ernährungsdaten über die Zeit.',
+    periodDay:'Täglich',periodWeek:'Wöchentlich',periodMonth:'Monatlich',
+    avgCal:'Durchschn. Kalorien',avgProt:'Durchschn. Eiweiß',avgFat:'Durchschn. Fett',avgWater:'Durchschn. Wasser',
+    chartMacros:'Kalorien & Makros',chartHourly:'Stündliche Aufschlüsselung – heute',
+    giTitle:'🩸 Glykämische Last (theoretisch)',giDesc:'Blutzuckersimulation — steigt nach der Mahlzeit, fällt mit der Zeit.',
+    giActual:'Ist-Wert',giForecast:'Prognose',giHypo:'<70 Hypoglykämie (Hunger)',giNorm:'70–140 Normoglykämie (Sättigung)',giHyper:'>140 Hyperglykämie (Risiko)',
+    waterChartTitle:'💧 Hydration',macroDonutTitle:'🥧 Makro-Verteilung',
+    historyTitle:'Verlauf',historyDesc:'Mahlzeiten früherer Tage durchsuchen.',historyLoad:'Mehr Tage laden',
+    historyEmpty:'Keine Daten.\nFügen Sie Mahlzeiten hinzu.',historyLoading:'Verlauf wird geladen…',
+    emptyState:'Keine Einträge heute.\nErste Mahlzeit hinzufügen →',
+    themeTitle:'🎨 Darstellung',themeSection:'Design',themeClassic:'Klassisch',themeDark:'Dunkel',themePastel:'Pastell',themeVivid:'Neon',
+    dietSection:'Ernährungsweise',dietMeat:'🥩 Omnivore',dietVege:'🥦 Vegetarisch',
+    langSection:'Sprache',doneBtn:'✓ Fertig',syncDone:'sync',syncBusy:'sync…',
+    profileTitle:'Ihr Ernährungsprofil',profileSub:'Beantworten Sie einige Fragen — wir berechnen Ihren Tagesbedarf.',
+    sexLabel:'Geschlecht',sexM:'Männlich',sexF:'Weiblich',ageLabel:'Alter (Jahre)',heightLabel:'Größe (cm)',weightLabel:'Gewicht (kg)',
+    activityLabel:'Körperliche Aktivität',act1:'Sitzend',act1sub:'Bürojob, kein Sport',act2:'Leicht aktiv',act2sub:'1-3 Trainings/Woche',act3:'Mäßig aktiv',act3sub:'3-5 Trainings/Woche',act4:'Sehr aktiv',act4sub:'6-7 Trainings/Woche',
+    goalLabel:'Ziel',g1:'Abnehmen',g2:'Gewicht halten',g3:'Masse aufbauen',g4:'Muskeln aufbauen',
+    calcTitle:'Basierend auf Ihren Daten haben wir berechnet:',manualOverride:'✏️ Manuelle Anpassung',
+    wCalLabel:'Kalorien',wProtLabel:'Eiweiß g',wFatLabel:'Fett g',wCarbLabel:'Kohlenhydrate g',wWaterLabel:'Wasser ml',
+    nextBtn:'Weiter →',backBtn:'← Zurück',saveBtn:'✓ Profil speichern',savedToast:'✓ Profil gespeichert',
+    errorAnalysis:'Analysefehler: ',errorNoText:'Bitte Mahlzeit beschreiben.',errorNoPhoto:'Bitte Foto hochladen.',
+    waterDetected:'💧 Flüssigkeit erkannt: ',waterWillAdd:' wird zur Hydration hinzugefügt',
+    deletedMeal:'Mahlzeit gelöscht',deletedEntry:'Eintrag gelöscht',rejectedAnalysis:'Analyse verworfen',
+    addedToLog:'✓ Hinzugefügt: ',micListen:'Ich höre zu…',micNoAccess:'Mikrofonzugriff verweigert.',micNoSpeech:'Keine Sprache erkannt.',micBrowser:'Spracheingabe erfordert Chrome/Edge.',
+    lookupFetch:'⏳ Daten werden abgerufen für',lookupDone:'✓ Werte per',lookupFail:'Fehler — manuell eingeben.',
+    dayLbl:(d)=>d.toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'}),
+    fluidsRow:(ml)=>`💧 Getrunkene Flüssigkeiten: <strong style="margin-left:4px;">${ml} ml</strong>`,
+    lastDays:(n)=>`Letzte ${n} Tage`,
+    analyzeAiSys:'Sie sind ein Ernährungsexperte. Analysieren Sie Mahlzeiten und schätzen Sie Nährwerte für jede Zutat separat. Antworten Sie NUR mit gültigem JSON, ohne zusätzlichen Text oder Markdown.',
+    analyzeIngSys:'Sie sind ein Ernährungsexperte. Geben Sie NUR JSON (kein Markdown) mit Werten pro 100g zurück:',
+    analyzePromptText:(txt)=>`Analysieren Sie und geben Sie JSON zurück:\n\n${txt}`,
+    analyzePromptPhoto:'Analysieren Sie diese Mahlzeit und geben Sie JSON zurück.',
+  },
+  es:{code:'es',name:'Español',flag:'🇪🇸',
+    loading:'Cargando…',loginTitle:'Contador de calorías inteligente con IA',
+    loginF1:'Análisis de comidas por IA — texto o foto',loginF2:'Sincronización en la nube — acceso desde cualquier dispositivo',loginF3:'Gráficos, carga glucémica e historial',
+    loginBtn:'Iniciar sesión con Google',loginPrivacy:'Sus datos son privados y visibles solo para usted.',
+    menuAppearance:'🎨 Apariencia',menuProfile:'⚙️ Perfil y objetivos',menuLogout:'🚪 Cerrar sesión',
+    caloriesTitle:'🔥 Calorías – hoy',goal:'objetivo',left:'restante',over:'excedido en',
+    protein:'🥩 Proteínas',fat:'🥑 Grasas',carb:'🌾 Carbohidratos',water:'💧 Hidratación',
+    addWaterBtn:'Añadir',waterPlaceholder:'Otra cantidad (ml)',entriesTitle:'Entradas del día',
+    navFood:'🍽️ Comidas',navCharts:'📊 Gráficos',navHistory:'📅 Historial',
+    addMealTitle:'Añadir',addMealEm:'comida',addMealDesc:'Describe tu comida o sube una foto — la IA identificará los ingredientes.',
+    tabText:'✏️ Descripción de texto',tabPhoto:'📷 Foto',photoLib:'🖼️ Galería',photoCam:'📸 Cámara',
+    textPlaceholder:'Ej.: plato de pasta boloñesa ~400g, vaso de agua...',
+    portionLabel:'🍽️ Ración:',analyzeBtn:'Analizar comida',analyzing:'IA analizando…',analyzingPhoto:'IA analizando foto…',analyzingText:'IA analizando ingredientes…',
+    aiPrefix:'IA:',ingredientsTitle:'Ingredientes',ingredientsHint:'— edite el peso → recálculo proporcional',
+    addIngredientBtn:'＋ Añadir ingrediente',addIngPlaceholder:'Escriba el nombre del ingrediente…',addBtn:'Añadir',cancelBtn:'✕',
+    acceptBtn:'✓ Añadir al diario',rejectBtn:'✕ Descartar',
+    chartsTitle:'Gráficos',chartsDesc:'Sus datos nutricionales a lo largo del tiempo.',
+    periodDay:'Diario',periodWeek:'Semanal',periodMonth:'Mensual',
+    avgCal:'Prom. calorías',avgProt:'Prom. proteínas',avgFat:'Prom. grasas',avgWater:'Prom. agua',
+    chartMacros:'Calorías y macros',chartHourly:'Desglose por horas – hoy',
+    giTitle:'🩸 Carga Glucémica (teórica)',giDesc:'Simulación de glucosa en sangre — sube tras la comida, baja con el tiempo.',
+    giActual:'Real',giForecast:'Pronóstico',giHypo:'<70 Hipoglucemia (hambre)',giNorm:'70–140 Normoglucemia (saciedad)',giHyper:'>140 Hiperglucemia (riesgo)',
+    waterChartTitle:'💧 Hidratación',macroDonutTitle:'🥧 Distribución de macros',
+    historyTitle:'Historial',historyDesc:'Consultar comidas de días anteriores.',historyLoad:'Cargar más días',
+    historyEmpty:'Sin datos.\nAñade comidas para ver el historial.',historyLoading:'Cargando historial…',
+    emptyState:'Sin entradas hoy.\nAñade tu primera comida →',
+    themeTitle:'🎨 Apariencia',themeSection:'Tema',themeClassic:'Clásico',themeDark:'Oscuro',themePastel:'Pastel',themeVivid:'Neón',
+    dietSection:'Modo alimenticio',dietMeat:'🥩 Omnívoro',dietVege:'🥦 Vegetariano',
+    langSection:'Idioma',doneBtn:'✓ Listo',syncDone:'sync',syncBusy:'sync…',
+    profileTitle:'Tu perfil nutricional',profileSub:'Responde algunas preguntas — calcularemos tus necesidades diarias.',
+    sexLabel:'Sexo',sexM:'Masculino',sexF:'Femenino',ageLabel:'Edad (años)',heightLabel:'Altura (cm)',weightLabel:'Peso (kg)',
+    activityLabel:'Nivel de actividad física',act1:'Sedentario',act1sub:'trabajo de oficina',act2:'Ligeramente activo',act2sub:'1-3 entrenamientos/semana',act3:'Moderadamente activo',act3sub:'3-5 entrenamientos/semana',act4:'Muy activo',act4sub:'6-7 entrenamientos/semana',
+    goalLabel:'Objetivo',g1:'Perder peso',g2:'Mantener peso',g3:'Ganar masa',g4:'Construir músculo',
+    calcTitle:'Basado en sus datos hemos calculado:',manualOverride:'✏️ Ajuste manual',
+    wCalLabel:'Calorías',wProtLabel:'Proteínas g',wFatLabel:'Grasas g',wCarbLabel:'Carbohidratos g',wWaterLabel:'Agua ml',
+    nextBtn:'Siguiente →',backBtn:'← Atrás',saveBtn:'✓ Guardar perfil',savedToast:'✓ Perfil guardado',
+    errorAnalysis:'Error de análisis: ',errorNoText:'Describe la comida.',errorNoPhoto:'Sube una foto.',
+    waterDetected:'💧 Líquido detectado: ',waterWillAdd:' se añadirá a la hidratación',
+    deletedMeal:'Comida eliminada',deletedEntry:'Entrada eliminada',rejectedAnalysis:'Análisis descartado',
+    addedToLog:'✓ Añadido: ',micListen:'Escuchando…',micNoAccess:'Acceso al micrófono denegado.',micNoSpeech:'No se detectó voz.',micBrowser:'La entrada de voz requiere Chrome/Edge.',
+    lookupFetch:'⏳ Obteniendo datos para',lookupDone:'✓ Valores para',lookupFail:'Error — ingrese manualmente.',
+    dayLbl:(d)=>d.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'}),
+    fluidsRow:(ml)=>`💧 Líquidos consumidos: <strong style="margin-left:4px;">${ml} ml</strong>`,
+    lastDays:(n)=>`Últimos ${n} días`,
+    analyzeAiSys:'Eres un experto en nutrición. Analiza las comidas y estima los valores nutricionales para cada ingrediente por separado. Responde SOLO con JSON válido, sin texto adicional ni Markdown.',
+    analyzeIngSys:'Eres un experto en nutrición. Devuelve SOLO JSON (sin Markdown) con valores por 100g:',
+    analyzePromptText:(txt)=>`Analiza y devuelve JSON:\n\n${txt}`,
+    analyzePromptPhoto:'Analiza esta comida y devuelve JSON.',
+  },
+  it:{code:'it',name:'Italiano',flag:'🇮🇹',
+    loading:'Caricamento…',loginTitle:'Contatore calorie intelligente con IA',
+    loginF1:'Analisi pasti tramite IA — testo o foto',loginF2:'Sincronizzazione cloud — accesso da qualsiasi dispositivo',loginF3:'Grafici, carico glicemico e cronologia',
+    loginBtn:'Accedi con Google',loginPrivacy:'I tuoi dati sono privati e visibili solo a te.',
+    menuAppearance:'🎨 Aspetto',menuProfile:'⚙️ Profilo e obiettivi',menuLogout:'🚪 Esci',
+    caloriesTitle:'🔥 Calorie – oggi',goal:'obiettivo',left:'rimanente',over:'superato di',
+    protein:'🥩 Proteine',fat:'🥑 Grassi',carb:'🌾 Carboidrati',water:'💧 Idratazione',
+    addWaterBtn:'Aggiungi',waterPlaceholder:'Altra quantità (ml)',entriesTitle:'Voci del giorno',
+    navFood:'🍽️ Pasti',navCharts:'📊 Grafici',navHistory:'📅 Cronologia',
+    addMealTitle:'Aggiungi',addMealEm:'pasto',addMealDesc:'Descrivi il tuo pasto o carica una foto — l\'IA identificherà gli ingredienti.',
+    tabText:'✏️ Descrizione testo',tabPhoto:'📷 Foto',photoLib:'🖼️ Galleria',photoCam:'📸 Fotocamera',
+    textPlaceholder:'Es.: piatto di pasta alla bolognese ~400g, bicchiere d\'acqua...',
+    portionLabel:'🍽️ Porzione:',analyzeBtn:'Analizza pasto',analyzing:'IA in corso…',analyzingPhoto:'IA analizza foto…',analyzingText:'IA analizza ingredienti…',
+    aiPrefix:'IA:',ingredientsTitle:'Ingredienti',ingredientsHint:'— modifica il peso → ricalcolo proporzionale',
+    addIngredientBtn:'＋ Aggiungi ingrediente',addIngPlaceholder:'Inserisci il nome dell\'ingrediente…',addBtn:'Aggiungi',cancelBtn:'✕',
+    acceptBtn:'✓ Aggiungi al diario',rejectBtn:'✕ Scarta',
+    chartsTitle:'Grafici',chartsDesc:'I tuoi dati nutrizionali nel tempo.',
+    periodDay:'Giornaliero',periodWeek:'Settimanale',periodMonth:'Mensile',
+    avgCal:'Media calorie',avgProt:'Media proteine',avgFat:'Media grassi',avgWater:'Media acqua',
+    chartMacros:'Calorie e macro',chartHourly:'Suddivisione oraria – oggi',
+    giTitle:'🩸 Carico Glicemico (teorico)',giDesc:'Simulazione glicemia — sale dopo i pasti, scende nel tempo.',
+    giActual:'Reale',giForecast:'Previsione',giHypo:'<70 Ipoglicemia (fame)',giNorm:'70–140 Normoglicemia (sazietà)',giHyper:'>140 Iperglicemia (rischio)',
+    waterChartTitle:'💧 Idratazione',macroDonutTitle:'🥧 Distribuzione macro',
+    historyTitle:'Cronologia',historyDesc:'Sfoglia i pasti dei giorni precedenti.',historyLoad:'Carica altri giorni',
+    historyEmpty:'Nessun dato.\nAggiungi pasti per vedere la cronologia.',historyLoading:'Caricamento cronologia…',
+    emptyState:'Nessuna voce oggi.\nAggiungi il tuo primo pasto →',
+    themeTitle:'🎨 Aspetto',themeSection:'Tema',themeClassic:'Classico',themeDark:'Scuro',themePastel:'Pastello',themeVivid:'Neon',
+    dietSection:'Modalità dieta',dietMeat:'🥩 Onnivoro',dietVege:'🥦 Vegetariano',
+    langSection:'Lingua',doneBtn:'✓ Fatto',syncDone:'sync',syncBusy:'sync…',
+    profileTitle:'Il tuo profilo nutrizionale',profileSub:'Rispondi ad alcune domande — calcoleremo il tuo fabbisogno giornaliero.',
+    sexLabel:'Sesso',sexM:'Maschio',sexF:'Femmina',ageLabel:'Età (anni)',heightLabel:'Altezza (cm)',weightLabel:'Peso (kg)',
+    activityLabel:'Livello di attività fisica',act1:'Sedentario',act1sub:'lavoro d\'ufficio',act2:'Leggermente attivo',act2sub:'1-3 allenamenti/settimana',act3:'Moderatamente attivo',act3sub:'3-5 allenamenti/settimana',act4:'Molto attivo',act4sub:'6-7 allenamenti/settimana',
+    goalLabel:'Obiettivo',g1:'Perdere peso',g2:'Mantenere il peso',g3:'Aumentare massa',g4:'Costruire muscoli',
+    calcTitle:'Sulla base dei tuoi dati abbiamo calcolato:',manualOverride:'✏️ Correzione manuale',
+    wCalLabel:'Calorie',wProtLabel:'Proteine g',wFatLabel:'Grassi g',wCarbLabel:'Carboidrati g',wWaterLabel:'Acqua ml',
+    nextBtn:'Avanti →',backBtn:'← Indietro',saveBtn:'✓ Salva profilo',savedToast:'✓ Profilo salvato',
+    errorAnalysis:'Errore di analisi: ',errorNoText:'Descrivi il pasto.',errorNoPhoto:'Carica una foto.',
+    waterDetected:'💧 Liquido rilevato: ',waterWillAdd:' verrà aggiunto all\'idratazione',
+    deletedMeal:'Pasto eliminato',deletedEntry:'Voce eliminata',rejectedAnalysis:'Analisi scartata',
+    addedToLog:'✓ Aggiunto: ',micListen:'In ascolto…',micNoAccess:'Accesso microfono negato.',micNoSpeech:'Nessun parlato rilevato.',micBrowser:'Input vocale richiede Chrome/Edge.',
+    lookupFetch:'⏳ Recupero dati per',lookupDone:'✓ Valori per',lookupFail:'Errore — inserisci manualmente.',
+    dayLbl:(d)=>d.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'}),
+    fluidsRow:(ml)=>`💧 Liquidi consumati: <strong style="margin-left:4px;">${ml} ml</strong>`,
+    lastDays:(n)=>`Ultimi ${n} giorni`,
+    analyzeAiSys:'Sei un esperto di nutrizione. Analizza i pasti e stima i valori nutrizionali per ogni ingrediente separatamente. Rispondi SOLO con JSON valido, senza testo aggiuntivo o Markdown.',
+    analyzeIngSys:'Sei un esperto di nutrizione. Restituisci SOLO JSON (senza Markdown) con valori per 100g:',
+    analyzePromptText:(txt)=>`Analizza e restituisci JSON:\n\n${txt}`,
+    analyzePromptPhoto:'Analizza questo pasto e restituisci JSON.',
+  },
+  cs:{code:'cs',name:'Čeština',flag:'🇨🇿',
+    loading:'Načítání…',loginTitle:'Inteligentní počítadlo kalorií s AI',
+    loginF1:'Analýza jídel pomocí AI — text nebo fotografie',loginF2:'Cloudová synchronizace — přístup z libovolného zařízení',loginF3:'Grafy, glykemická zátěž a historie',
+    loginBtn:'Přihlásit se přes Google',loginPrivacy:'Vaše data jsou soukromá a viditelná pouze pro vás.',
+    menuAppearance:'🎨 Vzhled aplikace',menuProfile:'⚙️ Profil a cíle',menuLogout:'🚪 Odhlásit se',
+    caloriesTitle:'🔥 Kalorie – dnes',goal:'cíl',left:'zbývá',over:'překročeno o',
+    protein:'🥩 Bílkoviny',fat:'🥑 Tuky',carb:'🌾 Sacharidy',water:'💧 Hydratace',
+    addWaterBtn:'Přidat',waterPlaceholder:'Jiné množství (ml)',entriesTitle:'Záznamy dne',
+    navFood:'🍽️ Jídla',navCharts:'📊 Grafy',navHistory:'📅 Historie',
+    addMealTitle:'Přidat',addMealEm:'jídlo',addMealDesc:'Popište jídlo nebo nahrajte fotografii — AI rozpozná ingredience.',
+    tabText:'✏️ Textový popis',tabPhoto:'📷 Fotografie',photoLib:'🖼️ Galerie',photoCam:'📸 Fotoaparát',
+    textPlaceholder:'Např.: mísa těstovin bolognese ~400g, sklenice vody...',
+    portionLabel:'🍽️ Porce:',analyzeBtn:'Analyzovat jídlo',analyzing:'AI analyzuje…',analyzingPhoto:'AI analyzuje fotografii…',analyzingText:'AI analyzuje ingredience…',
+    aiPrefix:'AI:',ingredientsTitle:'Ingredience',ingredientsHint:'— upravte hmotnost → proporcionální přepočet',
+    addIngredientBtn:'＋ Přidat ingredienci ručně',addIngPlaceholder:'Zadejte název ingredience…',addBtn:'Přidat',cancelBtn:'✕',
+    acceptBtn:'✓ Přidat do deníku',rejectBtn:'✕ Zamítnout',
+    chartsTitle:'Grafy',chartsDesc:'Vaše nutriční data v čase.',
+    periodDay:'Denní',periodWeek:'Týdenní',periodMonth:'Měsíční',
+    avgCal:'Prům. kalorie',avgProt:'Prům. bílkoviny',avgFat:'Prům. tuky',avgWater:'Prům. voda',
+    chartMacros:'Kalorie a makra',chartHourly:'Hodinové rozložení – dnes',
+    giTitle:'🩸 Glykemická zátěž (teoretická)',giDesc:'Simulace hladiny glukózy — stoupá po jídle, klesá v čase.',
+    giActual:'Skutečná',giForecast:'Prognóza',giHypo:'<70 Hypoglykémie (hlad)',giNorm:'70–140 Normoglykémie (sytost)',giHyper:'>140 Hyperglykémie (riziko)',
+    waterChartTitle:'💧 Hydratace',macroDonutTitle:'🥧 Rozložení maker',
+    historyTitle:'Historie',historyDesc:'Procházejte jídla z předchozích dní.',historyLoad:'Načíst více dní',
+    historyEmpty:'Žádná data.\nPřidejte jídla pro zobrazení historie.',historyLoading:'Načítání historie…',
+    emptyState:'Žádné záznamy dnes.\nPřidejte první jídlo →',
+    themeTitle:'🎨 Vzhled aplikace',themeSection:'Téma',themeClassic:'Klasické',themeDark:'Tmavé',themePastel:'Pastelové',themeVivid:'Neon',
+    dietSection:'Režim stravy',dietMeat:'🥩 Masová',dietVege:'🥦 Vegetariánská',
+    langSection:'Jazyk',doneBtn:'✓ Hotovo',syncDone:'sync',syncBusy:'sync…',
+    profileTitle:'Váš nutriční profil',profileSub:'Odpovězte na několik otázek — vypočítáme vaši denní potřebu.',
+    sexLabel:'Pohlaví',sexM:'Muž',sexF:'Žena',ageLabel:'Věk (roky)',heightLabel:'Výška (cm)',weightLabel:'Hmotnost (kg)',
+    activityLabel:'Úroveň fyzické aktivity',act1:'Sedavý',act1sub:'kancelářská práce',act2:'Lehce aktivní',act2sub:'1-3 tréninky/týden',act3:'Středně aktivní',act3sub:'3-5 tréninků/týden',act4:'Velmi aktivní',act4sub:'6-7 tréninků/týden',
+    goalLabel:'Cíl',g1:'Zhubnout',g2:'Udržet váhu',g3:'Nabrat hmotu',g4:'Budovat svaly',
+    calcTitle:'Na základě vašich dat jsme vypočítali:',manualOverride:'✏️ Ruční úprava hodnot',
+    wCalLabel:'Kalorie',wProtLabel:'Bílkoviny g',wFatLabel:'Tuky g',wCarbLabel:'Sacharidy g',wWaterLabel:'Voda ml',
+    nextBtn:'Dále →',backBtn:'← Zpět',saveBtn:'✓ Uložit profil',savedToast:'✓ Profil uložen',
+    errorAnalysis:'Chyba analýzy: ',errorNoText:'Popište jídlo.',errorNoPhoto:'Nahrajte fotografii.',
+    waterDetected:'💧 Zjištěna tekutina: ',waterWillAdd:' bude přidáno k hydrataci',
+    deletedMeal:'Jídlo odstraněno',deletedEntry:'Záznam odstraněn',rejectedAnalysis:'Analýza zamítnuta',
+    addedToLog:'✓ Přidáno: ',micListen:'Poslouchám…',micNoAccess:'Přístup k mikrofonu zamítnut.',micNoSpeech:'Nebyla zjištěna žádná řeč.',micBrowser:'Hlasový vstup vyžaduje Chrome/Edge.',
+    lookupFetch:'⏳ Získávám data pro',lookupDone:'✓ Hodnoty na',lookupFail:'Chyba — zadejte ručně.',
+    dayLbl:(d)=>d.toLocaleDateString('cs-CZ',{weekday:'long',day:'numeric',month:'long'}),
+    fluidsRow:(ml)=>`💧 Vypité tekutiny: <strong style="margin-left:4px;">${ml} ml</strong>`,
+    lastDays:(n)=>`Posledních ${n} dní`,
+    analyzeAiSys:'Jste odborník na výživu. Analyzujte jídla a odhadněte nutriční hodnoty pro každou ingredienci zvlášť. Odpovídejte POUZE platným JSON bez dalšího textu nebo Markdown.',
+    analyzeIngSys:'Jste odborník na výživu. Vraťte POUZE JSON (bez Markdown) s hodnotami na 100g:',
+    analyzePromptText:(txt)=>`Analyzujte a vraťte JSON:\n\n${txt}`,
+    analyzePromptPhoto:'Analyzujte toto jídlo a vraťte JSON.',
+  }
+};
+
+let currentLang = 'pl';
+let T = LANGS.pl; // active translations
+
+function setLang(code) {
+  if (!LANGS[code]) return;
+  currentLang = code;
+  T = LANGS[code];
+  try { localStorage.setItem('kaloai_lang', code); } catch(e) {}
+  applyTranslations();
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === code));
+  // update mic lang
+  if(recognition){try{recognition.stop();}catch(e){} recognition=null; isRecording=false;}
+}
+
+function applyTranslations() {
+  // loading overlay
+  const lo = document.querySelector('#loadingOverlay p');
+  if (lo) lo.textContent = T.loading;
+  // login
+  const lt = document.querySelector('.login-tagline'); if(lt) lt.textContent = T.loginTitle;
+  const lfs = document.querySelectorAll('.login-feature span:last-child');
+  if(lfs[0]) lfs[0].textContent = T.loginF1;
+  if(lfs[1]) lfs[1].textContent = T.loginF2;
+  if(lfs[2]) lfs[2].textContent = T.loginF3;
+  const gb = document.querySelector('.google-btn span:last-child') || document.querySelector('.google-btn');
+  // navbar
+  const nf=document.getElementById('nav-food'); if(nf) nf.textContent=T.navFood;
+  const nc=document.getElementById('nav-charts'); if(nc) nc.textContent=T.navCharts;
+  const nh=document.getElementById('nav-history'); if(nh) nh.textContent=T.navHistory;
+  // left panel
+  const st=document.querySelector('.summary-title'); if(st) st.textContent=T.caloriesTitle;
+  const mc=document.querySelectorAll('.macro-card');
+  mc.forEach(c=>{ const l=c.querySelector('.m-label'); if(!l)return; if(c.classList.contains('protein'))l.textContent=T.protein; else if(c.classList.contains('fat'))l.textContent=T.fat; else if(c.classList.contains('carb'))l.textContent=T.carb; });
+  const wt=document.querySelector('.water-title'); if(wt) wt.textContent=T.water;
+  const wp=document.getElementById('customWaterMl'); if(wp) wp.placeholder=T.waterPlaceholder;
+  const wab=document.querySelector('.w-custom button'); if(wab) wab.textContent=T.addWaterBtn;
+  const mst=document.querySelector('.meals-section-title');
+  if(mst){ const cnt=document.getElementById('mealCount'); mst.innerHTML=`${T.entriesTitle} (<span id="mealCount">${cnt?cnt.textContent:'0'}</span>)`; }
+  // food view
+  const fvh=document.querySelector('#view-food h2'); if(fvh) fvh.innerHTML=`${T.addMealTitle} <em>${T.addMealEm}</em>`;
+  const fvp=document.querySelector('#view-food p'); if(fvp) fvp.textContent=T.addMealDesc;
+  const tbt=document.getElementById('tab-text'); if(tbt) tbt.textContent=T.tabText;
+  const tbp=document.getElementById('tab-photo'); if(tbp) tbp.textContent=T.tabPhoto;
+  const plb=document.getElementById('photo-lib-btn'); if(plb) plb.textContent=T.photoLib;
+  const pcb=document.getElementById('photo-cam-btn'); if(pcb) pcb.textContent=T.photoCam;
+  const fta=document.getElementById('foodText'); if(fta) fta.placeholder=T.textPlaceholder;
+  const prl=document.querySelector('.portion-row label'); if(prl) prl.textContent=T.portionLabel;
+  const ab=document.getElementById('analyzeBtn'); if(ab){ const sp=ab.querySelector('span:last-child'); if(sp)sp.textContent=T.analyzeBtn; }
+  const ing_header=document.querySelector('.ing-header .ing-title'); if(ing_header) ing_header.textContent=T.ingredientsTitle;
+  const ing_hint=document.querySelector('.ing-header .ing-hint'); if(ing_hint) ing_hint.textContent=T.ingredientsHint;
+  const aib=document.querySelector('.add-ing-btn'); if(aib) aib.textContent=T.addIngredientBtn;
+  const ain=document.getElementById('ni-name'); if(ain) ain.placeholder=T.addIngPlaceholder;
+  const bac=document.querySelector('.btn-ai-confirm'); if(bac) bac.textContent=T.addBtn;
+  const bca=document.querySelector('.btn-ai-cancel'); if(bca) bca.textContent=T.cancelBtn;
+  const baa=document.querySelector('.btn-accept'); if(baa) baa.textContent=T.acceptBtn;
+  const brj=document.querySelector('.btn-reject'); if(brj) brj.textContent=T.rejectBtn;
+  // totals chips
+  const tcc=document.querySelector('.total-chip.cal .tc-label'); if(tcc) tcc.textContent='🔥 kcal';
+  // charts
+  const cv=document.querySelector('#view-charts h2'); if(cv) cv.innerHTML=`📊 <em>${T.chartsTitle}</em>`;
+  const cvp=document.querySelector('#view-charts p'); if(cvp) cvp.textContent=T.chartsDesc;
+  const pbd=document.getElementById('pb-day'); if(pbd) pbd.textContent=T.periodDay;
+  const pbw=document.getElementById('pb-week'); if(pbw) pbw.textContent=T.periodWeek;
+  const pbm=document.getElementById('pb-month'); if(pbm) pbm.textContent=T.periodMonth;
+  const stcal=document.querySelector('#st-cal'); if(stcal){const tx=stcal.childNodes[stcal.childNodes.length-1];if(tx)tx.textContent=T.avgCal.replace('Śr. ','').replace('Avg. ','').replace('Moy. ','').replace('Durchschn. ','').replace('Prom. ','').replace('Media ','').replace('Prům. ','')+'  ';}
+  const avgcl=document.getElementById('avgCal')?.closest('.stat-box .sb-label'); 
+  document.querySelectorAll('.stat-box').forEach(b=>{const l=b.querySelector('.sb-label');const u=b.querySelector('.sb-unit');if(!l)return; if(b.classList.contains('cal')){l.textContent=T.avgCal;if(u)u.textContent='kcal/'+T.periodDay.toLowerCase().slice(0,4);}else if(b.classList.contains('prot')){l.textContent=T.avgProt;}else if(b.classList.contains('fat')){l.textContent=T.avgFat;}else if(b.classList.contains('water')){l.textContent=T.avgWater;}});
+  // gi chart labels
+  const gil=document.querySelectorAll('.gi-badge');
+  if(gil[0]){const s=gil[0].querySelector('.gi-swatch'); gil[0].innerHTML=''; if(s)gil[0].appendChild(s); gil[0].append(T.giHypo);}
+  if(gil[1]){const s=gil[1].querySelector('.gi-swatch'); gil[1].innerHTML=''; if(s)gil[1].appendChild(s); gil[1].append(T.giNorm);}
+  if(gil[2]){const s=gil[2].querySelector('.gi-swatch'); gil[2].innerHTML=''; if(s)gil[2].appendChild(s); gil[2].append(T.giHyper);}
+  // water/donut titles
+  document.querySelectorAll('.chart-card h3').forEach(h=>{
+    if(h.textContent.includes('💧'))h.textContent=T.waterChartTitle;
+    if(h.textContent.includes('🥧'))h.textContent=T.macroDonutTitle;
+    if(h.textContent.includes('🩸'))h.textContent=T.giTitle;
+  });
+  // history
+  const hv=document.querySelector('#view-history h2'); if(hv) hv.innerHTML=`📅 <em>${T.historyTitle}</em>`;
+  const hvp=document.querySelector('#view-history p'); if(hvp) hvp.textContent=T.historyDesc;
+  const hlb=document.querySelector('.hist-nav button'); if(hlb) hlb.textContent=T.historyLoad;
+  // theme modal
+  const thbox=document.querySelector('.theme-box h3'); if(thbox) thbox.textContent=T.themeTitle;
+  const thsecs=document.querySelectorAll('.theme-section-label');
+  if(thsecs[0]) thsecs[0].textContent=T.themeSection;
+  if(thsecs[1]) thsecs[1].textContent=T.dietSection;
+  if(thsecs[2]) thsecs[2].textContent=T.langSection;
+  const tcc2=document.getElementById('tc-default'); if(tcc2){const s=tcc2.querySelector('.theme-swatch');tcc2.innerHTML='';if(s)tcc2.prepend(s);tcc2.append(T.themeClassic);}
+  const tcd=document.getElementById('tc-dark'); if(tcd){const s=tcd.querySelector('.theme-swatch');tcd.innerHTML='';if(s)tcd.prepend(s);tcd.append(T.themeDark);}
+  const tcp=document.getElementById('tc-pastel'); if(tcp){const s=tcp.querySelector('.theme-swatch');tcp.innerHTML='';if(s)tcp.prepend(s);tcp.append(T.themePastel);}
+  const tcv=document.getElementById('tc-vivid'); if(tcv){const s=tcv.querySelector('.theme-swatch');tcv.innerHTML='';if(s)tcv.prepend(s);tcv.append(T.themeVivid);}
+  const dbm=document.getElementById('db-meat'); if(dbm) dbm.textContent=T.dietMeat;
+  const dbv=document.getElementById('db-vege'); if(dbv) dbv.textContent=T.dietVege;
+  const tcb=document.querySelector('.theme-close'); if(tcb) tcb.textContent=T.doneBtn;
+  // menu buttons
+  const mb=document.querySelectorAll('.user-menu-btn');
+  mb.forEach(b=>{if(b.onclick&&b.onclick.toString().includes('openThemeModal'))b.textContent=T.menuAppearance;else if(b.onclick&&b.onclick.toString().includes('openProfile'))b.textContent=T.menuProfile;else if(b.onclick&&b.onclick.toString().includes('signOut'))b.textContent=T.menuLogout;});
+  // sync text
+  document.getElementById('syncText').textContent=T.syncDone;
+  const wdl=document.getElementById('waterDetectedLabel'); if(wdl) wdl.textContent=T.waterDetected;
+  const wds=document.getElementById('waterDetectedSuffix'); if(wds) wds.textContent=T.waterWillAdd;
+  // empty state
+  const ms=document.getElementById('mealList');
+  if(ms&&ms.querySelector('.empty-state'))ms.innerHTML=`<div class="empty-state">${T.emptyState.replace('\n','<br>')}</div>`;
+}
+
+// restore saved lang early (before login)
+try {
+  const saved = localStorage.getItem('kaloai_lang') || 'pl';
+  currentLang = saved; T = LANGS[saved] || LANGS.pl;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===saved));
+} catch(e) {}
 </script>
 </body>
 </html>
