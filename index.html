@@ -66,6 +66,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .app{display:none;grid-template-columns:380px 1fr;min-height:100vh;}
 .app.visible{display:grid;}
 .panel-left{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:hidden;}
+/* main-section inside left panel: flex column, overflow hidden for the sidebar */
+#left-calories,#left-cooking,#left-shopping{display:none;flex-direction:column;flex:1;overflow:hidden;}
+#left-calories.active,#left-cooking.active,#left-shopping.active{display:flex;}
+/* main-section for right panel: full area */
+#right-calories,#right-cooking,#right-shopping{display:none;flex-direction:column;}
+#right-calories.active,#right-cooking.active,#right-shopping.active{display:flex;}
+#right-cooking,#right-shopping{overflow-y:auto;min-height:100vh;}
+/* panel-right fills its container */
+.panel-right{display:flex;flex-direction:column;flex:1;}
 .logo{padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
 .logo-text h1{font-family:'DM Serif Display',serif;font-size:22px;letter-spacing:-.5px;color:var(--accent);}
 .logo-text p{font-size:11px;color:var(--text2);margin-top:1px;}
@@ -73,7 +82,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .user-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--accent-light);display:block;}
 .user-avatar-placeholder{width:34px;height:34px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--accent);}
 .avatar-badge{position:absolute;bottom:-2px;right:-2px;width:16px;height:16px;border-radius:50%;background:var(--surface);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;line-height:1;}
-.user-menu{position:absolute;top:62px;left:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:50;min-width:210px;display:none;}
+.user-menu{position:absolute;top:110px;left:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:50;min-width:210px;display:none;}
 .user-menu.open{display:block;}
 .user-menu-name{padding:8px 10px;font-size:13px;font-weight:500;color:var(--text);border-bottom:1px solid var(--border);margin-bottom:6px;}
 .user-menu-btn{width:100%;padding:8px 10px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;border-radius:var(--radius-sm);text-align:left;display:flex;align-items:center;gap:8px;}
@@ -135,7 +144,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .meal-delete:hover{color:var(--danger);background:var(--danger-light);}
 .water-item{background:var(--water-light);border:1px solid rgba(26,122,191,.2);border-radius:var(--radius-sm);padding:6px 10px;margin-bottom:5px;display:flex;align-items:center;gap:7px;font-size:11px;color:var(--water);}
 .empty-state{text-align:center;padding:20px 0;color:var(--text3);font-size:12px;}
-.panel-right{display:flex;flex-direction:column;min-height:100vh;}
 .main-nav{padding:0 32px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:0;overflow-x:auto;}
 .nav-btn{padding:14px 18px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:6px;}
 .nav-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
@@ -365,6 +373,57 @@ body.diet-vege .meal-icon.meat-icon{opacity:.4;filter:grayscale(1);}
 body.diet-vege .vege-hide{display:none;}
 body.diet-vege .analyze-btn::after{content:" 🥦";}
 .theme-close{width:100%;margin-top:16px;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;}
+
+/* ── MAIN TABS ─────────────────────────────────────────── */
+.main-tabs{display:flex;border-bottom:2px solid var(--border);background:var(--surface);}
+.main-tab{flex:1;padding:13px 8px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.main-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.main-tab:hover:not(.active){color:var(--text);background:var(--surface2);}
+
+/* ── RECIPES ───────────────────────────────────────────── */
+.recipes-header{padding:28px 32px 12px;}
+.recipes-header h2{font-family:'DM Serif Display',serif;font-size:24px;color:var(--text);letter-spacing:-.5px;}
+.recipes-header p{font-size:12px;color:var(--text2);margin-top:4px;}
+.recipes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding:16px 32px 32px;}
+.recipe-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);cursor:pointer;transition:all .25s;text-decoration:none;display:block;overflow:hidden;}
+.recipe-card:hover{transform:translateY(-3px);box-shadow:0 6px 24px rgba(0,0,0,.1);border-color:var(--accent);}
+.recipe-emoji{font-size:42px;height:90px;display:flex;align-items:center;justify-content:center;background:var(--accent-light);}
+.recipe-body{padding:14px 16px;}
+.recipe-name{font-family:'DM Serif Display',serif;font-size:16px;color:var(--text);margin-bottom:10px;line-height:1.3;}
+.recipe-meta{display:flex;flex-wrap:wrap;gap:6px;}
+.recipe-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;}
+.recipe-badge.diff-easy{background:#EAF3DE;color:#2D5A27;}
+.recipe-badge.diff-medium{background:#FAEEDA;color:#BA7517;}
+.recipe-badge.diff-hard{background:#FAECE7;color:#993C1D;}
+.recipe-badge.time{background:var(--surface2);color:var(--text2);}
+.recipe-badge.portions{background:var(--protein-light);color:var(--protein);}
+
+/* ── SHOPPING LIST ─────────────────────────────────────── */
+.shopping-wrap{padding:28px 32px;flex:1;}
+.shopping-wrap h2{font-family:'DM Serif Display',serif;font-size:24px;color:var(--text);letter-spacing:-.5px;margin-bottom:4px;}
+.shopping-wrap > p{font-size:12px;color:var(--text2);margin-bottom:20px;}
+.shop-add-row{display:flex;gap:8px;margin-bottom:20px;}
+.shop-add-row input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s;}
+.shop-add-row input:focus{border-color:var(--accent);background:var(--surface);}
+.shop-add-row button{padding:10px 18px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.shop-add-row button:hover{background:#1e3d1a;}
+.shop-cats{display:flex;flex-direction:column;gap:16px;}
+.shop-cat-title{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:7px;}
+.shop-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;transition:all .2s;}
+.shop-item.done{opacity:.5;}
+.shop-item.done .shop-item-name{text-decoration:line-through;color:var(--text3);}
+.shop-item input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;}
+.shop-item-name{flex:1;font-size:13px;font-weight:500;}
+.shop-item-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:2px 5px;border-radius:4px;}
+.shop-item-del:hover{color:var(--danger);background:var(--danger-light);}
+.shop-clear-btn{margin-top:16px;padding:9px 18px;background:var(--danger-light);color:var(--danger);border:1px solid var(--danger);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;}
+.shop-clear-btn:hover{background:var(--danger);color:#fff;}
+.shop-empty{text-align:center;padding:40px 0;color:var(--text3);font-size:13px;}
+@media(max-width:900px){
+  .recipes-grid{grid-template-columns:1fr;padding:12px 16px 24px;}
+  .recipes-header{padding:20px 16px 8px;}
+  .shopping-wrap{padding:20px 16px;}
+}
 </style>
 </head>
 <body>
@@ -481,12 +540,18 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
       <div class="logo-text"><h1>KaloAI</h1><p>Licznik kalorii</p></div>
       <div class="avatar-wrap" id="userAvatarBtn" onclick="toggleUserMenu()"><div id="avatarInner"></div><span class="avatar-badge">⚙️</span></div>
     </div>
+    <div class="main-tabs">
+      <button class="main-tab active" onclick="switchMainTab('calories')" id="mtab-calories">🔥 Kalorie</button>
+      <button class="main-tab" onclick="switchMainTab('cooking')" id="mtab-cooking">🍳 Gotowanie</button>
+      <button class="main-tab" onclick="switchMainTab('shopping')" id="mtab-shopping">🛒 Lista zakupów</button>
+    </div>
     <div id="userMenu" class="user-menu">
       <div class="user-menu-name" id="userMenuName">—</div>
       <button class="user-menu-btn profile" onclick="openThemeModal()">🎨 Wygląd aplikacji</button>
       <button class="user-menu-btn profile" onclick="openProfile()">⚙️ Dane i cele</button>
       <button class="user-menu-btn logout" onclick="signOut()">🚪 Wyloguj się</button>
     </div>
+    <div id="left-calories" class="main-section active">
     <div class="date-bar"><span id="currentDate"></span><span class="date-badge">dziś</span>
       <div class="sync-badge"><div class="sync-dot" id="syncDot"></div><span id="syncText">zsync</span></div>
     </div>
@@ -516,7 +581,44 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
       <div class="meals-section-title">Wpisy dnia (<span id="mealCount">0</span>)</div>
       <div id="mealList"><div class="empty-state">Brak wpisów.<br>Dodaj pierwszy posiłek →</div></div>
     </div>
+    </div><!-- /left-calories -->
+
+    <div id="left-cooking" class="main-section">
+      <div style="padding:14px 16px 8px;border-bottom:1px solid var(--border);">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">Przepisy</div>
+        <div style="font-size:12px;color:var(--text2);">Kliknij przepis po prawej, by go otworzyć w nowym oknie.</div>
+      </div>
+      <div style="padding:14px 16px;overflow-y:auto;flex:1;">
+        <div style="font-size:12px;color:var(--text2);line-height:1.7;">
+          <div style="margin-bottom:10px;font-weight:600;color:var(--text);">🍳 Kategorie:</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <span style="padding:5px 10px;background:var(--accent-light);border-radius:var(--radius-sm);color:var(--accent);font-size:11px;font-weight:600;">🥘 Obiady • Kolacje</span>
+            <span style="padding:5px 10px;background:var(--surface2);border-radius:var(--radius-sm);color:var(--text2);font-size:11px;">🥗 Sałatki</span>
+            <span style="padding:5px 10px;background:var(--surface2);border-radius:var(--radius-sm);color:var(--text2);font-size:11px;">🍲 Zupy</span>
+            <span style="padding:5px 10px;background:var(--surface2);border-radius:var(--radius-sm);color:var(--text2);font-size:11px;">🥐 Śniadania</span>
+          </div>
+          <div style="margin-top:14px;font-size:11px;color:var(--text3);line-height:1.6;">Wszystkie przepisy pochodzą z serwisu <strong>przepisy.pl</strong>. Kliknij kartę, aby zobaczyć pełny przepis ze składnikami i krokami.</div>
+        </div>
+      </div>
+    </div><!-- /left-cooking -->
+
+    <div id="left-shopping" class="main-section">
+      <div style="padding:14px 16px 8px;border-bottom:1px solid var(--border);">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">Lista zakupów</div>
+        <div style="font-size:12px;color:var(--text2);">Twoja prywatna lista.</div>
+      </div>
+      <div style="padding:12px 16px;overflow-y:auto;flex:1;">
+        <div style="font-size:12px;color:var(--text2);line-height:1.7;">
+          <div style="margin-bottom:8px;font-weight:600;color:var(--text);">📊 Statystyki:</div>
+          <div id="shop-stats" style="display:flex;flex-direction:column;gap:6px;">
+            <div style="padding:8px 10px;background:var(--surface2);border-radius:var(--radius-sm);font-size:11px;">Produkty: <strong id="shop-count-left">0</strong></div>
+            <div style="padding:8px 10px;background:var(--accent-light);border-radius:var(--radius-sm);font-size:11px;color:var(--accent);">Kupione: <strong id="shop-done-left">0</strong></div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /left-shopping -->
   </aside>
+  <div id="right-calories" class="main-section active">
   <div class="panel-right">
     <nav class="main-nav">
       <button class="nav-btn active" onclick="showView('food')" id="nav-food">🍽️ Posiłki</button>
@@ -644,7 +746,214 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
       </div>
       <div id="histList"><div class="empty-state">Ładowanie historii…</div></div>
     </div>
-  </div>
+  </div><!-- /panel-right -->
+  </div><!-- /right-calories -->
+
+  <!-- ── GOTOWANIE ─────────────────────────────────────── -->
+  <div id="right-cooking" class="main-section" style="grid-column:1/-1;">
+    <div class="recipes-header">
+      <h2>🍳 <em>Gotowanie</em></h2>
+      <p>Sprawdzone przepisy z serwisu przepisy.pl — kliknij, aby otworzyć pełny przepis.</p>
+    </div>
+    <div class="recipes-grid">
+
+      <a class="recipe-card" href="https://www.przepisy.pl/przepis/kotlety-mielone" target="_blank" rel="noopener">
+        <div class="recipe-emoji">🥩</div>
+        <div class="recipe-body">
+          <div class="recipe-name">Kotlety mielone</div>
+          <div class="recipe-meta">
+            <span class="recipe-badge diff-easy">⭐ Łatwy</span>
+            <span class="recipe-badge time">⏱ 40 min</span>
+            <span class="recipe-badge portions">👥 4 osoby</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="recipe-card" href="https://www.przepisy.pl/przepis/bigos-tradycyjny" target="_blank" rel="noopener">
+        <div class="recipe-emoji">🍲</div>
+        <div class="recipe-body">
+          <div class="recipe-name">Bigos tradycyjny</div>
+          <div class="recipe-meta">
+            <span class="recipe-badge diff-medium">⭐⭐ Średni</span>
+            <span class="recipe-badge time">⏱ 3 godz.</span>
+            <span class="recipe-badge portions">👥 6 osób</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="recipe-card" href="https://www.przepisy.pl/przepis/rosol-z-kury" target="_blank" rel="noopener">
+        <div class="recipe-emoji">🍜</div>
+        <div class="recipe-body">
+          <div class="recipe-name">Rosół z kury</div>
+          <div class="recipe-meta">
+            <span class="recipe-badge diff-easy">⭐ Łatwy</span>
+            <span class="recipe-badge time">⏱ 2 godz.</span>
+            <span class="recipe-badge portions">👥 6 osób</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="recipe-card" href="https://www.przepisy.pl/przepis/pierogi-ruskie" target="_blank" rel="noopener">
+        <div class="recipe-emoji">🥟</div>
+        <div class="recipe-body">
+          <div class="recipe-name">Pierogi ruskie</div>
+          <div class="recipe-meta">
+            <span class="recipe-badge diff-medium">⭐⭐ Średni</span>
+            <span class="recipe-badge time">⏱ 90 min</span>
+            <span class="recipe-badge portions">👥 4 osoby</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="recipe-card" href="https://www.przepisy.pl/przepis/spaghetti-bolognese" target="_blank" rel="noopener">
+        <div class="recipe-emoji">🍝</div>
+        <div class="recipe-body">
+          <div class="recipe-name">Spaghetti bolognese</div>
+          <div class="recipe-meta">
+            <span class="recipe-badge diff-easy">⭐ Łatwy</span>
+            <span class="recipe-badge time">⏱ 45 min</span>
+            <span class="recipe-badge portions">👥 4 osoby</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="recipe-card" href="https://www.przepisy.pl/przepis/kurczak-pieczony" target="_blank" rel="noopener">
+        <div class="recipe-emoji">🍗</div>
+        <div class="recipe-body">
+          <div class="recipe-name">Pieczony kurczak z ziołami</div>
+          <div class="recipe-meta">
+            <span class="recipe-badge diff-easy">⭐ Łatwy</span>
+            <span class="recipe-badge time">⏱ 80 min</span>
+            <span class="recipe-badge portions">👥 4 osoby</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="recipe-card" href="https://www.przepisy.pl/przepis/zupa-pomidorowa" target="_blank" rel="noopener">
+        <div class="recipe-emoji">🍅</div>
+        <div class="recipe-body">
+          <div class="recipe-name">Zupa pomidorowa</div>
+          <div class="recipe-meta">
+            <span class="recipe-badge diff-easy">⭐ Łatwy</span>
+            <span class="recipe-badge time">⏱ 50 min</span>
+            <span class="recipe-badge portions">👥 5 osób</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="recipe-card" href="https://www.przepisy.pl/przepis/gulasz-wolowy" target="_blank" rel="noopener">
+        <div class="recipe-emoji">🥘</div>
+        <div class="recipe-body">
+          <div class="recipe-name">Gulasz wołowy</div>
+          <div class="recipe-meta">
+            <span class="recipe-badge diff-medium">⭐⭐ Średni</span>
+            <span class="recipe-badge time">⏱ 2 godz.</span>
+            <span class="recipe-badge portions">👥 4 osoby</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="recipe-card" href="https://www.przepisy.pl/przepis/nalesniki" target="_blank" rel="noopener">
+        <div class="recipe-emoji">🥞</div>
+        <div class="recipe-body">
+          <div class="recipe-name">Naleśniki klasyczne</div>
+          <div class="recipe-meta">
+            <span class="recipe-badge diff-easy">⭐ Łatwy</span>
+            <span class="recipe-badge time">⏱ 30 min</span>
+            <span class="recipe-badge portions">👥 4 osoby</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="recipe-card" href="https://www.przepisy.pl/przepis/salatka-grecka" target="_blank" rel="noopener">
+        <div class="recipe-emoji">🥗</div>
+        <div class="recipe-body">
+          <div class="recipe-name">Sałatka grecka</div>
+          <div class="recipe-meta">
+            <span class="recipe-badge diff-easy">⭐ Łatwy</span>
+            <span class="recipe-badge time">⏱ 15 min</span>
+            <span class="recipe-badge portions">👥 2 osoby</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="recipe-card" href="https://www.przepisy.pl/przepis/zrazy-wolowe-zawijane" target="_blank" rel="noopener">
+        <div class="recipe-emoji">🍖</div>
+        <div class="recipe-body">
+          <div class="recipe-name">Zrazy wołowe zawijane</div>
+          <div class="recipe-meta">
+            <span class="recipe-badge diff-hard">⭐⭐⭐ Trudny</span>
+            <span class="recipe-badge time">⏱ 2,5 godz.</span>
+            <span class="recipe-badge portions">👥 4 osoby</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="recipe-card" href="https://www.przepisy.pl/przepis/zapiekanka-ziemniaczana" target="_blank" rel="noopener">
+        <div class="recipe-emoji">🥔</div>
+        <div class="recipe-body">
+          <div class="recipe-name">Zapiekanka ziemniaczana</div>
+          <div class="recipe-meta">
+            <span class="recipe-badge diff-easy">⭐ Łatwy</span>
+            <span class="recipe-badge time">⏱ 60 min</span>
+            <span class="recipe-badge portions">👥 4 osoby</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="recipe-card" href="https://www.przepisy.pl/przepis/losos-pieczony" target="_blank" rel="noopener">
+        <div class="recipe-emoji">🐟</div>
+        <div class="recipe-body">
+          <div class="recipe-name">Łosoś pieczony z cytryną</div>
+          <div class="recipe-meta">
+            <span class="recipe-badge diff-easy">⭐ Łatwy</span>
+            <span class="recipe-badge time">⏱ 35 min</span>
+            <span class="recipe-badge portions">👥 2 osoby</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="recipe-card" href="https://www.przepisy.pl/przepis/zupa-krem-z-brokula" target="_blank" rel="noopener">
+        <div class="recipe-emoji">🥦</div>
+        <div class="recipe-body">
+          <div class="recipe-name">Krem z brokułów</div>
+          <div class="recipe-meta">
+            <span class="recipe-badge diff-easy">⭐ Łatwy</span>
+            <span class="recipe-badge time">⏱ 30 min</span>
+            <span class="recipe-badge portions">👥 4 osoby</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="recipe-card" href="https://www.przepisy.pl/przepis/risotto-z-kurczakiem" target="_blank" rel="noopener">
+        <div class="recipe-emoji">🍚</div>
+        <div class="recipe-body">
+          <div class="recipe-name">Risotto z kurczakiem i grzybami</div>
+          <div class="recipe-meta">
+            <span class="recipe-badge diff-medium">⭐⭐ Średni</span>
+            <span class="recipe-badge time">⏱ 50 min</span>
+            <span class="recipe-badge portions">👥 3 osoby</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div><!-- /right-cooking -->
+
+  <!-- ── LISTA ZAKUPÓW ─────────────────────────────────── -->
+  <div id="right-shopping" class="main-section" style="grid-column:1/-1;">
+    <div class="shopping-wrap">
+      <h2>🛒 <em>Lista zakupów</em></h2>
+      <p>Twoja osobista lista — dodaj produkty i odhaczaj podczas zakupów.</p>
+      <div class="shop-add-row">
+        <input type="text" id="shopInput" placeholder="Np.: mleko 2%, chleb żytni, jabłka…" onkeydown="if(event.key==='Enter')addShopItem()">
+        <button onclick="addShopItem()">+ Dodaj</button>
+      </div>
+      <div id="shopList"><div class="shop-empty">🛍️ Lista jest pusta.<br>Dodaj pierwszy produkt powyżej.</div></div>
+      <button class="shop-clear-btn" onclick="clearDoneItems()">🗑️ Usuń kupione</button>
+    </div>
+  </div><!-- /right-shopping -->
+
 </div>
 <div class="toast" id="toast"></div>
 <script type="module">
@@ -1274,6 +1583,67 @@ try{
   applyTheme(savedTheme);
   if(savedDiet==='vege'){document.getElementById('db-vege').classList.add('active');document.getElementById('db-meat').classList.remove('active');}
 }catch(e){}
+
+// ── MAIN TABS ──────────────────────────────────────────────
+window.switchMainTab=tab=>{
+  ['calories','cooking','shopping'].forEach(t=>{
+    const lEl=document.getElementById(`left-${t}`);
+    const rEl=document.getElementById(`right-${t}`);
+    const btn=document.getElementById(`mtab-${t}`);
+    const active=t===tab;
+    if(lEl){lEl.style.display=active?'flex':'none';}
+    if(rEl){rEl.style.display=active?'flex':'none';}
+    if(btn)btn.classList.toggle('active',active);
+  });
+  // cooking/shopping: hide sidebar, go full width
+  const aside=document.querySelector('#mainApp aside');
+  const app=document.getElementById('mainApp');
+  if(tab==='cooking'||tab==='shopping'){
+    if(aside)aside.style.display='none';
+    app.style.gridTemplateColumns='1fr';
+  } else {
+    if(aside)aside.style.display='';
+    app.style.gridTemplateColumns='';
+  }
+};
+
+// ── SHOPPING LIST ──────────────────────────────────────────
+let shopItems=[];
+try{const s=localStorage.getItem('kaloai_shop');if(s)shopItems=JSON.parse(s);}catch(e){}
+
+function saveShop(){try{localStorage.setItem('kaloai_shop',JSON.stringify(shopItems));}catch(e){}}
+function updateShopStats(){
+  const total=shopItems.length;
+  const done=shopItems.filter(i=>i.done).length;
+  const lc=document.getElementById('shop-count-left');
+  const ld=document.getElementById('shop-done-left');
+  if(lc)lc.textContent=total;
+  if(ld)ld.textContent=done;
+}
+function renderShop(){
+  const el=document.getElementById('shopList');
+  if(!el)return;
+  if(!shopItems.length){el.innerHTML='<div class="shop-empty">🛍️ Lista jest pusta.<br>Dodaj pierwszy produkt powyżej.</div>';updateShopStats();return;}
+  el.innerHTML=shopItems.map((item,i)=>`
+    <div class="shop-item${item.done?' done':''}" id="sitem-${i}">
+      <input type="checkbox" ${item.done?'checked':''} onchange="toggleShopItem(${i})">
+      <span class="shop-item-name">${item.name}</span>
+      <button class="shop-item-del" onclick="deleteShopItem(${i})">✕</button>
+    </div>`).join('');
+  updateShopStats();
+}
+window.addShopItem=()=>{
+  const inp=document.getElementById('shopInput');
+  const val=(inp.value||'').trim();
+  if(!val)return;
+  shopItems.push({name:val,done:false});
+  inp.value='';
+  saveShop();renderShop();
+};
+window.toggleShopItem=i=>{shopItems[i].done=!shopItems[i].done;saveShop();renderShop();};
+window.deleteShopItem=i=>{shopItems.splice(i,1);saveShop();renderShop();};
+window.clearDoneItems=()=>{shopItems=shopItems.filter(i=>!i.done);saveShop();renderShop();};
+renderShop();
 </script>
 </body>
 </html>
