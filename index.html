@@ -492,7 +492,7 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
 <div class="app" id="mainApp">
   <aside class="panel-left" style="position:relative;">
     <div class="logo">
-      <div class="logo-text"><h1>KaloAI</h1><p>Licznik kalorii</p></div>
+      <div class="logo-text"><h1>KaloAI</h1><p id="logoSubtitle">Licznik kalorii</p></div>
       <div class="avatar-wrap" id="userAvatarBtn" onclick="toggleUserMenu()"><div id="avatarInner"></div><span class="avatar-badge">⚙️</span></div>
     </div>
     <div id="userMenu" class="user-menu">
@@ -501,7 +501,7 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
       <button class="user-menu-btn profile" onclick="openProfile()">⚙️ Dane i cele</button>
       <button class="user-menu-btn logout" onclick="signOut()">🚪 Wyloguj się</button>
     </div>
-    <div class="date-bar"><span id="currentDate"></span><span class="date-badge">dziś</span>
+    <div class="date-bar"><span id="currentDate"></span><span class="date-badge" id="todayBadge">dziś</span>
       <div class="sync-badge"><div class="sync-dot" id="syncDot"></div><span id="syncText">zsync</span></div>
     </div>
     <div class="daily-summary">
@@ -573,14 +573,14 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:11px;">
           <input class="dish-name-input" id="editName" type="text" placeholder="Nazwa posiłku" style="flex:1;">
           <div style="flex-shrink:0;display:flex;flex-direction:column;gap:2px;">
-            <label style="font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);">Data i godzina</label>
+            <label id="dateTimeLabel" style="font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);">Data i godzina</label>
             <input type="datetime-local" id="editDateTime" style="padding:3px 7px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text);background:var(--bg);outline:none;cursor:pointer;">
           </div>
         </div>
         <div class="totals-bar">
-          <div class="total-chip cal"><span class="tc-label">Kalorie</span><span class="tc-val" id="tcCal">0</span><span class="tc-unit">kcal</span></div>
-          <div class="total-chip prot"><span class="tc-label">Białko</span><span class="tc-val" id="tcProt">0</span><span class="tc-unit">g</span></div>
-          <div class="total-chip fat"><span class="tc-label">Tłuszcze</span><span class="tc-val" id="tcFat">0</span><span class="tc-unit">g</span></div>
+          <div class="total-chip cal"><span class="tc-label" id="tcLblCal">Kalorie</span><span class="tc-val" id="tcCal">0</span><span class="tc-unit">kcal</span></div>
+          <div class="total-chip prot"><span class="tc-label" id="tcLblProt">Białko</span><span class="tc-val" id="tcProt">0</span><span class="tc-unit">g</span></div>
+          <div class="total-chip fat"><span class="tc-label" id="tcLblFat">Tłuszcze</span><span class="tc-val" id="tcFat">0</span><span class="tc-unit">g</span></div>
           <div class="total-chip carb"><span class="tc-label">Węglow.</span><span class="tc-val" id="tcCarb">0</span><span class="tc-unit">g</span></div>
         </div>
         <div id="waterDetected" style="display:none;background:var(--water-light);border:1px solid rgba(26,122,191,.25);border-radius:var(--radius-sm);padding:7px 11px;font-size:11px;color:var(--water);margin-bottom:11px;">
@@ -619,11 +619,11 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
           <button class="period-btn" onclick="setPeriod('month')" id="pb-month">Miesięczny</button>
         </div>
         <div class="series-toggles">
-          <label class="series-toggle" id="st-cal"><input type="checkbox" checked onchange="toggleSeries('cal')"><span class="dot" style="background:#2D5A27"></span>Kalorie</label>
-          <label class="series-toggle" id="st-prot"><input type="checkbox" checked onchange="toggleSeries('prot')"><span class="dot" style="background:#185FA5"></span>Białko</label>
-          <label class="series-toggle" id="st-fat"><input type="checkbox" checked onchange="toggleSeries('fat')"><span class="dot" style="background:#993556"></span>Tłuszcze</label>
-          <label class="series-toggle" id="st-carb"><input type="checkbox" checked onchange="toggleSeries('carb')"><span class="dot" style="background:#BA7517"></span>Węglowodany</label>
-          <label class="series-toggle" id="st-water"><input type="checkbox" checked onchange="toggleSeries('water')"><span class="dot" style="background:#1a7abf"></span>Woda</label>
+          <label class="series-toggle" id="st-cal"><input type="checkbox" checked onchange="toggleSeries('cal')"><span class="dot" style="background:#2D5A27"></span><span id="stLblCal">Kalorie</span></label>
+          <label class="series-toggle" id="st-prot"><input type="checkbox" checked onchange="toggleSeries('prot')"><span class="dot" style="background:#185FA5"></span><span id="stLblProt">Białko</span></label>
+          <label class="series-toggle" id="st-fat"><input type="checkbox" checked onchange="toggleSeries('fat')"><span class="dot" style="background:#993556"></span><span id="stLblFat">Tłuszcze</span></label>
+          <label class="series-toggle" id="st-carb"><input type="checkbox" checked onchange="toggleSeries('carb')"><span class="dot" style="background:#BA7517"></span><span id="stLblCarb">Węglowodany</span></label>
+          <label class="series-toggle" id="st-water"><input type="checkbox" checked onchange="toggleSeries('water')"><span class="dot" style="background:#1a7abf"></span><span id="stLblWater">Woda</span></label>
         </div>
       </div>
       <div class="stat-row">
@@ -693,7 +693,7 @@ const pad=n=>String(n).padStart(2,'0');
 function todayKey(){const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
 function localDateStr(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
 
-document.getElementById('currentDate').textContent=new Date().toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long'});
+// date set in applyTranslations
 
 // ── FIRESTORE ──────────────────────────────────────────────
 const userDayRef=(uid,k)=>doc(db,'users',uid,'days',k);
@@ -754,11 +754,11 @@ function calcResult(){
   const tWater=Math.round(wData.weight*35);
   profile={...profile,cal:tCal,prot:tProt,fat:tFat,carb:tCarb,water:tWater};
   document.getElementById('wizardResult').innerHTML=`
-    <div class="wr-row"><span class="wr-label">Kalorie dziennie</span><span class="wr-val">${tCal} kcal</span></div>
-    <div class="wr-row"><span class="wr-label">Białko</span><span class="wr-val">${tProt} g</span></div>
-    <div class="wr-row"><span class="wr-label">Tłuszcze</span><span class="wr-val">${tFat} g</span></div>
-    <div class="wr-row"><span class="wr-label">Węglowodany</span><span class="wr-val">${tCarb} g</span></div>
-    <div class="wr-row"><span class="wr-label">Woda dziennie</span><span class="wr-val">${tWater} ml</span></div>`;
+    <div class="wr-row"><span class="wr-label">${T.wCalLabel}</span><span class="wr-val">${tCal} kcal</span></div>
+    <div class="wr-row"><span class="wr-label">${T.wProtLabel}</span><span class="wr-val">${tProt} g</span></div>
+    <div class="wr-row"><span class="wr-label">${T.wFatLabel}</span><span class="wr-val">${tFat} g</span></div>
+    <div class="wr-row"><span class="wr-label">${T.wCarbLabel}</span><span class="wr-val">${tCarb} g</span></div>
+    <div class="wr-row"><span class="wr-label">${T.wWaterLabel}</span><span class="wr-val">${tWater} ml</span></div>`;
   document.getElementById('mo-cal').value=tCal;document.getElementById('mo-prot').value=tProt;document.getElementById('mo-fat').value=tFat;document.getElementById('mo-carb').value=tCarb;document.getElementById('mo-water').value=tWater;
 }
 // ─ OPEN PROFILE: prefill saved data ───────────────────────
@@ -1081,9 +1081,9 @@ function buildGiChart(){
       // zone: high >140
       {label:'_zhigh',data:Array(SLOTS).fill(Math.max(maxY,141)),borderWidth:0,pointRadius:0,fill:{target:'-1',above:'rgba(153,60,29,.1)'},tension:0},
       // actual glucose
-      {label:'Stężenie glukozy',data:actualData,borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,.1)',fill:true,tension:.4,pointRadius:2,borderWidth:2.5},
+      {label:T.giActual+' (mg/dl)',data:actualData,borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,.1)',fill:true,tension:.4,pointRadius:2,borderWidth:2.5},
       // forecast
-      {label:'Prognoza',data:forecastData,borderColor:'#BA7517',backgroundColor:'rgba(186,117,23,.06)',fill:true,tension:.4,pointRadius:1,borderWidth:2,borderDash:[5,4]},
+      {label:T.giForecast+',data:forecastData,borderColor:'#BA7517',backgroundColor:'rgba(186,117,23,.06)',fill:true,tension:.4,pointRadius:1,borderWidth:2,borderDash:[5,4]},
     ]},
     options:{
       responsive:true,maintainAspectRatio:false,
@@ -1121,7 +1121,7 @@ function fmtLbl(d){if(currentPeriod==='day')return'';if(currentPeriod==='week')r
 window.setPeriod=p=>{currentPeriod=p;document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));document.getElementById('pb-'+p).classList.add('active');buildCharts();};
 window.toggleSeries=s=>{seriesVisible[s]=!seriesVisible[s];document.getElementById('st-'+s).classList.toggle('off',!seriesVisible[s]);buildCharts();};
 
-async function buildCharts(){
+window.buildCharts = async function buildCharts(){
   const days=getRange();const tk=todayKey();
   buildGiChart();
   if(currentPeriod==='day'){
@@ -1151,25 +1151,25 @@ async function buildCharts(){
   buildMainChart(labels,data);buildWaterChart(labels,data);buildDonut(active,n);
 }
 function buildHourlyChart(){
-  document.getElementById('mainChartTitle').textContent='Rozkład godzinowy – dziś';
+  document.getElementById('mainChartTitle').textContent=T.chartHourly;
   const slots=Array.from({length:24},(_,h)=>({h,cal:0,prot:0,fat:0,carb:0}));
   meals.forEach(m=>{const h=m.sortKey?new Date(m.sortKey).getHours():0;slots[h].cal+=m.cal||0;slots[h].prot+=m.protein||0;slots[h].fat+=m.fat||0;slots[h].carb+=m.carb||0;});
   const labels=slots.map(s=>s.h+':00');const ds=[];
-  if(seriesVisible.cal)ds.push({type:'bar',label:'Kalorie',data:slots.map(s=>s.cal),backgroundColor:'rgba(45,90,39,.7)',borderColor:'#2D5A27',borderWidth:1,borderRadius:3,yAxisID:'yL'});
-  if(seriesVisible.prot)ds.push({type:'line',label:'Białko (g)',data:slots.map(s=>r1(s.prot)),borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,.08)',fill:true,tension:.4,pointRadius:2,yAxisID:'yR'});
-  if(seriesVisible.fat)ds.push({type:'line',label:'Tłuszcze (g)',data:slots.map(s=>r1(s.fat)),borderColor:'#993556',backgroundColor:'rgba(153,53,86,.08)',fill:true,tension:.4,pointRadius:2,yAxisID:'yR'});
-  if(seriesVisible.carb)ds.push({type:'line',label:'Węglow. (g)',data:slots.map(s=>r1(s.carb)),borderColor:'#BA7517',backgroundColor:'rgba(186,117,23,.08)',fill:true,tension:.4,pointRadius:2,yAxisID:'yR'});
+  if(seriesVisible.cal)ds.push({type:'bar',label:T.seriesCalLbl,data:slots.map(s=>s.cal),backgroundColor:'rgba(45,90,39,.7)',borderColor:'#2D5A27',borderWidth:1,borderRadius:3,yAxisID:'yL'});
+  if(seriesVisible.prot)ds.push({type:'line',label:T.seriesProtLbl+' (g)',data:slots.map(s=>r1(s.prot)),borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,.08)',fill:true,tension:.4,pointRadius:2,yAxisID:'yR'});
+  if(seriesVisible.fat)ds.push({type:'line',label:T.seriesFatLbl+' (g)',data:slots.map(s=>r1(s.fat)),borderColor:'#993556',backgroundColor:'rgba(153,53,86,.08)',fill:true,tension:.4,pointRadius:2,yAxisID:'yR'});
+  if(seriesVisible.carb)ds.push({type:'line',label:T.seriesCarbLbl+' (g)',data:slots.map(s=>r1(s.carb)),borderColor:'#BA7517',backgroundColor:'rgba(186,117,23,.08)',fill:true,tension:.4,pointRadius:2,yAxisID:'yR'});
   const ctx=document.getElementById('mainChart').getContext('2d');
   if(mainChartInst)mainChartInst.destroy();
   mainChartInst=new Chart(ctx,{data:{labels,datasets:ds},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{font:{family:'DM Sans',size:11},padding:9}}},scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10},maxTicksLimit:12}},yL:{type:'linear',position:'left',grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'DM Sans',size:10}}},yR:{type:'linear',position:'right',grid:{display:false},ticks:{font:{family:'DM Sans',size:10}}}}}});
 }
 function buildMainChart(labels,data){
-  document.getElementById('mainChartTitle').textContent='Kalorie i makroskładniki';
+  document.getElementById('mainChartTitle').textContent=T.chartMacros;
   const ds=[];
-  if(seriesVisible.cal)ds.push({type:'bar',label:'Kalorie',data:data.map(d=>d.cal),backgroundColor:'rgba(45,90,39,.72)',borderColor:'#2D5A27',borderWidth:1,borderRadius:3,yAxisID:'yL'});
-  if(seriesVisible.prot)ds.push({type:'line',label:'Białko (g)',data:data.map(d=>r1(d.prot)),borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,.08)',fill:true,tension:.4,pointRadius:3,yAxisID:'yR'});
-  if(seriesVisible.fat)ds.push({type:'line',label:'Tłuszcze (g)',data:data.map(d=>r1(d.fat)),borderColor:'#993556',backgroundColor:'rgba(153,53,86,.08)',fill:true,tension:.4,pointRadius:3,yAxisID:'yR'});
-  if(seriesVisible.carb)ds.push({type:'line',label:'Węglow. (g)',data:data.map(d=>r1(d.carb)),borderColor:'#BA7517',backgroundColor:'rgba(186,117,23,.08)',fill:true,tension:.4,pointRadius:3,yAxisID:'yR'});
+  if(seriesVisible.cal)ds.push({type:'bar',label:T.seriesCalLbl,data:data.map(d=>d.cal),backgroundColor:'rgba(45,90,39,.72)',borderColor:'#2D5A27',borderWidth:1,borderRadius:3,yAxisID:'yL'});
+  if(seriesVisible.prot)ds.push({type:'line',label:T.seriesProtLbl+' (g)',data:data.map(d=>r1(d.prot)),borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,.08)',fill:true,tension:.4,pointRadius:3,yAxisID:'yR'});
+  if(seriesVisible.fat)ds.push({type:'line',label:T.seriesFatLbl+' (g)',data:data.map(d=>r1(d.fat)),borderColor:'#993556',backgroundColor:'rgba(153,53,86,.08)',fill:true,tension:.4,pointRadius:3,yAxisID:'yR'});
+  if(seriesVisible.carb)ds.push({type:'line',label:T.seriesCarbLbl+' (g)',data:data.map(d=>r1(d.carb)),borderColor:'#BA7517',backgroundColor:'rgba(186,117,23,.08)',fill:true,tension:.4,pointRadius:3,yAxisID:'yR'});
   const ctx=document.getElementById('mainChart').getContext('2d');
   if(mainChartInst)mainChartInst.destroy();
   mainChartInst=new Chart(ctx,{data:{labels,datasets:ds},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{font:{family:'DM Sans',size:11},padding:9}}},scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10}}},yL:{type:'linear',position:'left',grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'DM Sans',size:10}}},yR:{type:'linear',position:'right',grid:{display:false},ticks:{font:{family:'DM Sans',size:10}}}}}});
@@ -1178,13 +1178,13 @@ function buildWaterChart(labels,data){
   const gW=profile.water||2500;
   const ctx=document.getElementById('waterChart').getContext('2d');
   if(waterChartInst)waterChartInst.destroy();
-  waterChartInst=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Woda (ml)',data:data.map(d=>d.water||d),backgroundColor:data.map(d=>(d.water||d)>=gW?'rgba(26,122,191,.8)':'rgba(26,122,191,.4)'),borderColor:'#1a7abf',borderWidth:1,borderRadius:3},{type:'line',label:`Cel ${gW}ml`,data:data.map(()=>gW),borderColor:'rgba(26,122,191,.4)',borderDash:[4,4],borderWidth:1.5,pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{family:'DM Sans',size:11}}}},scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10}}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'DM Sans',size:10}}}}}});
+  waterChartInst=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:T.seriesWaterLbl+' (ml)',data:data.map(d=>d.water||d),backgroundColor:data.map(d=>(d.water||d)>=gW?'rgba(26,122,191,.8)':'rgba(26,122,191,.4)'),borderColor:'#1a7abf',borderWidth:1,borderRadius:3},{type:'line',label:T.goal+` ${gW}ml`,data:data.map(()=>gW),borderColor:'rgba(26,122,191,.4)',borderDash:[4,4],borderWidth:1.5,pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{family:'DM Sans',size:11}}}},scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10}}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'DM Sans',size:10}}}}}});
 }
 function buildDonut(active,n){
   const avgP=active.reduce((s,d)=>s+(d.prot||0),0)/n,avgF=active.reduce((s,d)=>s+(d.fat||0),0)/n,avgC=active.reduce((s,d)=>s+(d.carb||0),0)/n;
   const ctx=document.getElementById('macroDonut').getContext('2d');
   if(donutInst)donutInst.destroy();
-  donutInst=new Chart(ctx,{type:'doughnut',data:{labels:['Białko','Tłuszcze','Węglowodany'],datasets:[{data:[r1(avgP*4),r1(avgF*9),r1(avgC*4)],backgroundColor:['rgba(24,95,165,.8)','rgba(153,53,86,.8)','rgba(186,117,23,.8)'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:8}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.parsed} kcal`}}}}});
+  donutInst=new Chart(ctx,{type:'doughnut',data:{labels:[T.seriesProtLbl,T.seriesFatLbl,T.seriesCarbLbl],datasets:[{data:[r1(avgP*4),r1(avgF*9),r1(avgC*4)],backgroundColor:['rgba(24,95,165,.8)','rgba(153,53,86,.8)','rgba(186,117,23,.8)'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:8}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.parsed} kcal`}}}}});
 }
 
 // ── HISTORY ────────────────────────────────────────────────
@@ -1380,6 +1380,20 @@ window.LANGS = {
     analyzeAiSys:'Jesteś ekspertem od żywienia. Analizujesz posiłki i szacujesz wartości odżywcze dla każdego składnika osobno. Odpowiadaj WYŁĄCZNIE poprawnym JSON bez dodatkowego tekstu ani znaczników Markdown.',
     analyzeIngSys:'Jesteś ekspertem od żywienia. Zwróć WYŁĄCZNIE JSON (bez Markdown) z wartościami na 100g:',
     analyzePromptText:(txt)=>`Przeanalizuj i podaj JSON:\n\n${txt}`,
+    
+    logoSubtitle:'Licznik kalorii',
+    todayBadge:'dziś',
+    dateTimeLabel:'Data i godzina',
+    seriesCalLbl:'Kalorie',
+    seriesProtLbl:'Białko',
+    seriesFatLbl:'Tłuszcze',
+    seriesCarbLbl:'Węglowodany',
+    seriesWaterLbl:'Woda',
+    chipCal:'Kalorie',
+    chipProt:'Białko',
+    chipFat:'Tłuszcze',
+    chipCarb:'Węglow.',
+    locale:'pl-PL',
     analyzePromptPhoto:'Przeanalizuj i podaj JSON.',
   },
   en:{code:'en',name:'English',flag:'🇬🇧',
@@ -1429,6 +1443,20 @@ window.LANGS = {
     analyzeAiSys:'You are a nutrition expert. Analyze meals and estimate nutritional values for each ingredient separately. Reply ONLY with valid JSON, no extra text or Markdown.',
     analyzeIngSys:'You are a nutrition expert. Return ONLY JSON (no Markdown) with values per 100g:',
     analyzePromptText:(txt)=>`Analyze and return JSON:\n\n${txt}`,
+    
+    logoSubtitle:'Calorie counter',
+    todayBadge:'today',
+    dateTimeLabel:'Date & time',
+    seriesCalLbl:'Calories',
+    seriesProtLbl:'Protein',
+    seriesFatLbl:'Fat',
+    seriesCarbLbl:'Carbs',
+    seriesWaterLbl:'Water',
+    chipCal:'Calories',
+    chipProt:'Protein',
+    chipFat:'Fat',
+    chipCarb:'Carbs',
+    locale:'en-GB',
     analyzePromptPhoto:'Analyze this meal and return JSON.',
   },
   fr:{code:'fr',name:'Français',flag:'🇫🇷',
@@ -1478,6 +1506,20 @@ window.LANGS = {
     analyzeAiSys:'Vous êtes un expert en nutrition. Analysez les repas et estimez les valeurs nutritionnelles pour chaque ingrédient séparément. Répondez UNIQUEMENT avec du JSON valide, sans texte supplémentaire ni Markdown.',
     analyzeIngSys:'Vous êtes un expert en nutrition. Retournez UNIQUEMENT du JSON (sans Markdown) avec les valeurs pour 100g :',
     analyzePromptText:(txt)=>`Analysez et retournez le JSON :\n\n${txt}`,
+    
+    logoSubtitle:'Compteur de calories',
+    todayBadge:"aujourd'hui",
+    dateTimeLabel:'Date et heure',
+    seriesCalLbl:'Calories',
+    seriesProtLbl:'Protéines',
+    seriesFatLbl:'Graisses',
+    seriesCarbLbl:'Glucides',
+    seriesWaterLbl:'Eau',
+    chipCal:'Calories',
+    chipProt:'Protéines',
+    chipFat:'Graisses',
+    chipCarb:'Glucides',
+    locale:'fr-FR',
     analyzePromptPhoto:'Analysez ce repas et retournez le JSON.',
   },
   de:{code:'de',name:'Deutsch',flag:'🇩🇪',
@@ -1527,6 +1569,13 @@ window.LANGS = {
     analyzeAiSys:'Sie sind ein Ernährungsexperte. Analysieren Sie Mahlzeiten und schätzen Sie Nährwerte für jede Zutat separat. Antworten Sie NUR mit gültigem JSON, ohne zusätzlichen Text oder Markdown.',
     analyzeIngSys:'Sie sind ein Ernährungsexperte. Geben Sie NUR JSON (kein Markdown) mit Werten pro 100g zurück:',
     analyzePromptText:(txt)=>`Analysieren Sie und geben Sie JSON zurück:\n\n${txt}`,
+    
+    logoSubtitle:'Kalorienzähler',
+    todayBadge:'heute',
+    dateTimeLabel:'Datum & Uhrzeit',
+    seriesCalLbl:'Kalorien',seriesProtLbl:'Eiweiß',seriesFatLbl:'Fett',seriesCarbLbl:'Kohlenhydrate',seriesWaterLbl:'Wasser',
+    chipCal:'Kalorien',chipProt:'Eiweiß',chipFat:'Fett',chipCarb:'Kohlenhydr.',
+    locale:'de-DE',
     analyzePromptPhoto:'Analysieren Sie diese Mahlzeit und geben Sie JSON zurück.',
   },
   es:{code:'es',name:'Español',flag:'🇪🇸',
@@ -1576,6 +1625,20 @@ window.LANGS = {
     analyzeAiSys:'Eres un experto en nutrición. Analiza las comidas y estima los valores nutricionales para cada ingrediente por separado. Responde SOLO con JSON válido, sin texto adicional ni Markdown.',
     analyzeIngSys:'Eres un experto en nutrición. Devuelve SOLO JSON (sin Markdown) con valores por 100g:',
     analyzePromptText:(txt)=>`Analiza y devuelve JSON:\n\n${txt}`,
+    
+    logoSubtitle:'Contador de calorías',
+    todayBadge:'hoy',
+    dateTimeLabel:'Fecha y hora',
+    seriesCalLbl:'Calorías',
+    seriesProtLbl:'Proteínas',
+    seriesFatLbl:'Grasas',
+    seriesCarbLbl:'Carbohidratos',
+    seriesWaterLbl:'Agua',
+    chipCal:'Calorías',
+    chipProt:'Proteínas',
+    chipFat:'Grasas',
+    chipCarb:'Carbohidr.',
+    locale:'es-ES',
     analyzePromptPhoto:'Analiza esta comida y devuelve JSON.',
   },
   it:{code:'it',name:'Italiano',flag:'🇮🇹',
@@ -1625,6 +1688,20 @@ window.LANGS = {
     analyzeAiSys:'Sei un esperto di nutrizione. Analizza i pasti e stima i valori nutrizionali per ogni ingrediente separatamente. Rispondi SOLO con JSON valido, senza testo aggiuntivo o Markdown.',
     analyzeIngSys:'Sei un esperto di nutrizione. Restituisci SOLO JSON (senza Markdown) con valori per 100g:',
     analyzePromptText:(txt)=>`Analizza e restituisci JSON:\n\n${txt}`,
+    
+    logoSubtitle:'Contatore calorie',
+    todayBadge:'oggi',
+    dateTimeLabel:'Data e ora',
+    seriesCalLbl:'Calorie',
+    seriesProtLbl:'Proteine',
+    seriesFatLbl:'Grassi',
+    seriesCarbLbl:'Carboidrati',
+    seriesWaterLbl:'Acqua',
+    chipCal:'Calorie',
+    chipProt:'Proteine',
+    chipFat:'Grassi',
+    chipCarb:'Carboidr.',
+    locale:'it-IT',
     analyzePromptPhoto:'Analizza questo pasto e restituisci JSON.',
   },
   cs:{code:'cs',name:'Čeština',flag:'🇨🇿',
@@ -1674,14 +1751,32 @@ window.LANGS = {
     analyzeAiSys:'Jste odborník na výživu. Analyzujte jídla a odhadněte nutriční hodnoty pro každou ingredienci zvlášť. Odpovídejte POUZE platným JSON bez dalšího textu nebo Markdown.',
     analyzeIngSys:'Jste odborník na výživu. Vraťte POUZE JSON (bez Markdown) s hodnotami na 100g:',
     analyzePromptText:(txt)=>`Analyzujte a vraťte JSON:\n\n${txt}`,
+    
+    logoSubtitle:'Počítadlo kalorií',
+    todayBadge:'dnes',
+    dateTimeLabel:'Datum a čas',
+    seriesCalLbl:'Kalorie',
+    seriesProtLbl:'Bílkoviny',
+    seriesFatLbl:'Tuky',
+    seriesCarbLbl:'Sacharidy',
+    seriesWaterLbl:'Voda',
+    chipCal:'Kalorie',
+    chipProt:'Bílkoviny',
+    chipFat:'Tuky',
+    chipCarb:'Sacharidy',
+    locale:'cs-CZ',
     analyzePromptPhoto:'Analyzujte toto jídlo a vraťte JSON.',
   }
 };
 
 window.currentLang = 'pl';
 window.T = LANGS.pl; // active translations
-// local aliases for module scope
-let T = window.T;
+// local aliases - use getter so always reads latest window.T
+Object.defineProperty(window, '_T_sync', {get:()=>window.T||window.LANGS?.pl||{}});
+// Override local T to always be current
+let _tProxy = new Proxy({}, {get:(obj,key)=>(window.T||window.LANGS?.pl||{})[key]});
+// Reassign T to proxy
+let T = _tProxy;
 let currentLang = window.currentLang;
 
 window.setLang = function setLang(code) {
@@ -1692,10 +1787,15 @@ window.setLang = function setLang(code) {
   window.applyTranslations();
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === code));
   if(recognition){try{recognition.stop();}catch(e){} recognition=null; isRecording=false;}
+  // refresh dynamic content
+  if(window.updateSummary) window.updateSummary();
+  if(window.renderMeals) window.renderMeals();
+  // rebuild charts if visible
+  if(document.getElementById('view-charts').classList.contains('active') && window.buildCharts) window.buildCharts();
 }
 
 window.applyTranslations = function applyTranslations() {
-  const T = window.T || LANGS.pl; // always read latest
+  const T = window.T || window.LANGS?.pl || {}; // always read latest
   // loading overlay
   const lo = document.querySelector('#loadingOverlay p');
   if (lo) lo.textContent = T.loading;
@@ -1786,6 +1886,48 @@ window.applyTranslations = function applyTranslations() {
   // empty state
   const ms=document.getElementById('mealList');
   if(ms&&ms.querySelector('.empty-state'))ms.innerHTML=`<div class="empty-state">${T.emptyState.replace('\n','<br>')}</div>`;
+
+  // ── NEW: logo subtitle ──
+  const lsub=document.getElementById('logoSubtitle'); if(lsub) lsub.textContent=T.logoSubtitle;
+
+  // ── NEW: today badge ──
+  const tb=document.getElementById('todayBadge'); if(tb) tb.textContent=T.todayBadge;
+
+  // ── NEW: current date with correct locale ──
+  const cd=document.getElementById('currentDate');
+  if(cd) cd.textContent=new Date().toLocaleDateString(T.locale,{weekday:'long',day:'numeric',month:'long'});
+
+  // ── NEW: date/time label ──
+  const dtl=document.getElementById('dateTimeLabel'); if(dtl) dtl.textContent=T.dateTimeLabel;
+
+  // ── NEW: series toggle labels ──
+  const stc=document.getElementById('stLblCal'); if(stc) stc.textContent=T.seriesCalLbl;
+  const stp=document.getElementById('stLblProt'); if(stp) stp.textContent=T.seriesProtLbl;
+  const stf=document.getElementById('stLblFat'); if(stf) stf.textContent=T.seriesFatLbl;
+  const stcb=document.getElementById('stLblCarb'); if(stcb) stcb.textContent=T.seriesCarbLbl;
+  const stw=document.getElementById('stLblWater'); if(stw) stw.textContent=T.seriesWaterLbl;
+
+  // ── NEW: totals chip labels ──
+  const tcal=document.getElementById('tcLblCal'); if(tcal) tcal.textContent=T.chipCal;
+  const tprot=document.getElementById('tcLblProt'); if(tprot) tprot.textContent=T.chipProt;
+  const tfat=document.getElementById('tcLblFat'); if(tfat) tfat.textContent=T.chipFat;
+
+  // ── NEW: mainChartTitle (when chart not rebuilt) ──
+  const mct=document.getElementById('mainChartTitle');
+  if(mct){
+    if(mct.textContent.includes('godzin')||mct.textContent.includes('hourly')||mct.textContent.includes('hora')||mct.textContent.includes('horaire')||mct.textContent.includes('stündlich')||mct.textContent.includes('orario')||mct.textContent.includes('hodinov'))
+      mct.textContent=T.chartHourly;
+    else mct.textContent=T.chartMacros;
+  }
+
+  // ── NEW: stat box units (kcal/dzień etc) ──
+  document.querySelectorAll('.stat-box').forEach(b=>{
+    const u=b.querySelector('.sb-unit');
+    if(!u)return;
+    if(b.classList.contains('cal'))u.textContent='kcal/'+T.periodDay.toLowerCase().replace(/[^a-záéíóúàâãçèêëïôùûüñäöüß]/gi,'').slice(0,4);
+    else if(b.classList.contains('water'))u.textContent='ml/'+T.periodDay.toLowerCase().replace(/[^a-záéíóúàâãçèêëïôùûüñäöüß]/gi,'').slice(0,4);
+    else u.textContent='g/'+T.periodDay.toLowerCase().replace(/[^a-záéíóúàâãçèêëïôùûüñäöüß]/gi,'').slice(0,4);
+  });
 }
 
 // restore saved lang early (before login)
