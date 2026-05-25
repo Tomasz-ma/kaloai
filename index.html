@@ -803,7 +803,7 @@ onAuthStateChanged(auth,async user=>{
     if(!snap.exists())openProfile();
     // apply saved language
     try{const sl=localStorage.getItem('kaloai_lang')||'pl';currentLang=sl;T=LANGS[sl]||LANGS.pl;}catch(e){}
-    applyTranslations();
+    window.applyTranslations();
     // mark active lang button
     document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===currentLang));
   }else{
@@ -1295,7 +1295,7 @@ try{
 }catch(e){}
 
 // ══ i18n TRANSLATIONS ══════════════════════════════════════
-const LANGS = {
+window.LANGS = {
   pl:{code:'pl',name:'Polski',flag:'🇵🇱',
     loading:'Ładowanie…',
     loginTitle:'Inteligentny licznik kalorii z AI',
@@ -1678,21 +1678,24 @@ const LANGS = {
   }
 };
 
-let currentLang = 'pl';
-let T = LANGS.pl; // active translations
+window.currentLang = 'pl';
+window.T = LANGS.pl; // active translations
+// local aliases for module scope
+let T = window.T;
+let currentLang = window.currentLang;
 
-function setLang(code) {
+window.setLang = function setLang(code) {
   if (!LANGS[code]) return;
-  currentLang = code;
-  T = LANGS[code];
+  currentLang = code; window.currentLang = code;
+  T = LANGS[code]; window.T = LANGS[code];
   try { localStorage.setItem('kaloai_lang', code); } catch(e) {}
-  applyTranslations();
+  window.applyTranslations();
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === code));
-  // update mic lang
   if(recognition){try{recognition.stop();}catch(e){} recognition=null; isRecording=false;}
 }
 
-function applyTranslations() {
+window.applyTranslations = function applyTranslations() {
+  const T = window.T || LANGS.pl; // always read latest
   // loading overlay
   const lo = document.querySelector('#loadingOverlay p');
   if (lo) lo.textContent = T.loading;
@@ -1788,7 +1791,8 @@ function applyTranslations() {
 // restore saved lang early (before login)
 try {
   const saved = localStorage.getItem('kaloai_lang') || 'pl';
-  currentLang = saved; T = LANGS[saved] || LANGS.pl;
+  currentLang = saved; window.currentLang = saved;
+  T = LANGS[saved] || LANGS.pl; window.T = T;
   document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===saved));
 } catch(e) {}
 </script>
