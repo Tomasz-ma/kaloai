@@ -63,9 +63,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .btn-next{flex:1;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;}
 .btn-next:hover{background:#1e3d1a;}
 .btn-back{padding:12px 18px;background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;}
-.app{display:none;grid-template-columns:380px 1fr;min-height:100vh;}
-.app.visible{display:grid;}
-.panel-left{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:hidden;}
+.app{display:none;flex-direction:column;min-height:100vh;}
+.app.visible{display:flex;}
+.app-body{display:grid;grid-template-columns:380px 1fr;flex:1;overflow:hidden;}
+.panel-left{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:calc(100vh - 84px);overflow:hidden;}
 /* main-section inside left panel: flex column, overflow hidden for the sidebar */
 #left-calories,#left-cooking,#left-shopping{display:none;flex-direction:column;flex:1;overflow:hidden;}
 #left-calories.active,#left-cooking.active,#left-shopping.active{display:flex;}
@@ -82,7 +83,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .user-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--accent-light);display:block;}
 .user-avatar-placeholder{width:34px;height:34px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--accent);}
 .avatar-badge{position:absolute;bottom:-2px;right:-2px;width:16px;height:16px;border-radius:50%;background:var(--surface);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;line-height:1;}
-.user-menu{position:absolute;top:110px;left:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:50;min-width:210px;display:none;}
+.user-menu{position:fixed;top:90px;left:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:500;min-width:210px;display:none;}
 .user-menu.open{display:block;}
 .user-menu-name{padding:8px 10px;font-size:13px;font-weight:500;color:var(--text);border-bottom:1px solid var(--border);margin-bottom:6px;}
 .user-menu-btn{width:100%;padding:8px 10px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;border-radius:var(--radius-sm);text-align:left;display:flex;align-items:center;gap:8px;}
@@ -374,11 +375,20 @@ body.diet-vege .vege-hide{display:none;}
 body.diet-vege .analyze-btn::after{content:" 🥦";}
 .theme-close{width:100%;margin-top:16px;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;}
 
-/* ── MAIN TABS ─────────────────────────────────────────── */
-.main-tabs{display:flex;border-bottom:2px solid var(--border);background:var(--surface);}
-.main-tab{flex:1;padding:13px 8px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;}
-.main-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
-.main-tab:hover:not(.active){color:var(--text);background:var(--surface2);}
+/* ── GLOBAL TOP BAR ──────────────────────────────────── */
+.global-topbar{display:none;width:100%;background:var(--surface);border-bottom:2px solid var(--border);z-index:100;flex-shrink:0;}
+.global-topbar.visible{display:flex;flex-direction:column;}
+.topbar-brand{display:flex;align-items:center;justify-content:space-between;padding:10px 20px 0;}
+.topbar-brand-name{font-family:'DM Serif Display',serif;font-size:22px;letter-spacing:-.5px;color:var(--accent);}
+.topbar-brand-sub{font-size:11px;color:var(--text2);margin-top:1px;}
+.topbar-tabs{display:flex;padding:0 12px;}
+.topbar-tab{flex:1;max-width:180px;padding:10px 12px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;}
+.topbar-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.topbar-tab:hover:not(.active){color:var(--text);background:var(--surface2);}
+
+/* ── MAIN TABS (sidebar - remove old) ────────────────── */
+.main-tabs{display:none;}
+.main-tab{display:none;}
 
 /* ── RECIPES ───────────────────────────────────────────── */
 .recipes-header{padding:28px 32px 12px;}
@@ -399,30 +409,64 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
 .recipe-badge.portions{background:var(--protein-light);color:var(--protein);}
 
 /* ── SHOPPING LIST ─────────────────────────────────────── */
-.shopping-wrap{padding:28px 32px;flex:1;}
+.shopping-wrap{padding:24px 32px;flex:1;max-width:960px;margin:0 auto;width:100%;}
 .shopping-wrap h2{font-family:'DM Serif Display',serif;font-size:24px;color:var(--text);letter-spacing:-.5px;margin-bottom:4px;}
-.shopping-wrap > p{font-size:12px;color:var(--text2);margin-bottom:20px;}
-.shop-add-row{display:flex;gap:8px;margin-bottom:20px;}
-.shop-add-row input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s;}
+.shopping-wrap > .shop-sub{font-size:12px;color:var(--text2);margin-bottom:20px;}
+.shop-input-area{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:22px;box-shadow:var(--shadow);position:relative;}
+.shop-add-row{display:flex;gap:8px;}
+.shop-add-row input{flex:1;padding:11px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s;}
 .shop-add-row input:focus{border-color:var(--accent);background:var(--surface);}
-.shop-add-row button{padding:10px 18px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.shop-add-row .shop-cat-sel{padding:11px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--bg);outline:none;cursor:pointer;min-width:52px;}
+.shop-add-row button{padding:11px 18px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}
 .shop-add-row button:hover{background:#1e3d1a;}
-.shop-cats{display:flex;flex-direction:column;gap:16px;}
-.shop-cat-title{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:7px;}
-.shop-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;transition:all .2s;}
-.shop-item.done{opacity:.5;}
+/* autocomplete */
+.shop-autocomplete{position:absolute;left:16px;right:16px;top:calc(100% - 8px);background:var(--surface);border:1px solid var(--accent);border-top:none;border-radius:0 0 var(--radius-sm) var(--radius-sm);box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:200;max-height:200px;overflow-y:auto;display:none;}
+.shop-autocomplete.open{display:block;}
+.shop-ac-item{padding:9px 14px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--surface2);}
+.shop-ac-item:last-child{border-bottom:none;}
+.shop-ac-item:hover{background:var(--accent-light);}
+.shop-ac-emoji{font-size:15px;width:22px;text-align:center;flex-shrink:0;}
+.shop-ac-name{flex:1;}
+.shop-ac-cat{font-size:10px;color:var(--text3);}
+/* categories */
+.shop-cats-wrap{display:flex;flex-direction:column;gap:18px;}
+.shop-cat-group{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+.shop-cat-header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--surface2);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;}
+.shop-cat-header-emoji{font-size:18px;}
+.shop-cat-header-name{font-size:13px;font-weight:700;color:var(--text);flex:1;}
+.shop-cat-count{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--accent-light);color:var(--accent);}
+.shop-cat-count.done-all{background:var(--surface2);color:var(--text3);}
+.shop-cat-items{padding:6px 0;}
+.shop-cat-items.collapsed{display:none;}
+.shop-item{display:flex;align-items:center;gap:10px;padding:9px 16px;transition:all .2s;border-bottom:1px solid var(--surface2);}
+.shop-item:last-child{border-bottom:none;}
+.shop-item.done{opacity:.45;}
 .shop-item.done .shop-item-name{text-decoration:line-through;color:var(--text3);}
 .shop-item input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;}
 .shop-item-name{flex:1;font-size:13px;font-weight:500;}
-.shop-item-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:2px 5px;border-radius:4px;}
+.shop-item-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:12px;padding:3px 6px;border-radius:4px;transition:all .2s;}
 .shop-item-del:hover{color:var(--danger);background:var(--danger-light);}
+.shop-summary-bar{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:18px;font-size:12px;color:var(--text2);}
+.shop-summary-bar .ss-chip{padding:4px 10px;border-radius:20px;font-weight:600;font-size:11px;}
+.shop-summary-bar .ss-chip.total{background:var(--surface2);color:var(--text2);}
+.shop-summary-bar .ss-chip.done{background:var(--accent-light);color:var(--accent);}
+.shop-summary-bar .ss-chip.left{background:var(--carb-light);color:var(--carb);}
 .shop-clear-btn{margin-top:16px;padding:9px 18px;background:var(--danger-light);color:var(--danger);border:1px solid var(--danger);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;}
 .shop-clear-btn:hover{background:var(--danger);color:#fff;}
-.shop-empty{text-align:center;padding:40px 0;color:var(--text3);font-size:13px;}
+.shop-empty{text-align:center;padding:48px 0;color:var(--text3);font-size:13px;line-height:2;}
 @media(max-width:900px){
+  .app-body{grid-template-columns:1fr;}
+  .panel-left{position:static;height:auto;}
+  .view{padding:18px;}
+  .main-nav{padding:0 16px;}
+  .chart-grid{grid-template-columns:1fr;}
+  .stat-row{grid-template-columns:repeat(2,1fr);}
+  .manual-fields{grid-template-columns:1fr 1fr;}
   .recipes-grid{grid-template-columns:1fr;padding:12px 16px 24px;}
   .recipes-header{padding:20px 16px 8px;}
-  .shopping-wrap{padding:20px 16px;}
+  .shopping-wrap{padding:16px;}
+  .topbar-brand{padding:8px 12px 0;}
+  .topbar-tab{font-size:12px;padding:9px 8px;}
 }
 </style>
 </head>
@@ -535,16 +579,23 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
   </div>
 </div>
 <div class="app" id="mainApp">
-  <aside class="panel-left" style="position:relative;">
-    <div class="logo">
-      <div class="logo-text"><h1>KaloAI</h1><p>Licznik kalorii</p></div>
+  <!-- GLOBAL TOP BAR -->
+  <div class="global-topbar" id="globalTopbar">
+    <div class="topbar-brand">
+      <div>
+        <div class="topbar-brand-name">KaloAI</div>
+        <div class="topbar-brand-sub">Inteligentny asystent żywieniowy</div>
+      </div>
       <div class="avatar-wrap" id="userAvatarBtn" onclick="toggleUserMenu()"><div id="avatarInner"></div><span class="avatar-badge">⚙️</span></div>
     </div>
-    <div class="main-tabs">
-      <button class="main-tab active" onclick="switchMainTab('calories')" id="mtab-calories">🔥 Kalorie</button>
-      <button class="main-tab" onclick="switchMainTab('cooking')" id="mtab-cooking">🍳 Gotowanie</button>
-      <button class="main-tab" onclick="switchMainTab('shopping')" id="mtab-shopping">🛒 Lista zakupów</button>
+    <div class="topbar-tabs">
+      <button class="topbar-tab active" onclick="switchMainTab('calories')" id="mtab-calories">🔥 Kalorie</button>
+      <button class="topbar-tab" onclick="switchMainTab('cooking')" id="mtab-cooking">🍳 Gotowanie</button>
+      <button class="topbar-tab" onclick="switchMainTab('shopping')" id="mtab-shopping">🛒 Lista zakupów</button>
     </div>
+  </div>
+  <div class="app-body" id="appBody">
+  <aside class="panel-left" style="position:relative;">
     <div id="userMenu" class="user-menu">
       <div class="user-menu-name" id="userMenuName">—</div>
       <button class="user-menu-btn profile" onclick="openThemeModal()">🎨 Wygląd aplikacji</button>
@@ -941,19 +992,56 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
   </div><!-- /right-cooking -->
 
   <!-- ── LISTA ZAKUPÓW ─────────────────────────────────── -->
-  <div id="right-shopping" class="main-section" style="grid-column:1/-1;">
+  <div id="right-shopping" class="main-section" style="grid-column:1/-1;overflow-y:auto;min-height:calc(100vh - 84px);">
     <div class="shopping-wrap">
       <h2>🛒 <em>Lista zakupów</em></h2>
-      <p>Twoja osobista lista — dodaj produkty i odhaczaj podczas zakupów.</p>
-      <div class="shop-add-row">
-        <input type="text" id="shopInput" placeholder="Np.: mleko 2%, chleb żytni, jabłka…" onkeydown="if(event.key==='Enter')addShopItem()">
-        <button onclick="addShopItem()">+ Dodaj</button>
+      <p class="shop-sub">Dodaj produkty — zostaną automatycznie posortowane do kategorii.</p>
+
+      <!-- Add input -->
+      <div class="shop-input-area">
+        <div class="shop-add-row">
+          <select id="shopCatSel" class="shop-cat-sel" title="Kategoria">
+            <option value="auto">🤖</option>
+            <option value="veg">🥦</option>
+            <option value="bread">🍞</option>
+            <option value="dairy">🧀</option>
+            <option value="meat">🥩</option>
+            <option value="pantry">🥫</option>
+            <option value="frozen">❄️</option>
+            <option value="drinks">☕</option>
+            <option value="sweets">🍫</option>
+            <option value="hygiene">🧼</option>
+            <option value="cleaning">🧹</option>
+            <option value="home">🏡</option>
+            <option value="clothes">👟</option>
+            <option value="electronics">🔌</option>
+            <option value="culture">🎁</option>
+            <option value="auto2">🚗</option>
+            <option value="pharmacy">💊</option>
+          </select>
+          <input type="text" id="shopInput" placeholder="Np.: mleko 2%, chleb żytni, jabłka…" autocomplete="off" onkeydown="shopKeydown(event)" oninput="shopInputChange(this.value)">
+          <button onclick="addShopItem()">+ Dodaj</button>
+        </div>
+        <div class="shop-autocomplete" id="shopAC"></div>
       </div>
-      <div id="shopList"><div class="shop-empty">🛍️ Lista jest pusta.<br>Dodaj pierwszy produkt powyżej.</div></div>
-      <button class="shop-clear-btn" onclick="clearDoneItems()">🗑️ Usuń kupione</button>
+
+      <!-- Summary -->
+      <div class="shop-summary-bar" id="shopSummary" style="display:none;">
+        <span>📋 Lista:</span>
+        <span class="ss-chip total" id="ss-total">0 produktów</span>
+        <span class="ss-chip done" id="ss-done">0 kupionych</span>
+        <span class="ss-chip left" id="ss-left">0 pozostało</span>
+        <button class="shop-clear-btn" onclick="clearDoneItems()" style="margin-top:0;padding:4px 12px;font-size:11px;">🗑️ Usuń kupione</button>
+      </div>
+
+      <!-- Categories -->
+      <div class="shop-cats-wrap" id="shopCatsWrap">
+        <div class="shop-empty" id="shopEmpty">🛍️ Lista jest pusta.<br>Dodaj pierwszy produkt powyżej.</div>
+      </div>
     </div>
   </div><!-- /right-shopping -->
 
+  </div><!-- /app-body -->
 </div>
 <div class="toast" id="toast"></div>
 <script type="module">
@@ -1087,6 +1175,7 @@ onAuthStateChanged(auth,async user=>{
     currentUser=user;
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('mainApp').classList.add('visible');
+    document.getElementById('globalTopbar').classList.add('visible');
     const ab=document.getElementById('userAvatarBtn');
     const avatarInner=document.getElementById('avatarInner');
     avatarInner.innerHTML=user.photoURL?`<img class="user-avatar" src="${user.photoURL}" alt="">`:`<div class="user-avatar-placeholder">${(user.displayName||user.email||'U')[0].toUpperCase()}</div>`;
@@ -1100,6 +1189,7 @@ onAuthStateChanged(auth,async user=>{
     currentUser=null;
     document.getElementById('loginScreen').style.display='flex';
     document.getElementById('mainApp').classList.remove('visible');
+    document.getElementById('globalTopbar').classList.remove('visible');
     meals=[];waterLog=[];waterMl=0;
   }
 });
@@ -1591,58 +1681,294 @@ window.switchMainTab=tab=>{
     const rEl=document.getElementById(`right-${t}`);
     const btn=document.getElementById(`mtab-${t}`);
     const active=t===tab;
-    if(lEl){lEl.style.display=active?'flex':'none';}
-    if(rEl){rEl.style.display=active?'flex':'none';}
+    if(lEl)lEl.style.display=active?'flex':'none';
+    if(rEl)rEl.style.display=active?'flex':'none';
     if(btn)btn.classList.toggle('active',active);
   });
-  // cooking/shopping: hide sidebar, go full width
   const aside=document.querySelector('#mainApp aside');
-  const app=document.getElementById('mainApp');
+  const body=document.getElementById('appBody');
   if(tab==='cooking'||tab==='shopping'){
     if(aside)aside.style.display='none';
-    app.style.gridTemplateColumns='1fr';
+    if(body)body.style.gridTemplateColumns='1fr';
   } else {
     if(aside)aside.style.display='';
-    app.style.gridTemplateColumns='';
+    if(body)body.style.gridTemplateColumns='';
   }
 };
 
 // ── SHOPPING LIST ──────────────────────────────────────────
+const SHOP_CATS={
+  veg:    {emoji:'🥦', name:'Warzywa i owoce'},
+  bread:  {emoji:'🍞', name:'Pieczywo'},
+  dairy:  {emoji:'🧀', name:'Nabiał i jaja'},
+  meat:   {emoji:'🥩', name:'Mięso, wędliny i ryby'},
+  pantry: {emoji:'🥫', name:'Spiżarnia / Sypkie'},
+  frozen: {emoji:'❄️', name:'Mrożonki'},
+  drinks: {emoji:'☕', name:'Napoje'},
+  sweets: {emoji:'🍫', name:'Słodycze i przekąski'},
+  hygiene:{emoji:'🧼', name:'Kosmetyki i higiena'},
+  cleaning:{emoji:'🧹',name:'Chemia domowa'},
+  home:   {emoji:'🏡', name:'Dom i Ogród'},
+  clothes:{emoji:'👟', name:'Odzież i Obuwie'},
+  electronics:{emoji:'🔌',name:'Elektronika'},
+  culture:{emoji:'🎁', name:'Kultura i Rozrywka'},
+  auto2:  {emoji:'🚗', name:'Motoryzacja / Usługi'},
+  pharmacy:{emoji:'💊',name:'Apteka / Lekarstwa'},
+};
+
+// Product database for autocomplete
+const PRODUCT_DB=[
+  // Warzywa i owoce
+  {name:'Jabłka',cat:'veg'},{name:'Banany',cat:'veg'},{name:'Pomidory',cat:'veg'},
+  {name:'Ogórki',cat:'veg'},{name:'Marchew',cat:'veg'},{name:'Ziemniaki',cat:'veg'},
+  {name:'Cebula',cat:'veg'},{name:'Czosnek',cat:'veg'},{name:'Brokuły',cat:'veg'},
+  {name:'Papryka czerwona',cat:'veg'},{name:'Papryka żółta',cat:'veg'},{name:'Sałata',cat:'veg'},
+  {name:'Szpinak',cat:'veg'},{name:'Pietruszka',cat:'veg'},{name:'Por',cat:'veg'},
+  {name:'Kalafior',cat:'veg'},{name:'Kapusta',cat:'veg'},{name:'Buraki',cat:'veg'},
+  {name:'Awokado',cat:'veg'},{name:'Cytryna',cat:'veg'},{name:'Pomarańcze',cat:'veg'},
+  {name:'Winogrona',cat:'veg'},{name:'Truskawki',cat:'veg'},{name:'Borówki',cat:'veg'},
+  {name:'Gruszki',cat:'veg'},{name:'Kiwi',cat:'veg'},{name:'Mandarynki',cat:'veg'},
+  {name:'Cukinia',cat:'veg'},{name:'Bakłażan',cat:'veg'},{name:'Seler',cat:'veg'},
+  // Pieczywo
+  {name:'Chleb żytni',cat:'bread'},{name:'Chleb pszenny',cat:'bread'},
+  {name:'Bułki kajzerki',cat:'bread'},{name:'Bagietka',cat:'bread'},
+  {name:'Chleb tostowy',cat:'bread'},{name:'Bułki grahamki',cat:'bread'},
+  {name:'Chałka',cat:'bread'},{name:'Croissant',cat:'bread'},{name:'Rogaliki',cat:'bread'},
+  // Nabiał i jaja
+  {name:'Mleko 2%',cat:'dairy'},{name:'Mleko 3,2%',cat:'dairy'},{name:'Śmietana 18%',cat:'dairy'},
+  {name:'Śmietana 30%',cat:'dairy'},{name:'Jogurt naturalny',cat:'dairy'},{name:'Jogurt grecki',cat:'dairy'},
+  {name:'Ser żółty',cat:'dairy'},{name:'Ser biały',cat:'dairy'},{name:'Twaróg',cat:'dairy'},
+  {name:'Masło',cat:'dairy'},{name:'Jajka',cat:'dairy'},{name:'Mozzarella',cat:'dairy'},
+  {name:'Parmezan',cat:'dairy'},{name:'Feta',cat:'dairy'},{name:'Kefir',cat:'dairy'},
+  {name:'Maślanka',cat:'dairy'},{name:'Śmietanka do kawy',cat:'dairy'},{name:'Serek wiejski',cat:'dairy'},
+  // Mięso
+  {name:'Pierś kurczaka',cat:'meat'},{name:'Udka kurczaka',cat:'meat'},{name:'Mielone wołowe',cat:'meat'},
+  {name:'Schab wieprzowy',cat:'meat'},{name:'Boczek wędzony',cat:'meat'},{name:'Szynka gotowana',cat:'meat'},
+  {name:'Kiełbasa',cat:'meat'},{name:'Kabanosy',cat:'meat'},{name:'Łosoś',cat:'meat'},
+  {name:'Dorsz',cat:'meat'},{name:'Tuńczyk w puszce',cat:'meat'},{name:'Krewetki',cat:'meat'},
+  {name:'Wędlina drobiowa',cat:'meat'},{name:'Polędwica sopocka',cat:'meat'},{name:'Salami',cat:'meat'},
+  // Spiżarnia
+  {name:'Mąka pszenna',cat:'pantry'},{name:'Ryż biały',cat:'pantry'},{name:'Makaron spaghetti',cat:'pantry'},
+  {name:'Makaron penne',cat:'pantry'},{name:'Kasza gryczana',cat:'pantry'},{name:'Płatki owsiane',cat:'pantry'},
+  {name:'Cukier',cat:'pantry'},{name:'Sól',cat:'pantry'},{name:'Pieprz',cat:'pantry'},
+  {name:'Oliwa z oliwek',cat:'pantry'},{name:'Olej słonecznikowy',cat:'pantry'},{name:'Ocet',cat:'pantry'},
+  {name:'Sos sojowy',cat:'pantry'},{name:'Koncentrat pomidorowy',cat:'pantry'},{name:'Passata pomidorowa',cat:'pantry'},
+  {name:'Pomidory z puszki',cat:'pantry'},{name:'Fasola w puszce',cat:'pantry'},{name:'Ciecierzyca w puszce',cat:'pantry'},
+  {name:'Kukurydza w puszce',cat:'pantry'},{name:'Bulion warzywny',cat:'pantry'},{name:'Soda oczyszczona',cat:'pantry'},
+  {name:'Proszek do pieczenia',cat:'pantry'},{name:'Kakao',cat:'pantry'},{name:'Cynamon',cat:'pantry'},
+  // Mrożonki
+  {name:'Mrożone warzywa',cat:'frozen'},{name:'Mrożony groszek',cat:'frozen'},{name:'Mrożony szpinak',cat:'frozen'},
+  {name:'Mrożona pizza',cat:'frozen'},{name:'Lody',cat:'frozen'},{name:'Mrożone owoce',cat:'frozen'},
+  {name:'Mrożone pierogi',cat:'frozen'},{name:'Mrożone frytki',cat:'frozen'},
+  // Napoje
+  {name:'Woda mineralna',cat:'drinks'},{name:'Sok pomarańczowy',cat:'drinks'},{name:'Sok jabłkowy',cat:'drinks'},
+  {name:'Kawa mielona',cat:'drinks'},{name:'Kawa ziarnista',cat:'drinks'},{name:'Herbata czarna',cat:'drinks'},
+  {name:'Herbata zielona',cat:'drinks'},{name:'Napój energetyczny',cat:'drinks'},{name:'Cola',cat:'drinks'},
+  {name:'Woda gazowana',cat:'drinks'},{name:'Piwo',cat:'drinks'},{name:'Wino czerwone',cat:'drinks'},
+  {name:'Syrop owocowy',cat:'drinks'},{name:'Mleko roślinne',cat:'drinks'},
+  // Słodycze
+  {name:'Czekolada mleczna',cat:'sweets'},{name:'Czekolada gorzka',cat:'sweets'},{name:'Chipsy',cat:'sweets'},
+  {name:'Ciastka',cat:'sweets'},{name:'Paluszki',cat:'sweets'},{name:'Chrupki',cat:'sweets'},
+  {name:'Żelki',cat:'sweets'},{name:'Batonik',cat:'sweets'},{name:'Wafle',cat:'sweets'},
+  {name:'Miód',cat:'sweets'},{name:'Dżem truskawkowy',cat:'sweets'},{name:'Nutellla',cat:'sweets'},
+  // Higiena
+  {name:'Szampon',cat:'hygiene'},{name:'Odżywka do włosów',cat:'hygiene'},{name:'Żel pod prysznic',cat:'hygiene'},
+  {name:'Pasta do zębów',cat:'hygiene'},{name:'Szczoteczka do zębów',cat:'hygiene'},{name:'Dezodorant',cat:'hygiene'},
+  {name:'Krem do twarzy',cat:'hygiene'},{name:'Balsam do ciała',cat:'hygiene'},{name:'Maszynka do golenia',cat:'hygiene'},
+  {name:'Papier toaletowy',cat:'hygiene'},{name:'Chusteczki',cat:'hygiene'},{name:'Płyn micelarny',cat:'hygiene'},
+  {name:'Mydło w płynie',cat:'hygiene'},{name:'Podpaski',cat:'hygiene'},{name:'Tampony',cat:'hygiene'},
+  // Chemia
+  {name:'Płyn do naczyń',cat:'cleaning'},{name:'Proszek do prania',cat:'cleaning'},{name:'Płyn do płukania',cat:'cleaning'},
+  {name:'Spray do kuchni',cat:'cleaning'},{name:'Spray do łazienki',cat:'cleaning'},{name:'Mleczko do czyszczenia',cat:'cleaning'},
+  {name:'Worki na śmieci',cat:'cleaning'},{name:'Ścierki',cat:'cleaning'},{name:'Gąbki',cat:'cleaning'},
+  {name:'Odświeżacz powietrza',cat:'cleaning'},{name:'Tabletki do zmywarki',cat:'cleaning'},
+  // Dom
+  {name:'Świeczki',cat:'home'},{name:'Ziemia do kwiatów',cat:'home'},{name:'Doniczka',cat:'home'},
+  {name:'Baterie',cat:'home'},{name:'Żarówka',cat:'home'},{name:'Taśma klejąca',cat:'home'},
+  // Odzież
+  {name:'Skarpetki',cat:'clothes'},{name:'T-shirt',cat:'clothes'},{name:'Rajstopy',cat:'clothes'},
+  // Elektronika
+  {name:'Ładowarka',cat:'electronics'},{name:'Kabel USB',cat:'electronics'},{name:'Słuchawki',cat:'electronics'},
+  // Apteka
+  {name:'Paracetamol',cat:'pharmacy'},{name:'Ibuprofen',cat:'pharmacy'},{name:'Witamina C',cat:'pharmacy'},
+  {name:'Magnez',cat:'pharmacy'},{name:'Probiotyki',cat:'pharmacy'},{name:'Plasterki',cat:'pharmacy'},
+  {name:'Syrop na kaszel',cat:'pharmacy'},{name:'Krople do nosa',cat:'pharmacy'},
+];
+
+// keyword → category mapping for auto-detect
+const CAT_KEYWORDS={
+  veg:['jabłk','banan','pomidor','ogórek','marchew','ziemniak','cebul','czosnek','brokul','papryka','sałat','szpinak','pietruszk','por','kalafor','kapust','burak','awokad','cytryn','pomarańcz','winogron','truskawk','borówk','gruszk','kiwi','mandarynk','cukini','bakłażan','seler','warzywa','owoce','sałatk','rzodkiewk','fasolk','szparagi'],
+  bread:['chleb','bułk','bagiet','chałk','croissant','rogalik','tost','pieczywo'],
+  dairy:['mleko','śmietak','jogurt','ser ','sery','twaróg','masło','jajk','mozzarell','parmezan','fet','kefir','maślank','śmietank','serek'],
+  meat:['kurczak','wołow','wieprzow','boczek','szynk','kiełbas','kabanost','łosoś','dorsz','tuńczyk','krewetk','wędlin','polędwic','salami','mięso','ryba','filet'],
+  pantry:['mąk','ryż','makaron','kasza','płatk','cukier','sól','pieprz','oliwa','olej','ocet','sos sojow','koncentrat','passata','puszk','bulion','soda','kakao','cynamon','kminek','curry','kurkuma','oregano','bazylia','tymianek'],
+  frozen:['mrożon','lody','zamrożon'],
+  drinks:['woda','sok','kawa','herbat','napój','napoje','cola','piwo','wino','syrop','mleko roślinne','energy'],
+  sweets:['czekolad','chipsy','ciastk','paluszk','chrupk','żelk','baton','wafl','miód','dżem','nutella','karmel','lollipop'],
+  hygiene:['szampon','odżywk','żel pod prysznic','pasta do zębów','szczoteczk','dezodorant','krem','balsam','maszyn','papier toaletowy','chusteczk','micelarny','mydło','podpask','tampon','perfum','lakier'],
+  cleaning:['płyn do naczyń','proszek do prania','płyn do płukania','spray','mleczko','worki na śmieci','ścierki','gąbk','odświeżacz','tabletki do zmywarki','środek'],
+  home:['świeczk','ziemia do kwiatów','doniczk','baterie','żarówk','taśma','klej','narzędzi','wieszak','świec'],
+  clothes:['skarpet','t-shirt','rajstopy','spodnie','koszul','sweter','but','sandał','kapcie'],
+  electronics:['ładowark','kabel','słuchawk','adapter','tablet','smartfon'],
+  culture:['książk','gra ','puzzle','film','bilet'],
+  auto2:['olej silnikow','płyn do spryskiwaczy','opony','myjnia'],
+  pharmacy:['paracetamol','ibuprofen','witamina','magnez','probiotyk','plaster','syrop na kaszel','krople','tabletki','maść','suplement','leki','lek ','aspiryn'],
+};
+
+function autoDetectCat(name){
+  const n=name.toLowerCase();
+  for(const [cat,kws] of Object.entries(CAT_KEYWORDS)){
+    if(kws.some(k=>n.includes(k)))return cat;
+  }
+  return 'pantry';
+}
+
 let shopItems=[];
 try{const s=localStorage.getItem('kaloai_shop');if(s)shopItems=JSON.parse(s);}catch(e){}
+// migrate old items without cat
+shopItems=shopItems.map(i=>({...i,cat:i.cat||autoDetectCat(i.name)}));
 
 function saveShop(){try{localStorage.setItem('kaloai_shop',JSON.stringify(shopItems));}catch(e){}}
-function updateShopStats(){
-  const total=shopItems.length;
-  const done=shopItems.filter(i=>i.done).length;
-  const lc=document.getElementById('shop-count-left');
-  const ld=document.getElementById('shop-done-left');
-  if(lc)lc.textContent=total;
-  if(ld)ld.textContent=done;
-}
+
 function renderShop(){
-  const el=document.getElementById('shopList');
-  if(!el)return;
-  if(!shopItems.length){el.innerHTML='<div class="shop-empty">🛍️ Lista jest pusta.<br>Dodaj pierwszy produkt powyżej.</div>';updateShopStats();return;}
-  el.innerHTML=shopItems.map((item,i)=>`
-    <div class="shop-item${item.done?' done':''}" id="sitem-${i}">
-      <input type="checkbox" ${item.done?'checked':''} onchange="toggleShopItem(${i})">
-      <span class="shop-item-name">${item.name}</span>
-      <button class="shop-item-del" onclick="deleteShopItem(${i})">✕</button>
-    </div>`).join('');
-  updateShopStats();
+  const wrap=document.getElementById('shopCatsWrap');
+  const empty=document.getElementById('shopEmpty');
+  const summary=document.getElementById('shopSummary');
+  if(!wrap)return;
+  const total=shopItems.length;
+  const doneCount=shopItems.filter(i=>i.done).length;
+  const leftCount=total-doneCount;
+  if(!total){
+    empty.style.display='block';
+    if(summary)summary.style.display='none';
+    // clear all groups
+    wrap.querySelectorAll('.shop-cat-group').forEach(e=>e.remove());
+    return;
+  }
+  empty.style.display='none';
+  if(summary){
+    summary.style.display='flex';
+    document.getElementById('ss-total').textContent=total+' produktów';
+    document.getElementById('ss-done').textContent=doneCount+' kupionych';
+    document.getElementById('ss-left').textContent=leftCount+' pozostało';
+  }
+  // group by cat, pending first then done
+  const groups={};
+  shopItems.forEach((item,i)=>{
+    const cat=item.cat||'pantry';
+    if(!groups[cat])groups[cat]={pending:[],done:[]};
+    if(item.done)groups[cat].done.push(i);
+    else groups[cat].pending.push(i);
+  });
+  // render each cat group
+  const catOrder=Object.keys(SHOP_CATS);
+  // remove existing groups
+  wrap.querySelectorAll('.shop-cat-group').forEach(e=>e.remove());
+  catOrder.forEach(catKey=>{
+    const g=groups[catKey];
+    if(!g)return;
+    const catDef=SHOP_CATS[catKey];
+    const allItems=[...g.pending,...g.done]; // pending first, done last
+    const groupEl=document.createElement('div');
+    groupEl.className='shop-cat-group';
+    groupEl.id=`shopCat-${catKey}`;
+    const isDoneAll=g.pending.length===0;
+    groupEl.innerHTML=`
+      <div class="shop-cat-header" onclick="toggleCatCollapse('${catKey}')">
+        <span class="shop-cat-header-emoji">${catDef.emoji}</span>
+        <span class="shop-cat-header-name">${catDef.name}</span>
+        <span class="shop-cat-count ${isDoneAll?'done-all':''}">${g.pending.length} / ${allItems.length}</span>
+      </div>
+      <div class="shop-cat-items" id="shopCatItems-${catKey}">
+        ${allItems.map(i=>{
+          const item=shopItems[i];
+          return `<div class="shop-item${item.done?' done':''}">
+            <input type="checkbox" ${item.done?'checked':''} onchange="toggleShopItem(${i})">
+            <span class="shop-item-name">${item.name}</span>
+            <button class="shop-item-del" onclick="deleteShopItem(${i})" title="Usuń">✕</button>
+          </div>`;
+        }).join('')}
+      </div>`;
+    wrap.appendChild(groupEl);
+  });
 }
+
+window.toggleCatCollapse=catKey=>{
+  const el=document.getElementById(`shopCatItems-${catKey}`);
+  if(el)el.classList.toggle('collapsed');
+};
+
 window.addShopItem=()=>{
   const inp=document.getElementById('shopInput');
+  const catSel=document.getElementById('shopCatSel');
   const val=(inp.value||'').trim();
   if(!val)return;
-  shopItems.push({name:val,done:false});
+  closeAC();
+  let cat=catSel?catSel.value:'auto';
+  if(cat==='auto')cat=autoDetectCat(val);
+  shopItems.push({name:val,cat,done:false});
   inp.value='';
   saveShop();renderShop();
+  inp.focus();
 };
-window.toggleShopItem=i=>{shopItems[i].done=!shopItems[i].done;saveShop();renderShop();};
-window.deleteShopItem=i=>{shopItems.splice(i,1);saveShop();renderShop();};
-window.clearDoneItems=()=>{shopItems=shopItems.filter(i=>!i.done);saveShop();renderShop();};
+
+window.toggleShopItem=i=>{
+  shopItems[i].done=!shopItems[i].done;
+  saveShop();renderShop();
+};
+window.deleteShopItem=i=>{
+  shopItems.splice(i,1);
+  saveShop();renderShop();
+};
+window.clearDoneItems=()=>{
+  shopItems=shopItems.filter(i=>!i.done);
+  saveShop();renderShop();
+};
+
+// ── AUTOCOMPLETE ───────────────────────────────────────────
+let acIdx=-1;
+function shopInputChange(val){
+  const q=val.trim().toLowerCase();
+  const ac=document.getElementById('shopAC');
+  if(!ac)return;
+  if(!q){closeAC();return;}
+  const matches=PRODUCT_DB.filter(p=>p.name.toLowerCase().includes(q)).slice(0,8);
+  if(!matches.length){closeAC();return;}
+  acIdx=-1;
+  ac.innerHTML=matches.map((p,i)=>`
+    <div class="shop-ac-item" data-idx="${i}" onmousedown="pickAC('${p.name.replace(/'/g,"\\'")}','${p.cat}')">
+      <span class="shop-ac-emoji">${SHOP_CATS[p.cat]?.emoji||'🛒'}</span>
+      <span class="shop-ac-name">${p.name}</span>
+      <span class="shop-ac-cat">${SHOP_CATS[p.cat]?.name||''}</span>
+    </div>`).join('');
+  ac.classList.add('open');
+}
+window.pickAC=(name,cat)=>{
+  document.getElementById('shopInput').value=name;
+  const cs=document.getElementById('shopCatSel');
+  if(cs)cs.value=cat;
+  closeAC();
+  document.getElementById('shopInput').focus();
+};
+function closeAC(){
+  const ac=document.getElementById('shopAC');
+  if(ac){ac.classList.remove('open');ac.innerHTML='';acIdx=-1;}
+}
+window.shopKeydown=e=>{
+  const ac=document.getElementById('shopAC');
+  const items=ac?ac.querySelectorAll('.shop-ac-item'):[];
+  if(e.key==='ArrowDown'){e.preventDefault();acIdx=Math.min(acIdx+1,items.length-1);items.forEach((el,i)=>el.classList.toggle('active',i===acIdx));}
+  else if(e.key==='ArrowUp'){e.preventDefault();acIdx=Math.max(acIdx-1,0);items.forEach((el,i)=>el.classList.toggle('active',i===acIdx));}
+  else if(e.key==='Enter'){if(acIdx>=0&&items[acIdx]){items[acIdx].dispatchEvent(new MouseEvent('mousedown'));}else{addShopItem();}}
+  else if(e.key==='Escape'){closeAC();}
+};
+document.addEventListener('click',e=>{if(!e.target.closest('.shop-input-area'))closeAC();});
+
+// add .shop-ac-item.active style
+const acStyle=document.createElement('style');
+acStyle.textContent=`.shop-ac-item.active{background:var(--accent-light);}`;
+document.head.appendChild(acStyle);
+
 renderShop();
 </script>
 </body>
