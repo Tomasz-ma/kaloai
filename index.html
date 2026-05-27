@@ -468,6 +468,56 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
   .topbar-brand{padding:8px 12px 0;}
   .topbar-tab{font-size:12px;padding:9px 8px;}
 }
+/* ── OPEN FOOD FACTS ───────────────────────────────────── */
+.off-search-wrap{display:flex;flex-direction:column;gap:0;}
+.off-search-bar{display:flex;gap:8px;margin-bottom:4px;}
+.off-search-bar input{flex:1;padding:11px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s;}
+.off-search-bar input:focus{border-color:var(--accent);}
+.off-search-bar button{padding:11px 18px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+.off-search-bar button:hover{background:#1e3d1a;}
+.off-search-hint{font-size:11px;color:var(--text3);margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+.off-status{font-size:12px;color:var(--text2);text-align:center;padding:12px 0;}
+.off-results{display:flex;flex-direction:column;gap:8px;}
+.off-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);display:flex;gap:14px;padding:12px;box-shadow:var(--shadow);transition:all .2s;align-items:flex-start;}
+.off-card:hover{border-color:var(--accent);transform:translateX(2px);}
+.off-card-img{width:56px;height:56px;border-radius:6px;object-fit:contain;background:var(--surface2);flex-shrink:0;border:1px solid var(--border);}
+.off-card-img-placeholder{width:56px;height:56px;border-radius:6px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;border:1px solid var(--border);}
+.off-card-body{flex:1;min-width:0;}
+.off-card-name{font-weight:700;font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.off-card-brand{font-size:11px;color:var(--text2);margin-bottom:6px;}
+.off-card-macros{display:flex;flex-wrap:wrap;gap:5px;}
+.off-macro-chip{padding:3px 8px;border-radius:20px;font-size:10px;font-weight:600;}
+.off-macro-chip.kcal{background:var(--accent-light);color:var(--accent);}
+.off-macro-chip.prot{background:var(--protein-light);color:var(--protein);}
+.off-macro-chip.fat{background:var(--fat-light);color:var(--fat);}
+.off-macro-chip.carb{background:var(--carb-light);color:var(--carb);}
+.off-macro-chip.fiber{background:var(--surface2);color:var(--text2);}
+.off-nutriscore{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:800;color:#fff;letter-spacing:.5px;}
+.off-nutriscore.a{background:#038141;}.off-nutriscore.b{background:#85BB2F;}.off-nutriscore.c{background:#FFCD00;color:#333;}
+.off-nutriscore.d{background:#EE8100;}.off-nutriscore.e{background:#E63E11;}
+.off-card-actions{display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0;}
+.off-btn-add{padding:6px 12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.off-btn-add:hover{background:#1e3d1a;}
+.off-btn-shop{padding:6px 12px;background:var(--surface2);color:var(--text2);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;white-space:nowrap;}
+.off-btn-shop:hover{background:var(--accent-light);color:var(--accent);border-color:var(--accent);}
+.off-barcode-row{display:flex;gap:8px;margin-top:8px;}
+.off-barcode-inp{flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--bg);outline:none;}
+.off-barcode-inp:focus{border-color:var(--accent);}
+.off-scan-btn{padding:9px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;cursor:pointer;transition:all .2s;}
+.off-scan-btn:hover{background:var(--accent-light);border-color:var(--accent);}
+.off-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:14px;}
+.off-tab{padding:9px 16px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;}
+.off-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+/* ingredient autocomplete with OFF */
+.ing-ac{position:absolute;left:0;right:0;top:calc(100% + 2px);background:var(--surface);border:1px solid var(--accent);border-radius:var(--radius-sm);box-shadow:0 6px 20px rgba(0,0,0,.12);z-index:300;max-height:220px;overflow-y:auto;display:none;}
+.ing-ac.open{display:block;}
+.ing-ac-item{padding:8px 12px;font-size:12px;cursor:pointer;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--surface2);}
+.ing-ac-item:last-child{border-bottom:none;}
+.ing-ac-item:hover,.ing-ac-item.active{background:var(--accent-light);}
+.ing-ac-name{flex:1;font-weight:500;}
+.ing-ac-meta{font-size:10px;color:var(--text2);}
+.ing-ac-loading{padding:10px 12px;font-size:11px;color:var(--text3);text-align:center;}
+.add-ing-name-row{position:relative;}
 </style>
 </head>
 <body>
@@ -675,6 +725,7 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
       <button class="nav-btn active" onclick="showView('food')" id="nav-food">🍽️ Posiłki</button>
       <button class="nav-btn" onclick="showView('charts')" id="nav-charts">📊 Wykresy</button>
       <button class="nav-btn" onclick="showView('history')" id="nav-history">📅 Historia</button>
+      <button class="nav-btn" onclick="showView('fooddb')" id="nav-fooddb">🔍 Baza</button>
     </nav>
     <div class="view active" id="view-food">
       <div><h2>Dodaj <em>posiłek</em></h2><p style="font-size:12px;color:var(--text2);margin-top:5px;">Opisz posiłek lub wgraj zdjęcie — AI rozpozna składniki.</p></div>
@@ -737,9 +788,10 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
         <button class="add-ing-btn" onclick="toggleAddForm()">＋ Dodaj składnik ręcznie</button>
         <div class="add-ing-form" id="addIngForm">
           <div class="add-ing-name-row">
-            <input type="text" id="ni-name" placeholder="Wpisz nazwę składnika…" onkeydown="if(event.key==='Enter')confirmAddIng()">
+            <input type="text" id="ni-name" placeholder="Wpisz nazwę składnika…" onkeydown="niKeydown(event)" oninput="niInputChange(this.value)" autocomplete="off">
             <button class="btn-ai-confirm" onclick="confirmAddIng()">Dodaj</button>
             <button class="btn-ai-cancel" onclick="toggleAddForm()">✕</button>
+            <div class="ing-ac" id="niAC"></div>
           </div>
           <div id="ni-hint" class="add-ing-hint"></div>
         </div>
@@ -797,6 +849,44 @@ body.diet-vege .analyze-btn::after{content:" 🥦";}
       </div>
       <div id="histList"><div class="empty-state">Ładowanie historii…</div></div>
     </div>
+
+    <!-- ── BAZA PRODUKTÓW (Open Food Facts) ──────────────── -->
+    <div class="view" id="view-fooddb">
+      <div><h2>🔍 <em>Baza produktów</em></h2><p style="font-size:12px;color:var(--text2);margin-top:4px;">Wyszukaj produkt w bazie Open Food Facts — ponad 4 mln artykułów z całego świata.</p></div>
+
+      <div class="off-tabs">
+        <button class="off-tab active" onclick="offSwitchTab('search')" id="off-tab-search">🔎 Szukaj po nazwie</button>
+        <button class="off-tab" onclick="offSwitchTab('barcode')" id="off-tab-barcode">📦 Kod kreskowy / EAN</button>
+      </div>
+
+      <!-- Search tab -->
+      <div id="off-panel-search">
+        <div class="off-search-wrap">
+          <div class="off-search-bar">
+            <input type="text" id="offSearchInp" placeholder="Np.: jogurt naturalny, mleko Łaciate, pierś kurczaka…" onkeydown="if(event.key==='Enter')offSearch()">
+            <button onclick="offSearch()">Szukaj</button>
+          </div>
+          <div class="off-search-hint">
+            <span>🌍 Źródło: <strong>Open Food Facts</strong> — otwarta baza 4+ mln produktów</span>
+            <span style="margin-left:auto;">Możesz dodać produkt do posiłku lub listy zakupów</span>
+          </div>
+        </div>
+        <div id="offSearchStatus" class="off-status" style="display:none;"></div>
+        <div id="offResults" class="off-results"></div>
+      </div>
+
+      <!-- Barcode tab -->
+      <div id="off-panel-barcode" style="display:none;">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:12px;">Wpisz kod EAN ze spodu opakowania (np. 5900334003873):</div>
+        <div class="off-barcode-row">
+          <input type="text" id="offBarcodeInp" class="off-barcode-inp" placeholder="Kod EAN-13 lub EAN-8…" onkeydown="if(event.key==='Enter')offLookupBarcode()">
+          <button class="off-scan-btn" onclick="offLookupBarcode()" title="Szukaj">🔍</button>
+        </div>
+        <div id="offBarcodeStatus" class="off-status" style="display:none;margin-top:12px;"></div>
+        <div id="offBarcodeResult" class="off-results" style="margin-top:12px;"></div>
+      </div>
+    </div>
+
   </div><!-- /panel-right -->
   </div><!-- /right-calories -->
 
@@ -1970,6 +2060,203 @@ acStyle.textContent=`.shop-ac-item.active{background:var(--accent-light);}`;
 document.head.appendChild(acStyle);
 
 renderShop();
+
+// ── OPEN FOOD FACTS ────────────────────────────────────────
+const OFF_BASE='https://world.openfoodfacts.org';
+
+function offNutriScore(g){
+  if(!g)return'';
+  return `<span class="off-nutriscore ${g.toLowerCase()}">${g.toUpperCase()}</span>`;
+}
+
+function offMacroChips(n){
+  if(!n)return'';
+  const kcal=Math.round(n['energy-kcal_100g']||n['energy-kcal']||0);
+  const prot=+(n['proteins_100g']||0).toFixed(1);
+  const fat=+(n['fat_100g']||0).toFixed(1);
+  const carb=+(n['carbohydrates_100g']||0).toFixed(1);
+  const fiber=+(n['fiber_100g']||0).toFixed(1);
+  return `<span class="off-macro-chip kcal">🔥 ${kcal} kcal</span>
+    <span class="off-macro-chip prot">💪 ${prot}g białko</span>
+    <span class="off-macro-chip fat">🥑 ${fat}g tłuszcz</span>
+    <span class="off-macro-chip carb">🌾 ${carb}g węgl.</span>
+    ${fiber?`<span class="off-macro-chip fiber">🌿 ${fiber}g błonnik</span>`:''}`;
+}
+
+function offRenderCard(p,targetId,addToMeal=true){
+  const name=p.product_name_pl||p.product_name||p.product_name_en||'Nieznana nazwa';
+  const brand=p.brands||'';
+  const img=p.image_front_small_url||p.image_small_url||p.image_url||'';
+  const ns=p.nutrition_grades||p.nutriscore_grade||'';
+  const macros=offMacroChips(p.nutriments);
+  const ean=p.code||p._id||'';
+  return `<div class="off-card">
+    ${img
+      ?`<img class="off-card-img" src="${img}" alt="${name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="off-card-img-placeholder" style="display:none">🥫</div>`
+      :`<div class="off-card-img-placeholder">🥫</div>`}
+    <div class="off-card-body">
+      <div class="off-card-name">${name}</div>
+      <div class="off-card-brand">${brand}${ean?` · EAN: ${ean}`:''}  ${offNutriScore(ns)}</div>
+      <div class="off-card-macros">${macros||'<span style="font-size:11px;color:var(--text3)">Brak danych odżywczych</span>'}</div>
+    </div>
+    <div class="off-card-actions">
+      ${addToMeal?`<button class="off-btn-add" onclick="offAddToMeal(this)" data-name="${name.replace(/"/g,'&quot;')}" data-kcal="${Math.round(p.nutriments?.['energy-kcal_100g']||0)}" data-prot="${+(p.nutriments?.['proteins_100g']||0).toFixed(1)}" data-fat="${+(p.nutriments?.['fat_100g']||0).toFixed(1)}" data-carb="${+(p.nutriments?.['carbohydrates_100g']||0).toFixed(1)}">+ Do posiłku</button>`:''}
+      <button class="off-btn-shop" onclick="offAddToShop('${name.replace(/'/g,"\\'")}')">🛒 Na listę</button>
+    </div>
+  </div>`;
+}
+
+// Debounce helper
+function debounce(fn,ms){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};}
+
+// Search by name
+let offSearchAbort=null;
+async function offSearch(){
+  const q=(document.getElementById('offSearchInp').value||'').trim();
+  if(!q)return;
+  const status=document.getElementById('offSearchStatus');
+  const results=document.getElementById('offResults');
+  status.style.display='block';
+  status.innerHTML='<div class="spinner" style="width:18px;height:18px;margin:0 auto 4px;"></div>Szukam w bazie Open Food Facts…';
+  results.innerHTML='';
+  try{
+    const url=`${OFF_BASE}/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&fields=code,product_name,product_name_pl,product_name_en,brands,nutriments,nutrition_grades,nutriscore_grade,image_front_small_url,image_small_url&page_size=15&lc=pl`;
+    const res=await fetch(url,{headers:{'User-Agent':'KaloAI/1.0 (contact: dev@kaloai.app)'}});
+    const data=await res.json();
+    const products=(data.products||[]).filter(p=>p.product_name||p.product_name_pl);
+    if(!products.length){status.innerHTML='😔 Brak wyników. Spróbuj innej nazwy lub kodu EAN.';return;}
+    status.innerHTML=`✅ Znaleziono <strong>${data.count||products.length}</strong> produktów — pokazuję ${products.length}:`;
+    results.innerHTML=products.map(p=>offRenderCard(p,'offResults')).join('');
+  }catch(err){
+    status.innerHTML='❌ Błąd połączenia z Open Food Facts. Sprawdź internet.';
+    console.error(err);
+  }
+}
+
+// Barcode lookup
+async function offLookupBarcode(){
+  const code=(document.getElementById('offBarcodeInp').value||'').trim().replace(/\s/g,'');
+  if(!code)return;
+  const status=document.getElementById('offBarcodeStatus');
+  const result=document.getElementById('offBarcodeResult');
+  status.style.display='block';
+  status.innerHTML='<div class="spinner" style="width:18px;height:18px;margin:0 auto 4px;"></div>Szukam produktu…';
+  result.innerHTML='';
+  try{
+    const res=await fetch(`${OFF_BASE}/api/v2/product/${code}.json?fields=code,product_name,product_name_pl,product_name_en,brands,nutriments,nutrition_grades,nutriscore_grade,image_front_small_url,image_small_url`,{headers:{'User-Agent':'KaloAI/1.0'}});
+    const data=await res.json();
+    if(data.status===0||!data.product){status.innerHTML='😔 Produkt nie znaleziony w bazie. Upewnij się, że kod jest prawidłowy.';return;}
+    status.innerHTML='✅ Produkt znaleziony:';
+    result.innerHTML=offRenderCard(data.product,'offBarcodeResult');
+  }catch(err){
+    status.innerHTML='❌ Błąd połączenia. Sprawdź internet.';
+  }
+}
+
+// Tab switch
+window.offSwitchTab=tab=>{
+  ['search','barcode'].forEach(t=>{
+    document.getElementById(`off-tab-${t}`).classList.toggle('active',t===tab);
+    document.getElementById(`off-panel-${t}`).style.display=t===tab?'block':'none';
+  });
+};
+
+// Add product to meal ingredients
+window.offAddToMeal=(btn)=>{
+  const name=btn.dataset.name;
+  const kcal=+btn.dataset.kcal;
+  const prot=+btn.dataset.prot;
+  const fat=+btn.dataset.fat;
+  const carb=+btn.dataset.carb;
+  // Switch to food view and open add-ing form
+  showView('food');
+  document.getElementById('addIngForm').classList.add('open');
+  document.getElementById('ni-name').value=name;
+  // Pre-populate hint
+  const hint=document.getElementById('ni-hint');
+  hint.style.display='block';
+  hint.textContent=`📦 Z bazy OFF: ${kcal} kcal | białko ${prot}g | tłuszcz ${fat}g | węgl. ${carb}g (na 100g)`;
+  // Store OFF data for confirmAddIng to use
+  window._offPrefill={name,kcal,prot,fat,carb};
+  showToast(`📦 Wczytano: ${name}. Wpisz gramaturę i kliknij Dodaj.`);
+};
+
+// Add product to shopping list
+window.offAddToShop=(name)=>{
+  const cat=autoDetectCat(name);
+  shopItems.push({name,cat,done:false});
+  saveShop();renderShop();
+  showToast(`🛒 Dodano do listy: ${name}`);
+};
+
+// ── INGREDIENT AUTOCOMPLETE (OFF + local) ──────────────────
+let niAcIdx=-1,niAcResults=[];
+const offIngSearch=debounce(async(q)=>{
+  if(q.length<2)return;
+  const ac=document.getElementById('niAC');
+  if(!ac)return;
+  ac.innerHTML='<div class="ing-ac-loading">🔍 Szukam w bazie produktów…</div>';
+  ac.classList.add('open');
+  try{
+    const url=`${OFF_BASE}/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&fields=code,product_name,product_name_pl,brands,nutriments&page_size=6&lc=pl`;
+    const res=await fetch(url,{headers:{'User-Agent':'KaloAI/1.0'}});
+    const data=await res.json();
+    niAcResults=(data.products||[]).filter(p=>p.product_name||p.product_name_pl).slice(0,6);
+    niAcIdx=-1;
+    if(!niAcResults.length){ac.innerHTML='<div class="ing-ac-loading">Brak wyników w bazie</div>';return;}
+    ac.innerHTML=niAcResults.map((p,i)=>{
+      const name=p.product_name_pl||p.product_name||'';
+      const brand=p.brands?` · ${p.brands}`:'';
+      const kcal=Math.round(p.nutriments?.['energy-kcal_100g']||0);
+      return `<div class="ing-ac-item" data-idx="${i}" onmousedown="niPickAC(${i})">
+        <span class="ing-ac-name">${name}${brand}</span>
+        <span class="ing-ac-meta">${kcal?kcal+' kcal/100g':''}</span>
+      </div>`;
+    }).join('');
+  }catch(e){ac.innerHTML='<div class="ing-ac-loading">Błąd połączenia</div>';}
+},600);
+
+window.niInputChange=(val)=>{
+  window._offPrefill=null;
+  const hint=document.getElementById('ni-hint');
+  if(hint){hint.style.display='none';hint.textContent='';}
+  const ac=document.getElementById('niAC');
+  if(!val.trim()){if(ac){ac.classList.remove('open');ac.innerHTML='';}}
+  else offIngSearch(val);
+};
+
+window.niPickAC=(i)=>{
+  const p=niAcResults[i];
+  if(!p)return;
+  const name=p.product_name_pl||p.product_name||'';
+  document.getElementById('ni-name').value=name;
+  const kcal=Math.round(p.nutriments?.['energy-kcal_100g']||0);
+  const prot=+(p.nutriments?.['proteins_100g']||0).toFixed(1);
+  const fat=+(p.nutriments?.['fat_100g']||0).toFixed(1);
+  const carb=+(p.nutriments?.['carbohydrates_100g']||0).toFixed(1);
+  window._offPrefill={name,kcal,prot,fat,carb};
+  const hint=document.getElementById('ni-hint');
+  if(hint){hint.style.display='block';hint.textContent=`📦 ${kcal} kcal | białko ${prot}g | tłuszcz ${fat}g | węgl. ${carb}g (na 100g)`;}
+  const ac=document.getElementById('niAC');
+  if(ac){ac.classList.remove('open');ac.innerHTML='';}
+  niAcIdx=-1;
+};
+
+window.niKeydown=(e)=>{
+  const ac=document.getElementById('niAC');
+  const items=ac?ac.querySelectorAll('.ing-ac-item'):[];
+  if(e.key==='ArrowDown'){e.preventDefault();niAcIdx=Math.min(niAcIdx+1,items.length-1);items.forEach((el,i)=>el.classList.toggle('active',i===niAcIdx));}
+  else if(e.key==='ArrowUp'){e.preventDefault();niAcIdx=Math.max(niAcIdx-1,0);items.forEach((el,i)=>el.classList.toggle('active',i===niAcIdx));}
+  else if(e.key==='Enter'){if(niAcIdx>=0&&items[niAcIdx]){e.preventDefault();items[niAcIdx].dispatchEvent(new MouseEvent('mousedown'));}else{confirmAddIng();}}
+  else if(e.key==='Escape'){if(ac){ac.classList.remove('open');ac.innerHTML='';}}
+};
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.add-ing-name-row')){
+    const ac=document.getElementById('niAC');
+    if(ac){ac.classList.remove('open');ac.innerHTML='';niAcIdx=-1;}
+  }
+});
 </script>
 </body>
 </html>
